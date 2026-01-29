@@ -7,7 +7,7 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Users;
 
-public sealed class User : Entity, IAggregateRoot
+public sealed class User : AggregateRoot, IAggregateRoot
 {
     public Name Name { get; private set; }
     public PasswordHash PasswordHash { get; private set; }

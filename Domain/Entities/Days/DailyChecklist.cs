@@ -6,94 +6,111 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Days;
 
-public class Checklist : Entity, IAggregateRoot
+public sealed class Checklist : AggregateRoot
 {
     private readonly List<Task> _tasks = [];
+
     public IReadOnlyCollection<Task> Tasks => _tasks;
-
-    public bool Completed { get; private set; }
-
-    public Statistics Statistics { get; private set; }
-
     public Guid UserId { get; private set; }
+    public Statistics Statistics { get; private set; } = null!;
 
-
-    public Checklist(Guid userId)
+    // ---------- FACTORY ----------
+    public static Checklist Create(Guid userId)
     {
-        UserId = userId;
-        Statistics = new(DateOnly.FromDateTime(DateTime.Now));
-
-        AddDomainEvent(new ChecklistCreated(Id, userId));
+        var checklist = new Checklist();
+        checklist.AddDomainEvent(new ChecklistCreated(
+            ChecklistId: checklist.Id,
+            UserId: userId,
+            CreatedAt: DateTime.UtcNow
+        ));
+        return checklist;
     }
 
+    // ---------- COMMANDS (WRITE LOGIC) ----------
 
+    public void AddTask(Name name, TaskType taskType, Schedule planned, string? metadata)
+        => AddDomainEvent(new TaskAddedToChecklist(
+            ChecklistId: Id,
+            TaskId: Guid.NewGuid(),
+            Name: name,
+            TaskType: taskType,
+            Planned: planned,
+            Metadata: metadata,
+            CreatedAt: DateTime.UtcNow
+        ));
 
-    public void AddTask(
-        Name name,
-        TaskType taskType,
-        Schedule planned,
-        string? metadata = null)
+    public void StartTask(Guid taskId)
     {
-        var task = new Task(name, taskType, planned, Id, metadata);
-        _tasks.Add(task);
+        if (TryGetTask(taskId).IsCompleted)
+            throw new DomainRuleViolation("Can't start already completed Task");
 
-        AddDomainEvent(new TaskAddedToChecklist(
-                    ChecklistId: Id,
-                    TaskId: task.Id));
+        AddDomainEvent(new TaskStarted(Id, taskId, DateTime.UtcNow));
     }
 
-    public void RemoveTask(Guid TaskId)
+    public void CompleteTask(Guid taskId)
     {
-        var task = _tasks.FirstOrDefault(t => t.Id == TaskId)
-            ?? throw new DomainArgumentException($"Task with id {TaskId} not found");
-        _tasks.Remove(task);
+        var task = TryGetTask(taskId);
 
-        AddDomainEvent(new TaskRemovedFromChecklist(
-                    ChecklistId: Id,
-                    TaskId: task.Id));
+        if (task.IsCompleted)
+            throw new DomainRuleViolation("Can't complete already completed Task");
+
+        if (task.ActualSchedule is null)
+            throw new DomainRuleViolation("Can't complete not yet started Task");
+
+        AddDomainEvent(new TaskCompleted(Id, taskId, DateTime.UtcNow));
     }
 
-    public void CompleteTask(Guid TaskId)
+    public void RemoveTask(Guid taskId)
     {
-        var task = _tasks.FirstOrDefault(t => t.Id == TaskId)
-            ?? throw new DomainArgumentException($"Task with id {TaskId} not found");
-        task.Complete();
+        TryGetTask(taskId);
+        AddDomainEvent(new TaskRemovedFromChecklist(Id, taskId));
     }
 
-    public void StartTask(Guid TaskId)
+    public void SetUserRating(Rating rating)
+        => AddDomainEvent(new UserRatingSet(Id, rating));
+
+    public void SetLLMRating(Rating rating)
+        => AddDomainEvent(new LLMRatingSet(Id, rating));
+
+    // ---------- APPLY (STATE TRANSITIONS) ----------
+
+    public void Apply(ChecklistCreated e)
     {
-        var task = _tasks.FirstOrDefault(t => t.Id == TaskId)
-            ?? throw new DomainArgumentException($"Task with id {TaskId} not found");
-        task.Start();
+        UserId = e.UserId;
+        Statistics = new Statistics(e.CreatedAt);
     }
 
-    public void UpdateTaskMetadata(Guid TaskId, string metadata)
+    public void Apply(TaskAddedToChecklist e)
     {
-        var task = _tasks.FirstOrDefault(t => t.Id == TaskId)
-            ?? throw new DomainArgumentException($"Task with id {TaskId} not found");
-        task.UpdateMetadata(metadata);
+        _tasks.Add(new Task(
+            e.TaskId,
+            e.Name,
+            e.TaskType,
+            e.Planned,
+            e.ChecklistId,
+            e.Metadata
+        ));
     }
 
+    public void Apply(TaskStarted e)
+        => TryGetTask(e.TaskId).StartInternal();
 
-    public void SetUserRating(Rating userRating)
-    {
-        Statistics = Statistics.WithUserRating(userRating);
+    public void Apply(TaskCompleted e)
+        => TryGetTask(e.TaskId).CompleteInternal();
 
-        AddDomainEvent(new UserRatingSet(Id, userRating));
-    }
+    public void Apply(TaskRemovedFromChecklist e)
+        => _tasks.Remove(TryGetTask(e.TaskId));
 
-    public void SetLLMRating(Rating llmRating)
-    {
-        Statistics = Statistics.WithLLMRating(llmRating);
+    public void Apply(UserRatingSet e)
+        => Statistics = Statistics.WithUserRating(e.UserRating);
 
-        AddDomainEvent(new LLMRatingSet(Id, llmRating));
-    }
+    public void Apply(LLMRatingSet e)
+        => Statistics = Statistics.WithLLMRating(e.LLMRating);
 
 
+    // ---------- HELPERS ----------
 
-#pragma warning disable CS8618 
-    private Checklist() { }
-#pragma warning restore CS8618
+    private Task TryGetTask(Guid id) =>
+        _tasks.FirstOrDefault(t => t.Id == id)
+        ?? throw new DomainArgumentException($"Task {id} not found");
 }
-
-

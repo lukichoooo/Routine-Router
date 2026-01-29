@@ -1,3 +1,6 @@
-namespace Domain.SeedWork;
-
-public interface IAggregateRoot;
+namespace Domain.SeedWork
+{
+    public interface IAggregateRoot
+    {
+    }
+}
