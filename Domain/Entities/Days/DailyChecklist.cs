@@ -75,10 +75,10 @@ public class Checklist : Entity, IAggregateRoot
 
 
     public void SetUserRating(Rating userRating)
-        => Statistics.WithUserRating(userRating);
+        => Statistics = Statistics.WithUserRating(userRating);
 
     public void SetLLMRating(Rating llmRating)
-        => Statistics.WithLLMRating(llmRating);
+        => Statistics = Statistics.WithLLMRating(llmRating);
 
 
 

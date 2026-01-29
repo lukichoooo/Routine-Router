@@ -16,7 +16,7 @@ namespace Domain.Entities.Days.ValueObjects
         protected override IEnumerable<object?> GetEqualityComponents()
         {
             yield return StartTime;
-            yield return EndTime ?? new object();
+            yield return EndTime;
         }
 
 
