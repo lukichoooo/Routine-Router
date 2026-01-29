@@ -11,6 +11,6 @@ namespace Domain.Entities.Days.Events
          TaskType TaskType,
          Schedule Planned,
          string? Metadata,
-         DateTime CreatedAt
+         DateTimeOffset TimeStamp
          ) : IDomainEvent;
 }

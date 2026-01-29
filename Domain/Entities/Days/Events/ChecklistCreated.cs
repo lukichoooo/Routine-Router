@@ -5,5 +5,5 @@ namespace Domain.Entities.Days.Events
     public sealed record ChecklistCreated(
             Guid ChecklistId,
             Guid UserId,
-            DateTimeOffset CreatedAt) : IDomainEvent;
+            DateTimeOffset TimeStamp) : IDomainEvent;
 }

@@ -4,7 +4,7 @@ using Domain.Entities.Days.ValueObjects;
 
 namespace Domain.Entities.Days;
 
-public sealed class Task
+public sealed class TaskEntity
 {
     public Guid Id { get; private set; }
     public Name Name { get; private set; }
@@ -20,7 +20,7 @@ public sealed class Task
     public bool IsCompleted;
 
 
-    public Task(
+    public TaskEntity(
         Guid id,
         Name name,
         TaskType taskType,
@@ -38,9 +38,7 @@ public sealed class Task
 
 
     internal void StartInternal()
-    {
-        ActualSchedule = new Schedule(DateTimeOffset.Now);
-    }
+        => ActualSchedule = new Schedule(DateTimeOffset.Now);
 
     internal void CompleteInternal()
     {
@@ -49,8 +47,6 @@ public sealed class Task
     }
 
     public void UpdateMetadata(string metadata)
-    {
-        Metadata = metadata;
-    }
+        => Metadata = metadata;
 }
 

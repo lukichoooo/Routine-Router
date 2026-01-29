@@ -5,5 +5,5 @@ namespace Domain.Entities.Days.Events
     public sealed record TaskCompleted(
             Guid ChecklistId,
             Guid TaskId,
-            DateTimeOffset Date) : IDomainEvent;
+            DateTimeOffset TimeStamp) : IDomainEvent;
 }
