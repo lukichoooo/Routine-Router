@@ -9,6 +9,8 @@ namespace Domain.Entities.Days;
 public sealed class Task : Entity
 {
     public Name Name { get; private set; }
+    public TaskType TaskType { get; private set; }
+
     public string? Metadata { get; private set; }
 
     public Schedule PlannedSchedule { get; private set; }
@@ -21,16 +23,18 @@ public sealed class Task : Entity
 
     public Task(
         Name name,
+        TaskType taskType,
         Schedule planned,
-        Guid ChecklistId,
+        Guid checklistId,
         string? metadata = null)
     {
         Name = name ?? throw new DomainArgumentNullException(nameof(name));
+        TaskType = taskType ?? throw new DomainArgumentNullException(nameof(taskType));
         PlannedSchedule = planned ?? throw new DomainArgumentNullException(nameof(planned));
-        this.ChecklistId = ChecklistId;
+        ChecklistId = checklistId;
         Metadata = metadata;
 
-        AddDomainEvent(new TaskCreated(Id, name, planned, metadata));
+        AddDomainEvent(new TaskCreated(Id, name, taskType, planned, metadata));
     }
 
 

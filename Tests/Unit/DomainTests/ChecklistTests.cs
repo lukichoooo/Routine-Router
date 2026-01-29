@@ -40,7 +40,8 @@ namespace DomainTests
             var taskName = _fix.Create<Name>();
             var taskSchedule = _fix.Create<Schedule>();
             var taskMetadata = _fix.Create<string>();
-            checklist.AddTask(taskName, taskSchedule, taskMetadata);
+            var taskType = TaskType.DeepWork;
+            checklist.AddTask(taskName, taskType, taskSchedule, taskMetadata);
 
             Assert.That(
                     checklist.Tasks.FirstOrDefault
@@ -68,7 +69,8 @@ namespace DomainTests
             var taskName = _fix.Create<Name>();
             var taskSchedule = _fix.Create<Schedule>();
             var taskMetadata = _fix.Create<string>();
-            checklist.AddTask(taskName, taskSchedule, taskMetadata);
+            var taskType = TaskType.DeepWork;
+            checklist.AddTask(taskName, taskType, taskSchedule, taskMetadata);
             var task = checklist.Tasks.First();
 
             checklist.RemoveTask(task.Id);
@@ -99,7 +101,8 @@ namespace DomainTests
             var taskSchedule = _fix.Create<Schedule>();
             var taskMetadata = _fix.Create<string>();
 
-            checklist.AddTask(taskName, taskSchedule, taskMetadata);
+            var taskType = TaskType.DeepWork;
+            checklist.AddTask(taskName, taskType, taskSchedule, taskMetadata);
             var task = checklist.Tasks.First();
             checklist.StartTask(task.Id);
 
@@ -129,7 +132,8 @@ namespace DomainTests
             var taskName = _fix.Create<Name>();
             var taskSchedule = _fix.Create<Schedule>();
             var taskMetadata = _fix.Create<string>();
-            checklist.AddTask(taskName, taskSchedule, taskMetadata);
+            var taskType = TaskType.DeepWork;
+            checklist.AddTask(taskName, taskType, taskSchedule, taskMetadata);
 
             var task = checklist.Tasks.First();
             checklist.StartTask(task.Id);
@@ -163,7 +167,8 @@ namespace DomainTests
             var taskName = _fix.Create<Name>();
             var taskSchedule = _fix.Create<Schedule>();
             var taskMetadata = _fix.Create<string>();
-            checklist.AddTask(taskName, taskSchedule, taskMetadata);
+            var taskType = TaskType.DeepWork;
+            checklist.AddTask(taskName, taskType, taskSchedule, taskMetadata);
 
             var task = checklist.Tasks.First();
 
@@ -176,6 +181,37 @@ namespace DomainTests
 
             Assert.That(task.DomainEvents, Has.Count.EqualTo(1));
             Assert.That(task.DomainEvents, Has.Exactly(1).InstanceOf<TaskCreated>());
+        }
+
+
+
+        [Test]
+        public void SetUserRating_Success()
+        {
+            var userId = _fix.Create<Guid>();
+            var checklist = new Checklist(userId);
+
+            var rating = new Rating(1, 2, 3, 4, 5, 6);
+            checklist.SetUserRating(rating);
+
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
+            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<UserRatingSet>());
+        }
+
+
+        [Test]
+        public void SetLLMRating_Success()
+        {
+            var userId = _fix.Create<Guid>();
+            var checklist = new Checklist(userId);
+
+            var rating = new Rating(1, 2, 3, 4, 5, 6);
+            checklist.SetLLMRating(rating);
+
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
+            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<LLMRatingSet>());
         }
     }
 }

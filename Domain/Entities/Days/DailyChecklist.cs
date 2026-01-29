@@ -30,10 +30,11 @@ public class Checklist : Entity, IAggregateRoot
 
     public void AddTask(
         Name name,
+        TaskType taskType,
         Schedule planned,
         string? metadata = null)
     {
-        var task = new Task(name, planned, Id, metadata);
+        var task = new Task(name, taskType, planned, Id, metadata);
         _tasks.Add(task);
 
         AddDomainEvent(new TaskAddedToChecklist(
@@ -75,10 +76,18 @@ public class Checklist : Entity, IAggregateRoot
 
 
     public void SetUserRating(Rating userRating)
-        => Statistics = Statistics.WithUserRating(userRating);
+    {
+        Statistics = Statistics.WithUserRating(userRating);
+
+        AddDomainEvent(new UserRatingSet(Id, userRating));
+    }
 
     public void SetLLMRating(Rating llmRating)
-        => Statistics = Statistics.WithLLMRating(llmRating);
+    {
+        Statistics = Statistics.WithLLMRating(llmRating);
+
+        AddDomainEvent(new LLMRatingSet(Id, llmRating));
+    }
 
 
 
