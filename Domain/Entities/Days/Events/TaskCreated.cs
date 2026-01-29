@@ -1,4 +1,5 @@
 using Domain.Common.ValueObjects;
+using Domain.Entities.Days.ValueObjects;
 using Domain.SeedWork;
 
 namespace Domain.Entities.Days.Events

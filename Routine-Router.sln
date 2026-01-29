@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureTests", "Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{E0CF6743-83E1-4A8E-91ED-FAF46DF9D4E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainTests", "Tests\Unit\DomainTests\DomainTests.csproj", "{3EF880AD-EE69-4ACB-951C-7CA70640CD75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,18 @@ Global
 		{E0CF6743-83E1-4A8E-91ED-FAF46DF9D4E1}.Release|x64.Build.0 = Release|Any CPU
 		{E0CF6743-83E1-4A8E-91ED-FAF46DF9D4E1}.Release|x86.ActiveCfg = Release|Any CPU
 		{E0CF6743-83E1-4A8E-91ED-FAF46DF9D4E1}.Release|x86.Build.0 = Release|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Debug|x64.Build.0 = Debug|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Debug|x86.Build.0 = Debug|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Release|x64.ActiveCfg = Release|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Release|x64.Build.0 = Release|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Release|x86.ActiveCfg = Release|Any CPU
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,5 +122,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9D556B49-86D1-93A7-9596-FFAAB74EC556} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{C946D4A5-3310-4483-BCC0-87523899E634} = {9D556B49-86D1-93A7-9596-FFAAB74EC556}
+		{3EF880AD-EE69-4ACB-951C-7CA70640CD75} = {9D556B49-86D1-93A7-9596-FFAAB74EC556}
 	EndGlobalSection
 EndGlobal

@@ -1,42 +1,32 @@
-using Domain.Common.Exceptions;
-using Domain.Common.ValueObjects;
 using Domain.SeedWork;
 
-namespace Domain.Entities.Days;
+namespace Domain.Entities.Days.ValueObjects;
 
 public class Statistics : ValueObject
 {
-    public DateOnly Date { get; private set; }
+    public DateOnly Date { get; }
+    public Rating? UserRating { get; }
+    public Rating? LLMRating { get; }
 
-    public Rating? UserRating { get; private set; }
-    public Rating? LLMRating { get; private set; }
-
-    public Statistics(
-            DateOnly date,
-            Rating? llmRating = null,
-            Rating? userRating = null)
+    public Statistics(DateOnly date, Rating? llmRating = null, Rating? userRating = null)
     {
         Date = date;
-        LLMRating = llmRating;
         UserRating = userRating;
+        LLMRating = llmRating;
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    public Statistics WithUserRating(Rating userRating)
+        => new(Date, LLMRating, userRating);
+
+    public Statistics WithLLMRating(Rating llmRating)
+        => new(Date, llmRating, UserRating);
+
+    protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Date;
-        yield return UserRating ?? new object();
-        yield return LLMRating ?? new object();
+        yield return UserRating;
+        yield return LLMRating;
     }
-
-
-
-    public void SetUserRating(Rating userRating)
-        => UserRating = userRating ?? throw new DomainArgumentNullException(nameof(userRating));
-
-    public void SetLLMRating(Rating llmRating)
-        => LLMRating = llmRating ?? throw new DomainArgumentNullException(nameof(llmRating));
-
-
-    private Statistics() { }
 }
+
 

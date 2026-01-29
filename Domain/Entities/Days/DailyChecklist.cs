@@ -1,11 +1,12 @@
 using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 using Domain.Entities.Days.Events;
+using Domain.Entities.Days.ValueObjects;
 using Domain.SeedWork;
 
 namespace Domain.Entities.Days;
 
-public class DailyChecklist : Entity, IAggregateRoot
+public class Checklist : Entity, IAggregateRoot
 {
     private readonly List<Task> _tasks = [];
     public IReadOnlyCollection<Task> Tasks => _tasks;
@@ -17,12 +18,12 @@ public class DailyChecklist : Entity, IAggregateRoot
     public Guid UserId { get; private set; }
 
 
-    public DailyChecklist(
-            Guid userId,
-            Statistics statistics)
+    public Checklist(Guid userId)
     {
         UserId = userId;
-        Statistics = statistics ?? throw new DomainArgumentNullException(nameof(statistics));
+        Statistics = new(DateOnly.FromDateTime(DateTime.Now));
+
+        AddDomainEvent(new ChecklistCreated(Id, userId));
     }
 
 
@@ -32,10 +33,12 @@ public class DailyChecklist : Entity, IAggregateRoot
         Schedule planned,
         string? metadata = null)
     {
-        var task = new Task(name, planned, metadata);
+        var task = new Task(name, planned, Id, metadata);
         _tasks.Add(task);
 
-        AddDomainEvent(new TaskAddedToChecklist(Id, task.Id));
+        AddDomainEvent(new TaskAddedToChecklist(
+                    ChecklistId: Id,
+                    TaskId: task.Id));
     }
 
     public void RemoveTask(Guid TaskId)
@@ -43,6 +46,10 @@ public class DailyChecklist : Entity, IAggregateRoot
         var task = _tasks.FirstOrDefault(t => t.Id == TaskId)
             ?? throw new DomainArgumentException($"Task with id {TaskId} not found");
         _tasks.Remove(task);
+
+        AddDomainEvent(new TaskRemovedFromChecklist(
+                    ChecklistId: Id,
+                    TaskId: task.Id));
     }
 
     public void CompleteTask(Guid TaskId)
@@ -68,15 +75,15 @@ public class DailyChecklist : Entity, IAggregateRoot
 
 
     public void SetUserRating(Rating userRating)
-        => Statistics.SetUserRating(userRating);
+        => Statistics.WithUserRating(userRating);
 
     public void SetLLMRating(Rating llmRating)
-        => Statistics.SetLLMRating(llmRating);
+        => Statistics.WithLLMRating(llmRating);
 
 
 
 #pragma warning disable CS8618 
-    private DailyChecklist() { }
+    private Checklist() { }
 #pragma warning restore CS8618
 }
 

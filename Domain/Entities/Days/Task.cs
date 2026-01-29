@@ -1,6 +1,7 @@
 using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 using Domain.Entities.Days.Events;
+using Domain.Entities.Days.ValueObjects;
 using Domain.SeedWork;
 
 namespace Domain.Entities.Days;
@@ -10,8 +11,10 @@ public sealed class Task : Entity
     public Name Name { get; private set; }
     public string? Metadata { get; private set; }
 
-    public Schedule Planned { get; private set; }
-    public Schedule? Actual { get; private set; }
+    public Schedule PlannedSchedule { get; private set; }
+    public Schedule? ActualSchedule { get; private set; }
+
+    public Guid ChecklistId { get; private set; }
 
     public bool IsCompleted;
 
@@ -19,10 +22,12 @@ public sealed class Task : Entity
     public Task(
         Name name,
         Schedule planned,
+        Guid ChecklistId,
         string? metadata = null)
     {
         Name = name ?? throw new DomainArgumentNullException(nameof(name));
-        Planned = planned ?? throw new DomainArgumentNullException(nameof(planned));
+        PlannedSchedule = planned ?? throw new DomainArgumentNullException(nameof(planned));
+        this.ChecklistId = ChecklistId;
         Metadata = metadata;
 
         AddDomainEvent(new TaskCreated(Id, name, planned, metadata));
@@ -34,9 +39,9 @@ public sealed class Task : Entity
         if (IsCompleted)
             throw new DomainException("Can't Start already completed Task");
 
-        Actual = new Schedule(DateTimeOffset.Now);
+        ActualSchedule = new Schedule(DateTimeOffset.Now);
 
-        var delay = Actual.StartTime - Planned.StartTime;
+        var delay = ActualSchedule.StartTime - PlannedSchedule.StartTime;
 
         AddDomainEvent(new TaskStarted(Id, delay));
     }
@@ -46,19 +51,23 @@ public sealed class Task : Entity
         if (IsCompleted)
             throw new DomainException("Can't complete already completed Task");
 
-        if (Actual is null)
+        if (ActualSchedule is null)
             throw new DomainException("Can't complete unstarted Task");
 
-        Actual = new Schedule(Actual.StartTime, DateTimeOffset.Now);
+        ActualSchedule = new Schedule(ActualSchedule.StartTime, DateTimeOffset.Now);
         IsCompleted = true;
 
-        var delay = (TimeSpan)(Actual.EndTime - Planned.EndTime)!;
+        var delay = (TimeSpan)(ActualSchedule.EndTime - PlannedSchedule.EndTime)!;
 
         AddDomainEvent(new TaskCompleted(Id, delay));
     }
 
     public void UpdateMetadata(string? metadata)
-        => Metadata = metadata ?? throw new DomainArgumentNullException(nameof(metadata));
+    {
+        Metadata = metadata ?? throw new DomainArgumentNullException(nameof(metadata));
+
+        AddDomainEvent(new TaskMetadataUpdated(Id, metadata));
+    }
 
 
 

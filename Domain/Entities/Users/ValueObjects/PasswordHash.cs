@@ -15,7 +15,7 @@ namespace Domain.Entities.Users.ValueObjects
             Value = password;
         }
 
-        protected override IEnumerable<object> GetEqualityComponents()
+        protected override IEnumerable<object?> GetEqualityComponents()
         {
             yield return Value;
         }

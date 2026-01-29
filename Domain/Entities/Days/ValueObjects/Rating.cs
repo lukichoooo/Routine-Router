@@ -1,6 +1,6 @@
 using Domain.SeedWork;
 
-namespace Domain.Common.ValueObjects;
+namespace Domain.Entities.Days.ValueObjects;
 
 public class Rating : ValueObject // 0 - 100
 {
@@ -41,7 +41,7 @@ public class Rating : ValueObject // 0 - 100
     }
 
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return MoodRating;
         yield return ModivationRating;
@@ -49,6 +49,18 @@ public class Rating : ValueObject // 0 - 100
         yield return ProductivityRating;
         yield return FocusRating;
         yield return StressRating;
+    }
+
+
+    public double OverallScore()
+    {
+        return (MoodRating
+                + ModivationRating
+                + EffortRating
+                + ProductivityRating
+                + FocusRating
+                + StressRating
+                ) / 6.0;
     }
 
 

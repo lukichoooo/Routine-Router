@@ -1,5 +1,7 @@
 using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
+using Domain.Entities.Users.Events;
+using Domain.Entities.Users.Exceptions;
 using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
 
@@ -10,11 +12,12 @@ public sealed class User : Entity, IAggregateRoot
     public Name Name { get; private set; }
     public PasswordHash PasswordHash { get; private set; }
 
-
     public User(Name name, PasswordHash passwordHash)
     {
         Name = name ?? throw new DomainArgumentNullException(nameof(name));
         PasswordHash = passwordHash ?? throw new DomainArgumentNullException(nameof(passwordHash));
+
+        AddDomainEvent(new UserCreated(Id, Name, PasswordHash));
     }
 
 
@@ -22,10 +25,17 @@ public sealed class User : Entity, IAggregateRoot
     {
         Name = name ?? throw new DomainArgumentNullException(nameof(name));
         PasswordHash = passwordHash ?? throw new DomainArgumentNullException(nameof(passwordHash));
+
+        AddDomainEvent(new UserUpdated(Id, Name, PasswordHash));
     }
 
-    public bool Verify(Name name, PasswordHash passwordHash)
-        => Name == name && PasswordHash == passwordHash;
+    public void Verify(Name name, PasswordHash passwordHash)
+    {
+        if (Name != name || PasswordHash != passwordHash)
+            throw new WrongUserCredentialsException();
+
+        AddDomainEvent(new UserVerified(Id));
+    }
 
 
 

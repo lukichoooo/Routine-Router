@@ -15,7 +15,7 @@ namespace Domain.Common.ValueObjects
             Value = name;
         }
 
-        protected override IEnumerable<object> GetEqualityComponents()
+        protected override IEnumerable<object?> GetEqualityComponents()
         {
             yield return Value;
         }

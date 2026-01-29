@@ -1,6 +1,6 @@
 using Domain.SeedWork;
 
-namespace Domain.Common.ValueObjects
+namespace Domain.Entities.Days.ValueObjects
 {
     public sealed class Schedule : ValueObject
     {
@@ -13,7 +13,7 @@ namespace Domain.Common.ValueObjects
             EndTime = endTime;
         }
 
-        protected override IEnumerable<object> GetEqualityComponents()
+        protected override IEnumerable<object?> GetEqualityComponents()
         {
             yield return StartTime;
             yield return EndTime ?? new object();
