@@ -4,27 +4,27 @@ namespace Domain.Common.ValueObjects;
 
 public class Rating : ValueObject // 0 - 100
 {
-    public int MoodRating { get; }
-    public int ModivationRating { get; }
-    public int EffortRating { get; }
-    public int ProductivityRating { get; }
-    public int FocusRating { get; }
-    public int StressRating { get; }
+    public byte MoodRating { get; }
+    public byte ModivationRating { get; }
+    public byte EffortRating { get; }
+    public byte ProductivityRating { get; }
+    public byte FocusRating { get; }
+    public byte StressRating { get; }
 
     public Rating(
-            int moodRating,
-            int motivationRating,
-            int effortRating,
-            int productivityRating,
-            int focusRating,
-            int stressRating)
+            byte moodRating,
+            byte motivationRating,
+            byte effortRating,
+            byte productivityRating,
+            byte focusRating,
+            byte stressRating)
     {
-        ValidateRating(moodRating);
-        ValidateRating(motivationRating);
-        ValidateRating(effortRating);
-        ValidateRating(productivityRating);
-        ValidateRating(focusRating);
-        ValidateRating(stressRating);
+        ValidateRatingCriteria(moodRating);
+        ValidateRatingCriteria(motivationRating);
+        ValidateRatingCriteria(effortRating);
+        ValidateRatingCriteria(productivityRating);
+        ValidateRatingCriteria(focusRating);
+        ValidateRatingCriteria(stressRating);
 
         MoodRating = moodRating;
         ModivationRating = motivationRating;
@@ -33,6 +33,13 @@ public class Rating : ValueObject // 0 - 100
         FocusRating = focusRating;
         StressRating = stressRating;
     }
+
+    public static void ValidateRatingCriteria(int rating)
+    {
+        if (rating < 0 || rating > 100)
+            throw new DomainException("Rating must be between 0 and 100");
+    }
+
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
@@ -44,10 +51,7 @@ public class Rating : ValueObject // 0 - 100
         yield return StressRating;
     }
 
-    public static void ValidateRating(int rating)
-    {
-        if (rating < 0 || rating > 100)
-            throw new DomainException("Rating must be between 0 and 100");
-    }
+
+    private Rating() { }
 }
 
