@@ -4,7 +4,7 @@ using Domain.Entities.Days.ValueObjects;
 
 namespace Domain.Entities.Days;
 
-public class ChecklistState
+internal class ChecklistState
 {
     public Guid Id { get; private set; }
 

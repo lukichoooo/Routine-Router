@@ -4,6 +4,7 @@ using Domain.Entities.Users;
 using Domain.Entities.Users.Events;
 using Domain.Entities.Users.Exceptions;
 using Domain.Entities.Users.ValueObjects;
+using Domain.SeedWork;
 
 namespace DomainTests
 {
@@ -21,31 +22,27 @@ namespace DomainTests
         [Test]
         public void Create_Success()
         {
-            var name = _fix.Create<Name>();
-            var passwordHash = _fix.Create<PasswordHash>();
-            var user = new User(name, passwordHash);
+            var cmd = _fix.Create<UserCreated>();
+            IEnumerable<IDomainEvent> commands = [cmd];
+            var user = new User(commands);
 
             Assert.That(user, Is.Not.Null);
-            Assert.That(user.Name, Is.EqualTo(name));
-            Assert.That(user.PasswordHash, Is.EqualTo(passwordHash));
             Assert.That(user.DomainEvents, Has.Count.EqualTo(1));
-            Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserCreated>());
+            Assert.That(user.DomainEvents, Is.EquivalentTo(commands));
         }
 
         [Test]
         public void Update_Success()
         {
-            var name = _fix.Create<Name>();
-            var passwordHash = _fix.Create<PasswordHash>();
-            var user = new User(name, passwordHash);
+            var cmd = _fix.Create<UserCreated>();
+            IEnumerable<IDomainEvent> commands = [cmd];
+            var user = new User(commands);
 
             var newName = _fix.Create<Name>();
             var newPasswordHash = _fix.Create<PasswordHash>();
             user.Update(newName, newPasswordHash);
 
             Assert.That(user, Is.Not.Null);
-            Assert.That(user.Name, Is.EqualTo(newName));
-            Assert.That(user.PasswordHash, Is.EqualTo(newPasswordHash));
             Assert.That(user.DomainEvents, Has.Count.EqualTo(2));
             Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserCreated>());
             Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserUpdated>());
@@ -55,11 +52,12 @@ namespace DomainTests
         [Test]
         public void Verify_Success()
         {
-            var name = _fix.Create<Name>();
-            var passwordHash = _fix.Create<PasswordHash>();
-            var user = new User(name, passwordHash);
+            var cmd = _fix.Create<UserCreated>();
+            IEnumerable<IDomainEvent> commands = [cmd];
+            var user = new User(commands);
 
-            user.Verify(name, passwordHash);
+            user.Verify(cmd.Name, cmd.PasswordHash);
+
             Assert.That(user.DomainEvents, Has.Count.EqualTo(2));
             Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserCreated>());
             Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserVerified>());
@@ -69,9 +67,9 @@ namespace DomainTests
         [Test]
         public void Verify_Fail_WrongCredentials()
         {
-            var name = _fix.Create<Name>();
-            var passwordHash = _fix.Create<PasswordHash>();
-            var user = new User(name, passwordHash);
+            var cmd = _fix.Create<UserCreated>();
+            IEnumerable<IDomainEvent> commands = [cmd];
+            var user = new User(commands);
 
             var wrongName = _fix.Create<Name>();
             var wrongPasswordHash = _fix.Create<PasswordHash>();
@@ -80,7 +78,7 @@ namespace DomainTests
                     () => user.Verify(wrongName, wrongPasswordHash));
 
             Assert.That(user.DomainEvents, Has.Count.EqualTo(1));
-            Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserCreated>());
+            Assert.That(user.DomainEvents, Is.EquivalentTo(commands));
         }
     }
 }
