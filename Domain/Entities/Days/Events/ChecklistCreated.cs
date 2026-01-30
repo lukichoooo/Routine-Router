@@ -3,7 +3,9 @@ using Domain.SeedWork;
 namespace Domain.Entities.Days.Events
 {
     public sealed record ChecklistCreated(
-            Guid ChecklistId,
-            Guid UserId,
-            DateTimeOffset TimeStamp) : IDomainEvent;
+            Guid AggregateId,
+            int Version,
+            DateTimeOffset Timestamp,
+            Guid UserId
+            ) : IDomainEvent;
 }

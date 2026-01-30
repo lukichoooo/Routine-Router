@@ -1,6 +1,11 @@
 using MediatR;
 
-namespace Domain.SeedWork
+namespace Domain.SeedWork;
+
+public interface IDomainEvent : INotification
 {
-    public interface IDomainEvent : INotification;
+    Guid AggregateId { get; }
+    int Version { get; }
+    DateTimeOffset Timestamp { get; }
 }
+

@@ -4,13 +4,14 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Days.Events
 {
-    public sealed record TaskAddedToChecklist
-        (Guid ChecklistId,
-         Guid TaskId,
-         Name Name,
-         TaskType TaskType,
-         Schedule Planned,
-         string? Metadata,
-         DateTimeOffset TimeStamp
+    public sealed record TaskAddedToChecklist(
+            Guid AggregateId,
+            int Version,
+            DateTimeOffset Timestamp,
+            Guid TaskId,
+            Name Name,
+            TaskType TaskType,
+            Schedule Planned,
+            string? Metadata
          ) : IDomainEvent;
 }

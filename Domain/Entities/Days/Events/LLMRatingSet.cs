@@ -4,7 +4,9 @@ using Domain.SeedWork;
 namespace Domain.Entities.Days.Events
 {
     public sealed record LLMRatingSet(
-            Guid ChecklistId,
+            Guid AggregateId,
+            int Version,
+            DateTimeOffset Timestamp,
             Rating LLMRating
             ) : IDomainEvent;
 }

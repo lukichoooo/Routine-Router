@@ -1,4 +1,5 @@
 using AutoFixture;
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 using Domain.Entities.Days;
@@ -24,20 +25,18 @@ namespace DomainTests
         public void Create_Success()
         {
             var cmd = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent> commands = [cmd];
-            var checklist = new Checklist(commands);
+            var checklist = new Checklist([cmd]);
 
             Assert.That(checklist, Is.Not.Null);
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(1));
-            Assert.That(checklist.DomainEvents, Is.EquivalentTo(commands));
+            Assert.That(checklist.DomainEvents, Is.Empty);
+            Assert.That(checklist.Version, Is.EqualTo(cmd.Version));
         }
 
         [Test]
         public void AddTask_Success()
         {
             var cmd = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent> commands = [cmd];
-            var checklist = new Checklist(commands);
+            var checklist = new Checklist([cmd]);
 
             var taskName = _fix.Create<Name>();
             var taskSchedule = _fix.Create<Schedule>();
@@ -45,9 +44,9 @@ namespace DomainTests
             var taskType = TaskType.DeepWork;
             checklist.AddTask(taskName, taskType, taskSchedule, taskMetadata);
 
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
-            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(1));
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskAddedToChecklist>());
+            Assert.That(checklist.Version, Is.EqualTo(cmd.Version + checklist.DomainEvents.Count));
         }
 
         [Test]
@@ -58,7 +57,8 @@ namespace DomainTests
             IEnumerable<IDomainEvent> commands = [cmd, cmd2];
             var checklist = new Checklist(commands);
 
-            Assert.That(checklist.DomainEvents, Is.EquivalentTo(commands));
+            Assert.That(checklist.DomainEvents, Is.Empty);
+            Assert.That(checklist.Version, Is.EqualTo(commands.Last().Version + checklist.DomainEvents.Count));
         }
 
 
@@ -78,10 +78,10 @@ namespace DomainTests
 
             checklist.RemoveTask(taskId);
 
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(3));
-            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskAddedToChecklist>());
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskRemovedFromChecklist>());
+            Assert.That(checklist.Version, Is.EqualTo(commands.Last().Version + checklist.DomainEvents.Count));
         }
 
         [Test]
@@ -99,10 +99,10 @@ namespace DomainTests
             var taskId = checklist.AddTask(taskName, taskType, taskSchedule, taskMetadata);
             checklist.StartTask(taskId);
 
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(3));
-            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskAddedToChecklist>());
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskStarted>());
+            Assert.That(checklist.Version, Is.EqualTo(commands.Last().Version + checklist.DomainEvents.Count));
         }
 
 
@@ -122,11 +122,11 @@ namespace DomainTests
             checklist.StartTask(taskId);
             checklist.CompleteTask(taskId);
 
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(4));
-            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(3));
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskAddedToChecklist>());
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskStarted>());
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskCompleted>());
+            Assert.That(checklist.Version, Is.EqualTo(commands.Last().Version + checklist.DomainEvents.Count));
         }
 
 
@@ -146,9 +146,9 @@ namespace DomainTests
 
             Assert.Throws<DomainRuleViolation>(() => checklist.CompleteTask(taskId));
 
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
-            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(1));
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<TaskAddedToChecklist>());
+            Assert.That(checklist.Version, Is.EqualTo(commands.Last().Version + checklist.DomainEvents.Count));
         }
 
 
@@ -163,9 +163,9 @@ namespace DomainTests
             var rating = new Rating(1, 2, 3, 4, 5, 6);
             checklist.SetUserRating(rating);
 
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
-            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(1));
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<UserRatingSet>());
+            Assert.That(checklist.Version, Is.EqualTo(commands.Last().Version + checklist.DomainEvents.Count));
         }
 
 
@@ -179,9 +179,193 @@ namespace DomainTests
             var rating = new Rating(1, 2, 3, 4, 5, 6);
             checklist.SetLLMRating(rating);
 
-            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(2));
-            Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<ChecklistCreated>());
+            Assert.That(checklist.DomainEvents, Has.Count.EqualTo(1));
             Assert.That(checklist.DomainEvents, Has.Exactly(1).InstanceOf<LLMRatingSet>());
+            Assert.That(checklist.Version, Is.EqualTo(commands.Last().Version + checklist.DomainEvents.Count));
+        }
+
+
+        // ----------- STATE TESTS
+
+
+
+        [Test]
+        public void State_Create_Success()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Id, Is.EqualTo(cmd.AggregateId));
+            Assert.That(state.UserId, Is.EqualTo(cmd.UserId));
+            Assert.That(state.Statistics.CreatedAt, Is.EqualTo(cmd.Timestamp));
+        }
+
+        [Test]
+        public void State_AddTask_Success()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+            var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
+            state.Apply(addTaskToChecklist);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Tasks, Has.Count.EqualTo(1));
+            Assert.That(state.Tasks.First().IsCompleted, Is.False);
+            Assert.That(state.Tasks.First().Id, Is.EqualTo(addTaskToChecklist.TaskId));
+        }
+
+
+        [Test]
+        public void State_RemoveTask_Success()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+            var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
+            state.Apply(addTaskToChecklist);
+
+            var removeTaskFromChecklist = new TaskRemovedFromChecklist(
+                        addTaskToChecklist.AggregateId,
+                        addTaskToChecklist.Version + 1,
+                        Clock.Now,
+                        addTaskToChecklist.TaskId
+                        );
+            state.Apply(removeTaskFromChecklist);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Tasks, Is.Empty);
+        }
+
+        [Test]
+        public void State_StartTask_Success()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+            var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
+            state.Apply(addTaskToChecklist);
+
+            var startTask = new TaskStarted(
+                            cmd.AggregateId,
+                            addTaskToChecklist.Version + 1,
+                            Clock.Now,
+                            addTaskToChecklist.TaskId
+                            );
+            state.Apply(startTask);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Tasks, Has.Count.EqualTo(1));
+            Assert.That(state.Tasks.First().ActualSchedule, Is.Not.Null);
+            Assert.That(state.Tasks.First().ActualSchedule!.StartTime, Is.EqualTo(startTask.Timestamp));
+            Assert.That(state.Tasks.First().IsCompleted, Is.False);
+        }
+
+
+        [Test]
+        public void State_CompleteTask_Success()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+            var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
+            state.Apply(addTaskToChecklist);
+
+            var startTask = new TaskStarted(
+                            cmd.AggregateId,
+                            addTaskToChecklist.Version + 1,
+                            Clock.Now,
+                            addTaskToChecklist.TaskId
+                            );
+            state.Apply(startTask);
+
+            var completeTask = new TaskCompleted(
+                            cmd.AggregateId,
+                            startTask.Version + 1,
+                            Clock.Now,
+                            startTask.TaskId
+                            );
+            state.Apply(completeTask);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Tasks, Has.Count.EqualTo(1));
+            Assert.That(state.Tasks.First().ActualSchedule, Is.Not.Null);
+            Assert.That(state.Tasks.First().ActualSchedule!.StartTime, Is.EqualTo(startTask.Timestamp));
+            Assert.That(state.Tasks.First().ActualSchedule!.EndTime, Is.EqualTo(completeTask.Timestamp));
+            Assert.That(state.Tasks.First().IsCompleted, Is.True);
+        }
+
+
+        [Test]
+        public void State_SetUserRating_Success()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+
+            var rating = new UserRatingSet(
+                            cmd.AggregateId,
+                            100,
+                            Clock.Now,
+                            new(1, 2, 3, 4, 5, 6));
+            state.Apply(rating);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Statistics.UserRating, Is.EqualTo(rating.UserRating));
+            Assert.That(state.Statistics.LLMRating, Is.Null);
+        }
+
+
+        [Test]
+        public void State_SetLLMRating_Success()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+
+            var rating = new LLMRatingSet(
+                            cmd.AggregateId,
+                            100,
+                            Clock.Now,
+                            new(1, 2, 3, 4, 5, 6));
+            state.Apply(rating);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Statistics.LLMRating, Is.EqualTo(rating.LLMRating));
+            Assert.That(state.Statistics.UserRating, Is.Null);
+        }
+
+
+        [Test]
+        public void State_SetMetadata()
+        {
+            var cmd = _fix.Create<ChecklistCreated>();
+            var state = new ChecklistState();
+            state.Apply(cmd);
+
+            var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
+            state.Apply(addTaskToChecklist);
+
+            var metadata = _fix.Create<string>();
+            var updateMetadata = new TaskUpdateMetadata(
+                            cmd.AggregateId,
+                            100,
+                            Clock.Now,
+                            addTaskToChecklist.TaskId,
+                            metadata);
+            state.Apply(updateMetadata);
+
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state.Tasks.First().Metadata, Is.Not.Null);
+            Assert.That(state.Tasks.First().Metadata, Is.EqualTo(metadata));
         }
     }
 }

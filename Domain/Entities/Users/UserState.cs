@@ -4,39 +4,32 @@ using Domain.Entities.Users.ValueObjects;
 
 namespace Domain.Entities.Users;
 
-internal class UserState
+public class UserState
 {
     public Guid Id { get; private set; }
 
     public Name Name { get; private set; }
     public PasswordHash PasswordHash { get; private set; }
 
-    public int Version { get; private set; } = 0;
-
 
     public void Apply(UserCreated e)
     {
-        Id = e.UserId;
+        Id = e.AggregateId;
         Name = e.Name;
         PasswordHash = e.PasswordHash;
-        Version = 0;
     }
 
     public void Apply(UserUpdated e)
     {
         Name = e.Name;
         PasswordHash = e.PasswordHash;
-        Version++;
     }
 
-    public void Apply(UserVerified e)
-    {
-        Version++;
-    }
+    public void Apply(UserVerified e) { }
 
 
 #pragma warning disable CS8618
-    internal UserState() { }
+    public UserState() { }
 #pragma warning restore CS8618
 }
 

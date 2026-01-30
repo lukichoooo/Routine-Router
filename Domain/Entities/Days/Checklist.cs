@@ -13,12 +13,13 @@ public sealed class Checklist : AggregateRoot
 
     // ---------- FACTORY ----------
 
-    public Checklist(IEnumerable<IDomainEvent> events)
+    public Checklist(IEnumerable<IDomainEvent>? events = null)
     {
         State = new ChecklistState();
-        foreach (var e in events)
+        foreach (var e in events ?? [])
         {
-            AppendEvent(e);
+            ((dynamic)State).Apply((dynamic)e);
+            Version = e.Version;
         }
     }
 
@@ -26,28 +27,30 @@ public sealed class Checklist : AggregateRoot
     {
         AddDomainEvent(e);
         ((dynamic)State).Apply((dynamic)e);
+        Version = e.Version;
     }
+
+    // ---------- COMMANDS ----------
 
     public void Create(Guid userId)
         => AppendEvent(new ChecklistCreated(
-            ChecklistId: Guid.NewGuid(),
-            UserId: userId,
-            TimeStamp: Clock.Now
-        ));
-
-    // ---------- COMMANDS ----------
+            AggregateId: Guid.NewGuid(),
+            Version: GetNextVersion,
+            Timestamp: Clock.Now,
+            UserId: userId));
 
     public Guid AddTask(Name name, TaskType taskType, Schedule planned, string? metadata)
     {
         var taskId = Guid.NewGuid();
         AppendEvent(new TaskAddedToChecklist(
-                    ChecklistId: State.Id,
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
                     TaskId: taskId,
                     Name: name,
                     TaskType: taskType,
                     Planned: planned,
-                    Metadata: metadata,
-                    TimeStamp: Clock.Now
+                    Metadata: metadata
                     ));
         return taskId;
     }
@@ -57,7 +60,11 @@ public sealed class Checklist : AggregateRoot
         if (State.TryGetTask(taskId).IsCompleted)
             throw new DomainRuleViolation("Can't start already completed Task");
 
-        AppendEvent(new TaskStarted(taskId, Clock.Now));
+        AppendEvent(new TaskStarted(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
+                    taskId));
     }
 
     public void CompleteTask(Guid taskId)
@@ -70,13 +77,23 @@ public sealed class Checklist : AggregateRoot
         if (task.ActualSchedule is null)
             throw new DomainRuleViolation("Can't complete not yet started Task");
 
-        AppendEvent(new TaskCompleted(State.Id, taskId, Clock.Now));
+        AppendEvent(new TaskCompleted(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
+                    taskId
+                    ));
     }
 
     public void RemoveTask(Guid taskId)
     {
         State.TryGetTask(taskId);
-        AppendEvent(new TaskRemovedFromChecklist(State.Id, taskId));
+        AppendEvent(new TaskRemovedFromChecklist(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
+                    taskId
+                    ));
     }
 
     public void ChangeTaskMetadata(Guid taskId, string metadata)
@@ -85,14 +102,28 @@ public sealed class Checklist : AggregateRoot
             throw new DomainArgumentNullException(nameof(metadata));
         State.TryGetTask(taskId);
 
-        AppendEvent(new TaskUpdateMetadata(taskId, metadata));
+        AppendEvent(new TaskUpdateMetadata(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
+                    taskId,
+                    metadata
+                    ));
     }
 
     public void SetUserRating(Rating rating)
-        => AppendEvent(new UserRatingSet(State.Id, rating));
+        => AppendEvent(new UserRatingSet(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
+                    rating));
 
     public void SetLLMRating(Rating rating)
-        => AppendEvent(new LLMRatingSet(State.Id, rating));
+        => AppendEvent(new LLMRatingSet(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
+                    rating));
 
 
 #pragma warning disable CS8618 

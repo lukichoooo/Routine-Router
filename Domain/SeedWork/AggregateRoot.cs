@@ -9,5 +9,8 @@ public abstract class AggregateRoot
     public void AddDomainEvent(IDomainEvent eventItem) => _domainEvents.Add(eventItem);
     public void RemoveDomainEvent(IDomainEvent eventItem) => _domainEvents.Remove(eventItem);
     public void ClearDomainEvents() => _domainEvents.Clear();
+
+    public int Version { get; internal set; } = 0;
+    public int GetNextVersion => Version + 1;
 }
 

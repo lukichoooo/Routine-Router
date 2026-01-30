@@ -1,3 +1,4 @@
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 using Domain.Entities.Users.Events;
@@ -12,12 +13,13 @@ public sealed class User : AggregateRoot
     private readonly UserState State;
 
     // ---------- FACTORY ----------
-    public User(IEnumerable<IDomainEvent> events)
+    public User(IEnumerable<IDomainEvent>? events = null)
     {
         State = new UserState();
-        foreach (var e in events)
+        foreach (var e in events ?? [])
         {
-            AppendEvent(e);
+            ((dynamic)State).Apply((dynamic)e);
+            Version = e.Version;
         }
     }
 
@@ -25,13 +27,16 @@ public sealed class User : AggregateRoot
     {
         AddDomainEvent(e);
         ((dynamic)State).Apply((dynamic)e);
+        Version = e.Version;
     }
 
     // ---------- COMMANDS ----------
 
     public void Create(Name name, PasswordHash passwordHash)
         => AppendEvent(new UserCreated(
-                    Guid.NewGuid(),
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
                     name,
                     passwordHash
         ));
@@ -41,7 +46,13 @@ public sealed class User : AggregateRoot
         if (name == State.Name && passwordHash == State.PasswordHash)
             throw new DomainArgumentException("User Update has same fields");
 
-        AppendEvent(new UserUpdated(State.Id, name, passwordHash));
+        AppendEvent(new UserUpdated(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now,
+                    name,
+                    passwordHash
+                    ));
     }
 
     public void Verify(Name name, PasswordHash passwordHash)
@@ -49,7 +60,11 @@ public sealed class User : AggregateRoot
         if (State.Name != name || State.PasswordHash != passwordHash)
             throw new WrongUserCredentialsException();
 
-        AppendEvent(new UserVerified(State.Id));
+        AppendEvent(new UserVerified(
+                    AggregateId: State.Id,
+                    Version: GetNextVersion,
+                    Timestamp: Clock.Now
+                    ));
     }
 
 

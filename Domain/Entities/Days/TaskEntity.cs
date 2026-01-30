@@ -37,12 +37,12 @@ public sealed class TaskEntity
     }
 
 
-    internal void StartInternal()
-        => ActualSchedule = new Schedule(DateTimeOffset.Now);
+    internal void StartInternal(DateTimeOffset startTime)
+        => ActualSchedule = new Schedule(startTime);
 
-    internal void CompleteInternal()
+    internal void CompleteInternal(DateTimeOffset completionTime)
     {
-        ActualSchedule = new Schedule(ActualSchedule!.StartTime, DateTimeOffset.Now);
+        ActualSchedule = new Schedule(ActualSchedule!.StartTime, completionTime);
         IsCompleted = true;
     }
 

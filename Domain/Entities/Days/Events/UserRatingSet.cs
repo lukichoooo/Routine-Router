@@ -4,6 +4,8 @@ using Domain.SeedWork;
 namespace Domain.Entities.Days.Events
 {
     public sealed record UserRatingSet(
-            Guid ChecklistId,
+            Guid AggregateId,
+            int Version,
+            DateTimeOffset Timestamp,
             Rating UserRating) : IDomainEvent;
 }

@@ -4,7 +4,7 @@ using Domain.Entities.Days.ValueObjects;
 
 namespace Domain.Entities.Days;
 
-internal class ChecklistState
+public class ChecklistState
 {
     public Guid Id { get; private set; }
 
@@ -18,38 +18,52 @@ internal class ChecklistState
 
     public void Apply(ChecklistCreated e)
     {
+        Id = e.AggregateId;
         UserId = e.UserId;
-        Statistics = new Statistics(e.TimeStamp);
+        Statistics = new Statistics(e.Timestamp);
     }
 
     public void Apply(TaskAddedToChecklist e)
     {
         _tasks.Add(new TaskEntity(
-            e.TaskId,
-            e.Name,
-            e.TaskType,
-            e.Planned,
-            e.ChecklistId,
-            e.Metadata
+            id: e.TaskId,
+            name: e.Name,
+            taskType: e.TaskType,
+            planned: e.Planned,
+            checklistId: e.AggregateId,
+            metadata: e.Metadata
         ));
     }
 
     public void Apply(TaskStarted e)
-        => TryGetTask(e.TaskId).StartInternal();
+    {
+        TryGetTask(e.TaskId).StartInternal(e.Timestamp);
+    }
 
     public void Apply(TaskCompleted e)
-        => TryGetTask(e.TaskId).CompleteInternal();
+    {
+        TryGetTask(e.TaskId).CompleteInternal(e.Timestamp);
+    }
 
     public void Apply(TaskRemovedFromChecklist e)
-        => _tasks.Remove(TryGetTask(e.TaskId));
+    {
+        _tasks.Remove(TryGetTask(e.TaskId));
+    }
+
     public void Apply(TaskUpdateMetadata e)
-        => TryGetTask(e.TaskId).UpdateMetadata(e.Metadata);
+    {
+        TryGetTask(e.TaskId).UpdateMetadata(e.Metadata);
+    }
 
     public void Apply(UserRatingSet e)
-        => Statistics = Statistics.WithUserRating(e.UserRating);
+    {
+        Statistics = Statistics.WithUserRating(e.UserRating);
+    }
 
     public void Apply(LLMRatingSet e)
-        => Statistics = Statistics.WithLLMRating(e.LLMRating);
+    {
+        Statistics = Statistics.WithLLMRating(e.LLMRating);
+    }
 
 
     // ---------- HELPERS ----------
@@ -57,5 +71,9 @@ internal class ChecklistState
     public TaskEntity TryGetTask(Guid id) =>
         _tasks.FirstOrDefault(t => t.Id == id)
         ?? throw new DomainArgumentException($"Task {id} not found");
+
+#pragma warning disable CS8618
+    public ChecklistState() { }
+#pragma warning restore CS8618
 }
 

@@ -5,7 +5,9 @@ using Domain.SeedWork;
 namespace Domain.Entities.Users.Events
 {
     public sealed record UserCreated(
-            Guid UserId,
+            Guid AggregateId,
+            int Version,
+            DateTimeOffset Timestamp,
             Name Name,
             PasswordHash PasswordHash) : IDomainEvent;
 }
