@@ -32,10 +32,10 @@ public sealed class User : AggregateRoot
 
     // ---------- COMMANDS ----------
 
-    public void Create(Name name, PasswordHash passwordHash)
+    public void Create(Guid id, Name name, PasswordHash passwordHash)
         => AppendEvent(new UserCreated(
-                    AggregateId: State.Id,
-                    Version: GetNextVersion,
+                    AggregateId: id,
+                    Version: NextVersion,
                     Timestamp: Clock.Now,
                     name,
                     passwordHash
@@ -48,7 +48,7 @@ public sealed class User : AggregateRoot
 
         AppendEvent(new UserUpdated(
                     AggregateId: State.Id,
-                    Version: GetNextVersion,
+                    Version: NextVersion,
                     Timestamp: Clock.Now,
                     name,
                     passwordHash
@@ -62,7 +62,7 @@ public sealed class User : AggregateRoot
 
         AppendEvent(new UserVerified(
                     AggregateId: State.Id,
-                    Version: GetNextVersion,
+                    Version: NextVersion,
                     Timestamp: Clock.Now
                     ));
     }

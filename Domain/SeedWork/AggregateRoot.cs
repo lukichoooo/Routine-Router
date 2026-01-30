@@ -11,6 +11,6 @@ public abstract class AggregateRoot
     public void ClearDomainEvents() => _domainEvents.Clear();
 
     public int Version { get; internal set; } = 0;
-    public int GetNextVersion => Version + 1;
+    public int NextVersion => Version + 1;
 }
 
