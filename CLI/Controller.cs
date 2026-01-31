@@ -23,9 +23,8 @@ public class ConsoleController : IController
 
     public async void Handle(string input)
     {
-        CreateChecklistCommand cmd = (CreateChecklistCommand)await _parser.ParseAsync(input);
+        dynamic cmd = await _parser.ParseAsync(input);
 
-        // TODO: add returning value
         await _sender.Send(cmd);
 
         //
