@@ -2,10 +2,12 @@ using MediatR;
 
 namespace Domain.SeedWork;
 
-public interface IDomainEvent<TAggregateId> : INotification
+public interface IDomainEvent<TAggregateRootId> : IDomainEvent
+    where TAggregateRootId : IAggregateRootId
 {
-    TAggregateId AggregateId { get; }
+    TAggregateRootId AggregateId { get; }
     int Version { get; }
     DateTimeOffset Timestamp { get; }
 }
 
+public interface IDomainEvent : INotification;

@@ -1,4 +1,6 @@
+using Application.Common.Seedwork;
 using Application.Interfaces.Command;
+using Application.UseCases.Schedules.Commands.CreateChecklist;
 using OpenAI.Chat;
 
 namespace Infrastructure.Services.Command;
@@ -13,9 +15,10 @@ public class CommandParser : ICommandParser
         _client = client;
     }
 
-    public Task<object> ParseAsync(string command)
+    public Task<ICommand> ParseAsync(string command)
     {
-        throw new NotImplementedException();
+        // TODO: implement
+        return Task.FromResult<ICommand>(new CreateChecklistCommand());
     }
 }
 

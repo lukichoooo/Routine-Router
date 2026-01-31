@@ -10,4 +10,5 @@ namespace Domain.Entities.Users.Events
             DateTimeOffset Timestamp,
             Name Name,
             PasswordHash PasswordHash) : IDomainEvent<UserId>;
+
 }

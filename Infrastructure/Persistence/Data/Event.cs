@@ -5,27 +5,26 @@ namespace Infrastructure.Persistence.Data;
 public class Event
 {
     [Key]
-    public int Id { get; set; }
+    public int Id { get; private set; }
+
+    public DateTimeOffset CreatedAt { get; private set; }
 
     [Required]
-    public Guid AggregateId { get; set; }
+    public required Guid AggregateId { get; set; }
 
     [Required]
-    public string AggregateIdType { get; set; } = string.Empty;
+    public required string AggregateIdType { get; set; } = string.Empty;
 
     [Required]
-    public int Version { get; set; }
+    public required int Version { get; set; }
 
     [Required]
-    public string EventType { get; set; } = string.Empty;
+    public required string EventType { get; set; } = string.Empty;
 
     [Required]
-    public string EventData { get; set; } = string.Empty;
+    public required string EventData { get; set; } = string.Empty;
 
     [Required]
-    public DateTimeOffset TimeStamp { get; set; }
-
-    [Required]
-    public DateTimeOffset CreatedAt { get; set; }
+    public required DateTimeOffset TimeStamp { get; set; }
 }
 

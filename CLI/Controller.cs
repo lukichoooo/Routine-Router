@@ -24,9 +24,11 @@ public class ConsoleController : IController
     {
         var cmd = await _parser.ParseAsync(input);
 
-        var result = await _sender.Send(cmd);
+        // TODO: add returning value
+        await _sender.Send(cmd);
 
-        if (result != null)
-            Console.WriteLine(result);
+        //
+        // if (result != null)
+        //     Console.WriteLine(result);
     }
 }

@@ -1,6 +1,9 @@
 using System.ClientModel;
 using Application.Interfaces.Events;
 using Infrastructure.Configs;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -19,14 +22,13 @@ namespace Infrastructure
                 .AddJsonFile("infrastructure.json", optional: false, reloadOnChange: true)
                 .Build();
 
-
             // settings
             services.Configure<LLMConfig>(_ => config.GetSection("LLMConfig"));
             services.Configure<EventStoreConfig>(_ => config.GetSection("EventStoreConfig"));
 
             // // Event Store Infrastructure
-            // services.AddSingleton<EventSerializer>();
-            // services.AddSingleton<IEventStore, SQLiteEventStore>();
+            services.AddSingleton<IEventSerializer, EventSerializer>();
+            services.AddSingleton(typeof(IEventStore<>), typeof(SQLiteEventStore<>));
 
             // Services
             // TODO: create an interface for each llm service 

@@ -2,7 +2,7 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Users.ValueObjects
 {
-    public class UserId : ValueObject
+    public class UserId : ValueObject, IAggregateRootId
     {
         public Guid Value { get; }
 
