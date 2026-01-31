@@ -8,4 +8,8 @@ var services = new ServiceCollection();
 services.AddApplication();
 services.AddInfrastructure();
 
-Controller.Run();
+var serviceProvider = services.BuildServiceProvider();
+
+var app = serviceProvider.GetRequiredService<App>();
+
+app.Run();

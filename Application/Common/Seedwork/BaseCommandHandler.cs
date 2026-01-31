@@ -7,7 +7,9 @@ namespace Application.Common.Seedwork;
 /// Saves Changes to Database Automatically
 /// (Returns result)
 /// </summary>
-public abstract class BaseCommandHandler<TResult> : IRequestHandler<ICommand<TResult>, TResult>
+public abstract class BaseCommandHandler<TCommand, TResult>
+: IRequestHandler<TCommand, TResult>
+where TCommand : ICommand<TResult>
 {
     private readonly IUnitOfWork _uow;
 
@@ -17,7 +19,7 @@ public abstract class BaseCommandHandler<TResult> : IRequestHandler<ICommand<TRe
     }
 
     public async Task<TResult> Handle(
-            ICommand<TResult> command,
+            TCommand command,
             CancellationToken ct)
     {
         var result = await ExecuteAsync(command, ct);
@@ -26,16 +28,17 @@ public abstract class BaseCommandHandler<TResult> : IRequestHandler<ICommand<TRe
     }
 
     protected abstract Task<TResult> ExecuteAsync(
-            ICommand<TResult> command,
+            TCommand command,
             CancellationToken ct);
 }
-
 
 /// <summary>
 /// Saves Changes to Database Automatically
 /// (Doesn't return anything)
 /// </summary>
-public abstract class BaseCommandHandler : IRequestHandler<ICommand>
+public abstract class BaseCommandHandler<TCommand>
+: IRequestHandler<TCommand>
+where TCommand : ICommand
 {
     private readonly IUnitOfWork _uow;
 
@@ -45,7 +48,7 @@ public abstract class BaseCommandHandler : IRequestHandler<ICommand>
     }
 
     public async Task Handle(
-            ICommand command,
+            TCommand command,
             CancellationToken ct)
     {
         await ExecuteAsync(command, ct);
@@ -53,7 +56,7 @@ public abstract class BaseCommandHandler : IRequestHandler<ICommand>
     }
 
     protected abstract Task ExecuteAsync(
-            ICommand command,
+            TCommand command,
             CancellationToken ct);
 }
 

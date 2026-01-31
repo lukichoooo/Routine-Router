@@ -1,19 +1,32 @@
+using Application.Interfaces.Command;
+using MediatR;
+
 namespace CLI;
 
-public static class Controller
+
+public interface IController
 {
-    public static void Run()
-    {
-        Console.WriteLine("Welcome to Routine-Router!");
-
-        while (true)
-        {
-            Console.WriteLine("Type 'exit' to exit");
-            var input = Console.ReadLine();
-            if (input == "exit")
-                return;
-
-        }
-    }
+    public void Handle(string input);
 }
 
+public class ConsoleController : IController
+{
+    private readonly ICommandParser _parser;
+    private readonly ISender _sender;
+
+    public ConsoleController(ICommandParser parser, ISender sender)
+    {
+        _parser = parser;
+        _sender = sender;
+    }
+
+    public async void Handle(string input)
+    {
+        var cmd = await _parser.ParseAsync(input);
+
+        var result = await _sender.Send(cmd);
+
+        if (result != null)
+            Console.WriteLine(result);
+    }
+}
