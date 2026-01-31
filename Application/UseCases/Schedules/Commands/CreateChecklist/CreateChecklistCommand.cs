@@ -1,6 +1,7 @@
 using Application.Common.Seedwork;
+using Domain.Entities.Schedules.ValueObjects;
 
 namespace Application.UseCases.Schedules.Commands.CreateChecklist
 {
-    public sealed record CreateChecklistCommand : ICommand<Guid>;
+    public sealed record CreateChecklistCommand : ICommand<ChecklistId>;
 }

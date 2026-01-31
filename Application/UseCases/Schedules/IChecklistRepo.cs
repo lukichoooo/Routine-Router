@@ -1,11 +1,13 @@
 using Domain.Entities.Schedules;
+using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users.ValueObjects;
 
 namespace Application.UseCases.Schedules
 {
-    public interface IChecklistRepo // TODO: Implement
+    public interface IChecklistRepo
     {
-        Task<Checklist?> GetByIdAsync(Guid id, CancellationToken ct);
-        Task<Checklist?> GetForDayAsync(Guid userId, DateOnly date, CancellationToken ct);
+        Task<Checklist?> GetByIdAsync(ChecklistId id, CancellationToken ct);
+        Task<Checklist?> GetForDayAsync(UserId userId, DateOnly date, CancellationToken ct);
         Task AddAsync(Checklist checklist, CancellationToken ct);
         Task SaveAsync(Checklist checklist, CancellationToken ct);
     }

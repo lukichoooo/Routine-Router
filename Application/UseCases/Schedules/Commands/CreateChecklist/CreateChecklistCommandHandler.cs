@@ -2,34 +2,38 @@ using Application.Common.Seedwork;
 using Application.Interfaces.Data;
 using Application.UseCases.Identity;
 using Domain.Entities.Schedules;
+using Domain.Entities.Schedules.ValueObjects;
 
-namespace Application.UseCases.Schedules.Commands.CreateChecklist
+namespace Application.UseCases.Schedules.Commands.CreateChecklist;
+
+
+// TODO: write tests
+public class CreateChecklistCommandHandler
+    : BaseCommandHandler<CreateChecklistCommand, ChecklistId>
 {
-    public class CreateChecklistCommandHandler
-        : BaseCommandHandler<CreateChecklistCommand, Guid>
+    private readonly IIdentityProvider _identity;
+    private readonly IChecklistRepo _repo;
+
+    public CreateChecklistCommandHandler(
+            IIdentityProvider identity,
+            IChecklistRepo repo,
+            IUnitOfWork uow) : base(uow)
     {
-        private readonly IIdentityProvider _identity;
-        private readonly IChecklistRepo _repo;
+        _identity = identity;
+        _repo = repo;
+    }
 
-        public CreateChecklistCommandHandler(
-                IIdentityProvider identity,
-                IChecklistRepo repo,
-                IUnitOfWork uow) : base(uow)
-        {
-            _identity = identity;
-            _repo = repo;
-        }
+    protected override async Task<ChecklistId> ExecuteAsync(CreateChecklistCommand command, CancellationToken ct)
+    {
+        var checklist = new Checklist();
+        var checklistId = new ChecklistId(Guid.NewGuid());
+        var userId = _identity.GetCurrentUserId();
 
-        protected override async Task<Guid> ExecuteAsync(CreateChecklistCommand command, CancellationToken ct)
-        {
-            var checklist = new Checklist();
-            var checklistId = Guid.NewGuid();
-            var userId = _identity.GetCurrentUserId();
+        checklist.Create(checklistId, userId);
 
-            checklist.Create(checklistId, userId);
-            await _repo.AddAsync(checklist, ct);
+        await _repo.AddAsync(checklist, ct);
 
-            return checklistId;
-        }
+        return checklistId;
     }
 }
+

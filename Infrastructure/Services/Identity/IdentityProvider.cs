@@ -1,22 +1,23 @@
 using Application.UseCases.Identity;
+using Domain.Entities.Users.ValueObjects;
 
 namespace Infrastructure.Services.Identity;
 
 
 public sealed class IdentityProvider : IIdentityProvider
 {
-    private readonly Guid _userId;
+    private readonly UserId _userId;
     public IdentityProvider() { _userId = LoadOrCreateUserId(); }
 
 
-    public Guid GetCurrentUserId()
+    public UserId GetCurrentUserId()
         => _userId;
 
     public string GetCurrentUserName()
         => Environment.UserName;
 
 
-    private static Guid LoadOrCreateUserId()
+    private static UserId LoadOrCreateUserId()
     {
         var basePath =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -31,12 +32,12 @@ public sealed class IdentityProvider : IIdentityProvider
             var text = File.ReadAllText(filePath).Trim();
 
             if (Guid.TryParse(text, out var existing))
-                return existing;
+                return new UserId(existing);
         }
 
-        var id = Guid.NewGuid();
-        File.WriteAllText(filePath, id.ToString("N"));
-        return id;
+        var userId = new UserId(Guid.NewGuid());
+        File.WriteAllText(filePath, userId.Value.ToString("N"));
+        return userId;
     }
 
 }

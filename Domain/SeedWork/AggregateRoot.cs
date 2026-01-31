@@ -12,5 +12,7 @@ public abstract class AggregateRoot<TAggregateId>
 
     public int Version { get; internal set; } = 0;
     public int NextVersion => Version + 1;
+    
+    public abstract TAggregateId Id { get; }
 }
 

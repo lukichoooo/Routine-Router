@@ -3,6 +3,7 @@ using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 using Domain.Entities.Schedules.Events;
 using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
@@ -10,6 +11,8 @@ namespace Domain.Entities.Schedules;
 public sealed class Checklist : AggregateRoot<ChecklistId>
 {
     private readonly ChecklistState State;
+
+    public override ChecklistId Id => State.Id;
 
     // ---------- FACTORY ----------
 
@@ -32,7 +35,7 @@ public sealed class Checklist : AggregateRoot<ChecklistId>
 
     // ---------- COMMANDS ----------
 
-    public void Create(ChecklistId id, Guid userId)
+    public void Create(ChecklistId id, UserId userId)
         => AppendEvent(new ChecklistCreated(
             AggregateId: id,
             Version: NextVersion,

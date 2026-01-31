@@ -1,6 +1,7 @@
 using Domain.Common.Exceptions;
 using Domain.Entities.Schedules.Events;
 using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users.ValueObjects;
 
 namespace Domain.Entities.Schedules;
 
@@ -11,7 +12,7 @@ public class ChecklistState
     private readonly List<TaskEntity> _tasks = [];
     public IReadOnlyCollection<TaskEntity> Tasks => _tasks;
 
-    public Guid UserId { get; private set; }
+    public UserId UserId { get; private set; }
     public Statistics Statistics { get; private set; } = null!;
 
     // ---------- APPLY  ----------
@@ -36,34 +37,22 @@ public class ChecklistState
     }
 
     public void Apply(TaskStarted e)
-    {
-        TryGetTask(e.TaskId).StartInternal(e.Timestamp);
-    }
+        => TryGetTask(e.TaskId).StartInternal(e.Timestamp);
 
     public void Apply(TaskCompleted e)
-    {
-        TryGetTask(e.TaskId).CompleteInternal(e.Timestamp);
-    }
+        => TryGetTask(e.TaskId).CompleteInternal(e.Timestamp);
 
     public void Apply(TaskRemovedFromChecklist e)
-    {
-        _tasks.Remove(TryGetTask(e.TaskId));
-    }
+        => _tasks.Remove(TryGetTask(e.TaskId));
 
     public void Apply(TaskMetadataUpdated e)
-    {
-        TryGetTask(e.TaskId).UpdateMetadataInternal(e.Metadata);
-    }
+        => TryGetTask(e.TaskId).UpdateMetadataInternal(e.Metadata);
 
     public void Apply(UserRatingSet e)
-    {
-        Statistics = Statistics.WithUserRating(e.UserRating);
-    }
+        => Statistics = Statistics.WithUserRating(e.UserRating);
 
     public void Apply(LLMRatingSet e)
-    {
-        Statistics = Statistics.WithLLMRating(e.LLMRating);
-    }
+        => Statistics = Statistics.WithLLMRating(e.LLMRating);
 
 
     // ---------- HELPERS ----------

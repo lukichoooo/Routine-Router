@@ -1,4 +1,5 @@
 using System.ClientModel;
+using Application.Interfaces.Events;
 using Infrastructure.Configs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,11 @@ namespace Infrastructure
 
             // settings
             services.Configure<LLMConfig>(_ => config.GetSection("LLMConfig"));
+            services.Configure<EventStoreConfig>(_ => config.GetSection("EventStoreConfig"));
 
+            // // Event Store Infrastructure
+            // services.AddSingleton<EventSerializer>();
+            // services.AddSingleton<IEventStore, SQLiteEventStore>();
 
             // Services
             // TODO: create an interface for each llm service 

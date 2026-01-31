@@ -12,6 +12,9 @@ public sealed class User : AggregateRoot<UserId>
 {
     private readonly UserState State;
 
+    public override UserId Id => State.Id;
+
+
     // ---------- FACTORY ----------
     public User(IEnumerable<IDomainEvent<UserId>>? events = null)
     {

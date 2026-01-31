@@ -1,7 +1,7 @@
 using Application.Interfaces.Command;
 using OpenAI.Chat;
 
-namespace Infrastructure.Services.Commands;
+namespace Infrastructure.Services.Command;
 
 
 public class CommandParser : ICommandParser

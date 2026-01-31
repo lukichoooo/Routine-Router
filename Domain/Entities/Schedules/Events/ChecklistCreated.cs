@@ -1,4 +1,5 @@
 using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules.Events
@@ -7,6 +8,6 @@ namespace Domain.Entities.Schedules.Events
             ChecklistId AggregateId,
             int Version,
             DateTimeOffset Timestamp,
-            Guid UserId
+            UserId UserId
             ) : IDomainEvent<ChecklistId>;
 }
