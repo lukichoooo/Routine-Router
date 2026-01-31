@@ -15,10 +15,10 @@ public class CommandParser : ICommandParser
         _client = client;
     }
 
-    public Task<ICommand> ParseAsync(string command)
+    public Task<ICommand<object>> ParseAsync(string command)
     {
         // TODO: implement
-        return Task.FromResult<ICommand>(new CreateChecklistCommand());
+        return Task.FromResult<ICommand<object>>(new CreateChecklistCommand());
     }
 }
 

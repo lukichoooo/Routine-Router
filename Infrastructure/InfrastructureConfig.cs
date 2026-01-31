@@ -1,9 +1,9 @@
 using System.ClientModel;
+using Application.Interfaces.Command;
 using Application.Interfaces.Events;
 using Infrastructure.Configs;
-using Infrastructure.Persistence;
 using Infrastructure.Persistence.Data;
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Services.Command;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -23,8 +23,8 @@ namespace Infrastructure
                 .Build();
 
             // settings
-            services.Configure<LLMConfig>(_ => config.GetSection("LLMConfig"));
-            services.Configure<EventStoreConfig>(_ => config.GetSection("EventStoreConfig"));
+            services.Configure<LLMConfig>(config.GetSection("LLMConfig"));
+            services.Configure<EventStoreConfig>(config.GetSection("EventStoreConfig"));
 
             // // Event Store Infrastructure
             services.AddSingleton<IEventSerializer, EventSerializer>();
@@ -49,6 +49,10 @@ namespace Infrastructure
                             });
                     }
             );
+
+            // LLM
+            services.AddSingleton<ICommandParser, CommandParser>();
+
 
             return services;
         }

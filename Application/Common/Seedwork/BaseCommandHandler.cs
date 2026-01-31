@@ -32,33 +32,3 @@ where TCommand : ICommand<TResult>
             CancellationToken ct);
 }
 
-/// <summary>
-/// Saves Changes to Database Automatically
-/// (Doesn't return anything)
-/// </summary>
-public abstract class BaseCommandHandler<TCommand>
-: IRequestHandler<TCommand>
-where TCommand : ICommand
-{
-    private readonly IUnitOfWork _uow;
-
-    protected BaseCommandHandler(IUnitOfWork uow)
-    {
-        _uow = uow;
-    }
-
-    public async Task Handle(
-            TCommand command,
-            CancellationToken ct)
-    {
-        await ExecuteAsync(command, ct);
-        await _uow.CommitAsync(ct);
-    }
-
-    protected abstract Task ExecuteAsync(
-            TCommand command,
-            CancellationToken ct);
-}
-
-
-

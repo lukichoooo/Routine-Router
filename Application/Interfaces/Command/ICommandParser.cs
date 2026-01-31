@@ -5,6 +5,6 @@ namespace Application.Interfaces.Command;
 
 public interface ICommandParser
 {
-    Task<ICommand> ParseAsync(string command);
+    Task<ICommand<object>> ParseAsync(string command);
 }
 

@@ -7,6 +7,8 @@ var services = new ServiceCollection();
 
 services.AddApplication();
 services.AddInfrastructure();
+services.AddSingleton<IController, ConsoleController>();
+services.AddSingleton<App>();
 
 var serviceProvider = services.BuildServiceProvider();
 
