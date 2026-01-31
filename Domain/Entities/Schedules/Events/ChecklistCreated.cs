@@ -1,11 +1,12 @@
+using Domain.Entities.Schedules.ValueObjects;
 using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules.Events
 {
     public sealed record ChecklistCreated(
-            Guid AggregateId,
+            ChecklistId AggregateId,
             int Version,
             DateTimeOffset Timestamp,
             Guid UserId
-            ) : IDomainEvent;
+            ) : IDomainEvent<ChecklistId>;
 }

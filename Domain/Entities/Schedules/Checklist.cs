@@ -7,13 +7,13 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
 
-public sealed class Checklist : AggregateRoot
+public sealed class Checklist : AggregateRoot<ChecklistId>
 {
     private readonly ChecklistState State;
 
     // ---------- FACTORY ----------
 
-    public Checklist(IEnumerable<IDomainEvent>? events = null)
+    public Checklist(IEnumerable<IDomainEvent<ChecklistId>>? events = null)
     {
         State = new ChecklistState();
         foreach (var e in events ?? [])
@@ -23,7 +23,7 @@ public sealed class Checklist : AggregateRoot
         }
     }
 
-    private void AppendEvent(IDomainEvent e)
+    private void AppendEvent(IDomainEvent<ChecklistId> e)
     {
         AddDomainEvent(e);
         ((dynamic)State).Apply((dynamic)e);
@@ -32,16 +32,16 @@ public sealed class Checklist : AggregateRoot
 
     // ---------- COMMANDS ----------
 
-    public void Create(Guid id, Guid userId)
+    public void Create(ChecklistId id, Guid userId)
         => AppendEvent(new ChecklistCreated(
             AggregateId: id,
             Version: NextVersion,
             Timestamp: Clock.Now,
             UserId: userId));
 
-    public Guid AddTask(Name name, TaskType taskType, Schedule planned, string? metadata)
+    public TaskId AddTask(Name name, TaskType taskType, Schedule planned, string? metadata)
     {
-        var taskId = Guid.NewGuid();
+        var taskId = new TaskId(Guid.NewGuid());
         AppendEvent(new TaskAddedToChecklist(
                     AggregateId: State.Id,
                     Version: NextVersion,
@@ -55,7 +55,7 @@ public sealed class Checklist : AggregateRoot
         return taskId;
     }
 
-    public void StartTask(Guid taskId)
+    public void StartTask(TaskId taskId)
     {
         if (State.TryGetTask(taskId).IsCompleted())
             throw new DomainRuleViolation("Can't start already completed Task");
@@ -67,7 +67,7 @@ public sealed class Checklist : AggregateRoot
                     taskId));
     }
 
-    public void CompleteTask(Guid taskId)
+    public void CompleteTask(TaskId taskId)
     {
         var task = State.TryGetTask(taskId);
 
@@ -85,7 +85,7 @@ public sealed class Checklist : AggregateRoot
                     ));
     }
 
-    public void RemoveTask(Guid taskId)
+    public void RemoveTask(TaskId taskId)
     {
         State.TryGetTask(taskId);
         AppendEvent(new TaskRemovedFromChecklist(
@@ -96,13 +96,13 @@ public sealed class Checklist : AggregateRoot
                     ));
     }
 
-    public void ChangeTaskMetadata(Guid taskId, string metadata)
+    public void ChangeTaskMetadata(TaskId taskId, string metadata)
     {
         if (metadata is null)
             throw new DomainArgumentNullException(nameof(metadata));
         State.TryGetTask(taskId);
 
-        AppendEvent(new TaskUpdateMetadata(
+        AppendEvent(new TaskMetadataUpdated(
                     AggregateId: State.Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,

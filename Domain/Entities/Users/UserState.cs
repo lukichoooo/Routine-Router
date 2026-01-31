@@ -6,8 +6,7 @@ namespace Domain.Entities.Users;
 
 public class UserState
 {
-    public Guid Id { get; private set; }
-
+    public UserId Id { get; private set; }
     public Name Name { get; private set; }
     public PasswordHash PasswordHash { get; private set; }
 

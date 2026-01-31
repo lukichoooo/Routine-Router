@@ -6,7 +6,7 @@ namespace Domain.Entities.Schedules;
 
 public sealed class TaskEntity
 {
-    public Guid Id { get; private set; }
+    public TaskId Id { get; private set; }
     public Name Name { get; private set; }
     public TaskType TaskType { get; private set; }
 
@@ -15,15 +15,15 @@ public sealed class TaskEntity
     public Schedule PlannedSchedule { get; private set; }
     public Schedule? ActualSchedule { get; private set; }
 
-    public Guid ChecklistId { get; private set; }
+    public ChecklistId ChecklistId { get; private set; }
 
 
     public TaskEntity(
-        Guid id,
+        TaskId id,
         Name name,
         TaskType taskType,
         Schedule planned,
-        Guid checklistId,
+        ChecklistId checklistId,
         string? metadata = null)
     {
         Id = id;

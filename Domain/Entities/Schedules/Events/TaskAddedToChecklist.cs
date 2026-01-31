@@ -5,13 +5,13 @@ using Domain.SeedWork;
 namespace Domain.Entities.Schedules.Events
 {
     public sealed record TaskAddedToChecklist(
-            Guid AggregateId,
+            ChecklistId AggregateId,
             int Version,
             DateTimeOffset Timestamp,
-            Guid TaskId,
+            TaskId TaskId,
             Name Name,
             TaskType TaskType,
             Schedule Planned,
             string? Metadata
-         ) : IDomainEvent;
+         ) : IDomainEvent<ChecklistId>;
 }

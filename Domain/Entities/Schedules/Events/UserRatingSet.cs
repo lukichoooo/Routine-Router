@@ -4,8 +4,8 @@ using Domain.SeedWork;
 namespace Domain.Entities.Schedules.Events
 {
     public sealed record UserRatingSet(
-            Guid AggregateId,
+            ChecklistId AggregateId,
             int Version,
             DateTimeOffset Timestamp,
-            Rating UserRating) : IDomainEvent;
+            Rating UserRating) : IDomainEvent<ChecklistId>;
 }

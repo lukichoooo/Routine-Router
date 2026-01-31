@@ -1,8 +1,8 @@
 namespace Domain.SeedWork;
 
-public interface IRepository<T> where T : AggregateRoot
+public interface IRepository<T, TAggregateId> where T : AggregateRoot<TAggregateId>
 {
-    Task<T> Load(Guid id, CancellationToken ct);
-    Task Commit(T aggregate, CancellationToken ct);
+    Task<T> LoadAsync(Guid id, CancellationToken ct);
+    Task SaveAsync(T aggregate, CancellationToken ct);
 }
 

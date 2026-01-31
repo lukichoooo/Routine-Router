@@ -6,7 +6,7 @@ namespace Domain.Entities.Schedules;
 
 public class ChecklistState
 {
-    public Guid Id { get; private set; }
+    public ChecklistId Id { get; private set; }
 
     private readonly List<TaskEntity> _tasks = [];
     public IReadOnlyCollection<TaskEntity> Tasks => _tasks;
@@ -50,7 +50,7 @@ public class ChecklistState
         _tasks.Remove(TryGetTask(e.TaskId));
     }
 
-    public void Apply(TaskUpdateMetadata e)
+    public void Apply(TaskMetadataUpdated e)
     {
         TryGetTask(e.TaskId).UpdateMetadataInternal(e.Metadata);
     }
@@ -68,7 +68,7 @@ public class ChecklistState
 
     // ---------- HELPERS ----------
 
-    public TaskEntity TryGetTask(Guid id) =>
+    public TaskEntity TryGetTask(TaskId id) =>
         _tasks.FirstOrDefault(t => t.Id == id)
         ?? throw new DomainArgumentException($"Task {id} not found");
 
