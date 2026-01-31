@@ -1,4 +1,5 @@
 using Application.Interfaces.Command;
+using Application.UseCases.Schedules.Commands.CreateChecklist;
 using MediatR;
 
 namespace CLI;
@@ -22,7 +23,7 @@ public class ConsoleController : IController
 
     public async void Handle(string input)
     {
-        var cmd = await _parser.ParseAsync(input);
+        CreateChecklistCommand cmd = (CreateChecklistCommand)await _parser.ParseAsync(input);
 
         // TODO: add returning value
         await _sender.Send(cmd);

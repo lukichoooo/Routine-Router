@@ -1,0 +1,53 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class initialm : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    AggregateId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AggregateIdType = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Version = table.Column<int>(type: "INTEGER", nullable: false),
+                    EventType = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
+                    EventData = table.Column<string>(type: "TEXT", nullable: false),
+                    TimeStamp = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Events", x => x.Id);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_AggregateId_Version_EventType",
+                table: "Events",
+                columns: new[] { "AggregateId", "Version", "EventType" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_Id",
+                table: "Events",
+                column: "Id",
+                unique: true);
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "Events");
+        }
+    }
+}

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Data.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence.Data;
 
@@ -19,9 +20,12 @@ public class EventSerializer : IEventSerializer
     private readonly ConcurrentDictionary<string, Type> _eventTypeMap = new();
     private readonly ConcurrentDictionary<Type, string> _reverseEventTypeMap = new();
     private readonly JsonSerializerOptions _serializerOptions;
+    private readonly ILogger<EventSerializer> _logger;
 
-    public EventSerializer()
+    public EventSerializer(ILogger<EventSerializer> logger)
     {
+        _logger = logger;
+
         _serializerOptions = CreateSerializerOptions();
         RegisterEventTypes();
     }
@@ -85,6 +89,7 @@ public class EventSerializer : IEventSerializer
 
     private void RegisterEventTypes()
     {
+        // Scan assemblies
         IEnumerable<Assembly> assemblies =
         [
             typeof(Domain.Entities.Schedules.Events.ChecklistCreated).Assembly,
@@ -94,9 +99,7 @@ public class EventSerializer : IEventSerializer
         foreach (var assembly in assemblies)
         {
             var eventTypes = assembly.GetTypes()
-                .Where(t => !t.IsAbstract && !t.IsInterface && t.GetInterfaces().Any(i =>
-                    i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDomainEvent)))
-                .ToList();
+                .Where(t => !t.IsAbstract && !t.IsInterface && typeof(IDomainEvent).IsAssignableFrom(t));
 
             foreach (var eventType in eventTypes)
             {
@@ -105,7 +108,10 @@ public class EventSerializer : IEventSerializer
                 _reverseEventTypeMap.TryAdd(eventType, eventTypeString);
             }
         }
+
+        _logger.LogInformation($"Registered event types: {string.Join(", ", _eventTypeMap.Keys)}");
     }
+
 
     private JsonSerializerOptions CreateSerializerOptions()
     {

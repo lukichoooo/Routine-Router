@@ -9,6 +9,7 @@ public class RoutineContextFactory : IDesignTimeDbContextFactory<RoutineContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<RoutineContext>();
         optionsBuilder.UseSqlite("Data Source=events.db");
+
         return new RoutineContext(optionsBuilder.Options);
     }
 }

@@ -4,8 +4,8 @@
         "ApiKey": "local",
         "Model": "llama-3.1-8b-instruct"
     },
-    "EventStoreConfig": {
-        "ConnectionString": "Data Source=events.db",
+    "ConnectionStrings": {
+        "RoutineContext": "Data Source=../Infrastructure/events.db",
         "CreateDatabaseIfNotExists": true
     }
 }

@@ -1,9 +1,16 @@
 using System.ClientModel;
 using Application.Interfaces.Command;
+using Application.Interfaces.Data;
 using Application.Interfaces.Events;
+using Application.UseCases.Identity;
+using Application.UseCases.Schedules;
 using Infrastructure.Configs;
+using Infrastructure.Persistence;
 using Infrastructure.Persistence.Data;
+using Infrastructure.Repos;
 using Infrastructure.Services.Command;
+using Infrastructure.Services.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -22,13 +29,25 @@ namespace Infrastructure
                 .AddJsonFile("infrastructure.json", optional: false, reloadOnChange: true)
                 .Build();
 
+            services.AddLogging();
+
+            //EF
+            services.AddDbContext<RoutineContext>(options =>
+                options.UseSqlite(config.GetConnectionString("RoutineContext")));
+
             // settings
             services.Configure<LLMConfig>(config.GetSection("LLMConfig"));
             services.Configure<EventStoreConfig>(config.GetSection("EventStoreConfig"));
 
+            services.AddSingleton<IIdentityProvider, IdentityProvider>();
+
             // // Event Store Infrastructure
             services.AddSingleton<IEventSerializer, EventSerializer>();
             services.AddSingleton(typeof(IEventStore<>), typeof(SQLiteEventStore<>));
+            services.AddSingleton<IUnitOfWork, SQLiteUnitOfWork>();
+
+            // repos
+            services.AddSingleton<IChecklistRepo, ChecklistRepo>();
 
             // Services
             // TODO: create an interface for each llm service 
