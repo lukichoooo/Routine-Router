@@ -6,17 +6,17 @@ namespace Application.Common.Seedwork;
 /// <summary>
 /// Makes No Changes To Database
 /// </summary>
-public abstract class BaseQueryHandler<TResult> : IRequestHandler<IQuery<TResult>, TResult>
+public abstract class BaseQueryHandler<TRes> : IRequestHandler<IQuery<TRes>, TRes>
 {
-    public async Task<TResult> Handle(
-            IQuery<TResult> query,
+    public async Task<TRes> Handle(
+            IQuery<TRes> query,
             CancellationToken ct)
     {
         return await ExecuteAsync(query, ct);
     }
 
-    protected abstract Task<TResult> ExecuteAsync(
-            IQuery<TResult> command,
+    protected abstract Task<TRes> ExecuteAsync(
+            IQuery<TRes> command,
             CancellationToken ct);
 }
 

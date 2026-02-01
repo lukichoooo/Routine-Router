@@ -1,37 +1,39 @@
 using Application.Interfaces.Data;
-using Domain.SeedWork;
+using Application.Interfaces.Events;
+using Infrastructure.Persistence.Contexts;
 
 namespace Infrastructure.Persistence;
 
+
 public sealed class SQLiteUnitOfWork : IUnitOfWork
 {
-    private readonly RoutineContext _context;
-    // private readonly IDomainEventDispatcher _domainDispatcher;
+    private readonly EventsContext _context;
+    private readonly ITrackedEntities _trackedEntities;
+    private readonly IDomainEventDispatcher _eventDispatcher;
 
-    public SQLiteUnitOfWork(RoutineContext context
-    // IDomainEventDispatcher domainDispatcher
-    )
+    public SQLiteUnitOfWork(
+            EventsContext context,
+            ITrackedEntities trackedEntities,
+            IDomainEventDispatcher domainDispatcher)
     {
         _context = context;
-        // _domainDispatcher = domainDispatcher;
+        _trackedEntities = trackedEntities;
+        _eventDispatcher = domainDispatcher;
     }
 
-    // TODO: WTF
     public async Task CommitAsync(CancellationToken ct = default)
     {
         await _context.SaveChangesAsync(ct);
 
-        var entities = _context.ChangeTracker
-            .Entries<AggregateRoot<AggregateRootId>>()
-            .Where(e => e.Entity.DomainEvents.Any())
-            .Select(e => e.Entity)
-            .ToList();
-
-        foreach (var entity in entities)
+        foreach (var entity in _trackedEntities.GetAll())
         {
-            // await _domainDispatcher.DispatchAsync(entity.DomainEvents, ct);
+            foreach (var @event in entity.DomainEvents)
+                await _eventDispatcher.DispatchAsync(@event, ct);
+
             entity.ClearDomainEvents();
         }
+
+        _trackedEntities.Clear();
     }
 }
 

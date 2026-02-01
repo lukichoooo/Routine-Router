@@ -7,9 +7,9 @@ namespace Application.Common.Seedwork;
 /// Saves Changes to Database Automatically
 /// (Returns result)
 /// </summary>
-public abstract class BaseCommandHandler<TCommand, TResult>
-: IRequestHandler<TCommand, TResult>
-where TCommand : ICommand<TResult>
+public abstract class BaseCommandHandler<TCmd, TRes>
+: IRequestHandler<TCmd, TRes>
+where TCmd : ICommand<TRes>
 {
     private readonly IUnitOfWork _uow;
 
@@ -18,8 +18,8 @@ where TCommand : ICommand<TResult>
         _uow = uow;
     }
 
-    public async Task<TResult> Handle(
-            TCommand command,
+    public async Task<TRes> Handle(
+            TCmd command,
             CancellationToken ct)
     {
         var result = await ExecuteAsync(command, ct);
@@ -27,8 +27,8 @@ where TCommand : ICommand<TResult>
         return result;
     }
 
-    protected abstract Task<TResult> ExecuteAsync(
-            TCommand command,
+    protected abstract Task<TRes> ExecuteAsync(
+            TCmd command,
             CancellationToken ct);
 }
 

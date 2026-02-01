@@ -1,5 +1,6 @@
 using Application.Interfaces.Events;
 using Domain.SeedWork;
+using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,11 +10,11 @@ namespace Infrastructure.Persistence.Data;
 public class SQLiteEventStore : IEventStore
 {
     private readonly IEventSerializer _serializer;
-    private readonly RoutineContext _context;
+    private readonly EventsContext _context;
 
     public SQLiteEventStore(
             IEventSerializer serializer,
-            RoutineContext context)
+            EventsContext context)
     {
         _serializer = serializer;
         _context = context;

@@ -2,6 +2,10 @@ using MediatR;
 
 namespace Domain.SeedWork;
 
+
+// <summary>
+// Domain Event
+// </summary>
 public interface IDomainEvent<out TAggregateRootId> : INotification
     where TAggregateRootId : AggregateRootId
 {

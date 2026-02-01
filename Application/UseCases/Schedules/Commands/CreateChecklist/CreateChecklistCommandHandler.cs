@@ -31,7 +31,7 @@ public class CreateChecklistCommandHandler
 
         checklist.Create(checklistId, userId);
 
-        await _repo.AddAsync(checklist, ct);
+        await _repo.SaveAsync(checklist, ct);
 
         return checklistId;
     }

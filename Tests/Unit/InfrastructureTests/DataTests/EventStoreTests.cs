@@ -5,8 +5,8 @@ using Infrastructure.Persistence.Data;
 using Domain.Entities.Users.Events;
 using Infrastructure.Persistence.Data.Exceptions;
 using Domain.Entities.Users.ValueObjects;
-using Infrastructure.Persistence;
 using Domain.SeedWork;
+using Infrastructure.Persistence.Contexts;
 
 
 namespace InfrastructureTests.DataTests;
@@ -16,7 +16,7 @@ namespace InfrastructureTests.DataTests;
 public class EventStoreTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
-    private readonly RoutineContext _context = TestFactory.GetDbContext();
+    private readonly EventsContext _context = TestFactory.GetDbContext();
     private readonly IEventSerializer _eventSerializer = TestFactory.GetEventSerializer();
 
     [OneTimeTearDown]

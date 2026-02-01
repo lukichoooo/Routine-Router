@@ -6,6 +6,7 @@ using Application.UseCases.Identity;
 using Application.UseCases.Schedules;
 using Infrastructure.Configs;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
 using Infrastructure.Repos;
 using Infrastructure.Services.Command;
@@ -32,7 +33,7 @@ namespace Infrastructure
             services.AddLogging();
 
             //EF
-            services.AddDbContext<RoutineContext>(options =>
+            services.AddDbContext<EventsContext>(options =>
                 options.UseSqlite(config.GetConnectionString("RoutineContext")));
 
             // settings

@@ -1,6 +1,6 @@
 using AutoFixture;
 using Domain.Entities.Schedules.ValueObjects;
-using Infrastructure.Persistence;
+using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,12 +26,12 @@ public static class TestFactory
         return fix;
     }
 
-    public static RoutineContext GetDbContext()
+    public static EventsContext GetDbContext()
     {
-        var options = new DbContextOptionsBuilder<RoutineContext>()
+        var options = new DbContextOptionsBuilder<EventsContext>()
             .UseInMemoryDatabase("TestDb")
             .Options;
-        return new RoutineContext(options);
+        return new EventsContext(options);
     }
 
 
