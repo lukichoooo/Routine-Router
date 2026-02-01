@@ -2,7 +2,7 @@ using AutoFixture;
 using AutoFixture.Kernel;
 using Domain.Entities.Users.Events;
 using Domain.SeedWork;
-using FixtureProvider;
+using TestHelperFactory;
 using Infrastructure.Persistence.Data;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +12,7 @@ namespace InfrastructureTests.DataTests;
 [TestFixture]
 public class EventSerializerTests
 {
-    private readonly Fixture _fix = FixtureFactory.GetFixture();
+    private readonly Fixture _fix = TestFactory.GetFixture();
 
     private IEventSerializer EventSerializer =>
         new EventSerializer();
@@ -21,7 +21,7 @@ public class EventSerializerTests
     {
         var loggerFactory = LoggerFactory.Create(builder =>
         {
-            // builder.AddConsole();
+            // builder.AddConsole(); // Comment out to not log
             builder.SetMinimumLevel(LogLevel.Debug);
         });
         return loggerFactory.CreateLogger<EventSerializerTests>();
@@ -54,6 +54,11 @@ public class EventSerializerTests
 
             logger.LogInformation("Event Json: {0},\n", serialized);
         }
+
+        logger.LogInformation("Tested Events: {0}\n\n{1}\n",
+                events.Count,
+                events.ConvertAll(e => e.GetType().Name + "\n")
+                .Order());
     }
 
 }

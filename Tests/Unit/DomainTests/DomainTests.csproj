@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\..\FixtureProvider\FixtureProvider.csproj" />
+    <ProjectReference Include="..\..\TestHelperFactory\TestHelperFactory.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using Domain.SeedWork;
 
 namespace Infrastructure.Persistence.Data;
 
-public class Event
+public sealed class Event
 {
     [Key]
     public int Id { get; private set; }
@@ -30,18 +30,15 @@ public class Event
 
 
 
-    public static Event From(IDomainEvent<AggregateRootId> e, string eventData) => new()
-    {
-        AggregateId = e.AggregateId.ToGuid(),
-        AggregateIdType = e.AggregateId.GetType().Name,
-        Version = e.Version,
-        EventType = e.GetType().Name,
-        EventData = eventData,
-        TimeStamp = e.Timestamp
-    };
-
-
-
-    private Event() { } // EF
+    public static Event From(IDomainEvent<AggregateRootId> e, string eventData)
+        => new()
+        {
+            AggregateId = e.AggregateId.ToGuid(),
+            AggregateIdType = e.AggregateId.GetType().Name,
+            Version = e.Version,
+            EventType = e.GetType().Name,
+            EventData = eventData,
+            TimeStamp = e.Timestamp
+        };
 }
 

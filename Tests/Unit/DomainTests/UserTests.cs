@@ -5,14 +5,14 @@ using Domain.Entities.Users;
 using Domain.Entities.Users.Events;
 using Domain.Entities.Users.Exceptions;
 using Domain.Entities.Users.ValueObjects;
-using FixtureProvider;
+using TestHelperFactory;
 
 namespace DomainTests
 {
     [TestFixture]
     public class UserTests
     {
-        private readonly Fixture _fix = FixtureFactory.GetFixture();
+        private readonly Fixture _fix = TestFactory.GetFixture();
 
         [Test]
         public void Create_Success()

@@ -6,14 +6,14 @@ using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.Events;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.SeedWork;
-using FixtureProvider;
+using TestHelperFactory;
 
 namespace DomainTests
 {
     [TestFixture]
     public class ChecklistTests
     {
-        private readonly Fixture _fix = FixtureFactory.GetFixture();
+        private readonly Fixture _fix = TestFactory.GetFixture();
 
         [Test]
         public void Create_Success()

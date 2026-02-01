@@ -1,10 +1,13 @@
 using AutoFixture;
 using Domain.Entities.Schedules.ValueObjects;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace FixtureProvider;
+namespace TestHelperFactory;
 
 
-public static class FixtureFactory
+public static class TestFactory
 {
     public static Fixture GetFixture()
     {
@@ -22,5 +25,17 @@ public static class FixtureFactory
 
         return fix;
     }
+
+    public static RoutineContext GetDbContext()
+    {
+        var options = new DbContextOptionsBuilder<RoutineContext>()
+            .UseInMemoryDatabase("TestDb")
+            .Options;
+        return new RoutineContext(options);
+    }
+
+
+    public static IEventSerializer GetEventSerializer()
+        => new EventSerializer();
 }
 

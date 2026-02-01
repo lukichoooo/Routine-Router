@@ -1,5 +1,6 @@
 using Application.Interfaces.Events;
 using Domain.SeedWork;
+using Infrastructure.Persistence.Data.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Data;
@@ -19,33 +20,31 @@ public class SQLiteEventStore : IEventStore
     }
 
     public async Task AppendAsync(
+            AggregateRootId aggregateId,
             IReadOnlyCollection<IDomainEvent<AggregateRootId>> events,
-            int expectedVersion,
+            int? expectedVersion,
             CancellationToken ct)
     {
-        IEnumerable<Event> dbEvents = events.Select(e => Event.From(e, _serializer.Serialize(e)));
-        await _context.Events.AddRangeAsync(dbEvents);
+        var currentVersion = await _context.Events
+            .FirstOrDefaultAsync(e => e.AggregateId == aggregateId, ct);
+
+        if (currentVersion?.Version != expectedVersion)
+        {
+            throw new ConcurrencyException(
+                $"Expected version {expectedVersion} but found {currentVersion}.");
+        }
+
+        IEnumerable<Event> newEvents = events.Select(
+                e => Event.From(e, _serializer.Serialize(e)));
+
+        await _context.Events.AddRangeAsync(newEvents);
     }
 
     public async Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
             AggregateRootId aggregateId,
-            CancellationToken ct)
-    {
-        var dbEvents = _context.Events
-            .AsNoTracking()
-            .Where(e => e.AggregateId == aggregateId)
-            .OrderBy(e => e.Version);
-
-        return await dbEvents
-            .Select(e => _serializer.Deserialize(e.EventData, e.EventType))
-            .ToListAsync(ct);
-    }
-
-    public async Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
-            AggregateRootId aggregateId,
-             int fromVersion = 0,
-            int? toVersion = null,
-            CancellationToken ct = default)
+            CancellationToken ct,
+            int fromVersion = 0,
+            int? toVersion = null)
     {
         var dbEvents = _context.Events
             .AsNoTracking()

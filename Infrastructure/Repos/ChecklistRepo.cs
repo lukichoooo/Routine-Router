@@ -16,6 +16,7 @@ public class ChecklistRepo : IChecklistRepo
 
     public async Task AddAsync(Checklist checklist, CancellationToken ct)
         => await _eventStore.AppendAsync(
+                checklist.Id,
                 checklist.DomainEvents,
                 checklist.Version,
                 ct);
