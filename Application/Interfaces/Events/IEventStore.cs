@@ -2,22 +2,21 @@ using Domain.SeedWork;
 
 namespace Application.Interfaces.Events;
 
-public interface IEventStore<TAggregateId>
-where TAggregateId : IAggregateRootId
+public interface IEventStore
 {
     Task AppendAsync(
-        TAggregateId aggregateId,
-        IReadOnlyCollection<IDomainEvent<TAggregateId>> events,
+        IReadOnlyCollection<IDomainEvent<AggregateRootId>> events,
         int expectedVersion,
         CancellationToken ct);
 
-    Task<IReadOnlyCollection<IDomainEvent<TAggregateId>>> LoadAsync(
-        TAggregateId aggregateId,
+    Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
+        AggregateRootId aggregateId,
         CancellationToken ct);
 
-    Task<IReadOnlyCollection<IDomainEvent<TAggregateId>>> LoadAsync(
-        TAggregateId aggregateId,
-        int fromVersion,
-        CancellationToken ct);
+    Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
+        AggregateRootId aggregateId,
+        int fromVersion = 0,
+        int? toVersion = null,
+        CancellationToken ct = default);
 }
 

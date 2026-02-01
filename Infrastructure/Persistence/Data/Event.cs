@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Domain.SeedWork;
 
 namespace Infrastructure.Persistence.Data;
 
@@ -10,7 +11,7 @@ public class Event
     public DateTimeOffset CreatedAt { get; private set; }
 
     [Required]
-    public required Guid AggregateId { get; set; }
+    public required AggregateRootId AggregateId { get; set; }
 
     [Required]
     public required string AggregateIdType { get; set; } = string.Empty;
@@ -26,5 +27,21 @@ public class Event
 
     [Required]
     public required DateTimeOffset TimeStamp { get; set; }
+
+
+
+    public static Event From(IDomainEvent<AggregateRootId> e, string eventData) => new()
+    {
+        AggregateId = e.AggregateId,
+        AggregateIdType = e.AggregateId.GetType().Name,
+        Version = e.Version,
+        EventType = e.GetType().Name,
+        EventData = eventData,
+        TimeStamp = e.Timestamp
+    };
+
+
+
+    private Event() { } // EF
 }
 

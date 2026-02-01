@@ -16,12 +16,13 @@ public sealed class SQLiteUnitOfWork : IUnitOfWork
         // _domainDispatcher = domainDispatcher;
     }
 
+    // TODO: WTF
     public async Task CommitAsync(CancellationToken ct = default)
     {
         await _context.SaveChangesAsync(ct);
 
         var entities = _context.ChangeTracker
-            .Entries<AggregateRoot<IAggregateRootId>>() // TODO: fix
+            .Entries<AggregateRoot<AggregateRootId>>()
             .Where(e => e.Entity.DomainEvents.Any())
             .Select(e => e.Entity)
             .ToList();

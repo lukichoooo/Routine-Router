@@ -1,11 +1,11 @@
 using Application.Interfaces.Events;
 using Domain.SeedWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Data;
 
 
-public class SQLiteEventStore<TAggregateRootId> : IEventStore<TAggregateRootId>
-    where TAggregateRootId : IAggregateRootId
+public class SQLiteEventStore : IEventStore
 {
     private readonly IEventSerializer _serializer;
     private readonly RoutineContext _context;
@@ -19,37 +19,44 @@ public class SQLiteEventStore<TAggregateRootId> : IEventStore<TAggregateRootId>
     }
 
     public async Task AppendAsync(
-            TAggregateRootId aggregateId,
-            IReadOnlyCollection<IDomainEvent<TAggregateRootId>> events,
+            IReadOnlyCollection<IDomainEvent<AggregateRootId>> events,
             int expectedVersion,
             CancellationToken ct)
     {
-        IEnumerable<Event> dbEvents = events.Select(e =>
-                new Event()
-                {
-                    AggregateId = aggregateId.Value,
-                    AggregateIdType = aggregateId.GetType().Name,
-                    Version = e.Version,
-                    EventType = e.GetType().Name,
-                    EventData = _serializer.Serialize(e),
-                    TimeStamp = e.Timestamp
-                });
+        IEnumerable<Event> dbEvents = events.Select(e => Event.From(e, _serializer.Serialize(e)));
         await _context.Events.AddRangeAsync(dbEvents);
     }
 
-    public Task<IReadOnlyCollection<IDomainEvent<TAggregateRootId>>> LoadAsync(
-            TAggregateRootId aggregateId,
+    public async Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
+            AggregateRootId aggregateId,
             CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var dbEvents = _context.Events
+            .AsNoTracking()
+            .Where(e => e.AggregateId == aggregateId)
+            .OrderBy(e => e.Version);
+
+        return await dbEvents
+            .Select(e => _serializer.Deserialize(e.EventData, e.EventType))
+            .ToListAsync(ct);
     }
 
-    public Task<IReadOnlyCollection<IDomainEvent<TAggregateRootId>>> LoadAsync(
-            TAggregateRootId aggregateId,
-            int fromVersion,
-            CancellationToken ct)
+    public async Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
+            AggregateRootId aggregateId,
+             int fromVersion = 0,
+            int? toVersion = null,
+            CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var dbEvents = _context.Events
+            .AsNoTracking()
+            .Where(e => e.AggregateId == aggregateId)
+            .OrderBy(e => e.Version)
+            .Where(e => e.Version >= fromVersion
+                    && (toVersion == null || e.Version <= toVersion));
+
+        return await dbEvents
+            .Select(e => _serializer.Deserialize(e.EventData, e.EventType))
+            .ToListAsync(ct);
     }
 }
 

@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Domain.SeedWork;
@@ -10,8 +9,8 @@ namespace Infrastructure.Persistence.Data;
 
 public interface IEventSerializer
 {
-    string Serialize(IDomainEvent domainEvent);
-    IDomainEvent Deserialize(string eventData, string eventType);
+    string Serialize(IDomainEvent<AggregateRootId> domainEvent);
+    IDomainEvent<AggregateRootId> Deserialize(string eventData, string eventType);
 }
 
 
@@ -30,33 +29,33 @@ public class EventSerializer : IEventSerializer
         RegisterEventTypes();
     }
 
-    public string Serialize(IDomainEvent domainEvent)
+    public string Serialize(IDomainEvent<AggregateRootId> @event)
     {
-        if (domainEvent == null)
-            throw new EventSerializerArgumentNullException(nameof(domainEvent));
+        if (@event == null)
+            throw new EventSerializerArgumentNullException(nameof(@event));
 
         try
         {
-            var eventType = domainEvent.GetType();
+            var eventType = @event.GetType();
 
             if (!_reverseEventTypeMap.TryGetValue(eventType, out var eventTypeString))
             {
                 throw new EventSerializationException(
-                        $"Event type '{eventType.FullName}' is not registered.");
+                        $"Event type '{eventType.Name}' is not registered.");
             }
 
-            return JsonSerializer.Serialize(domainEvent, eventType, _serializerOptions);
+            return JsonSerializer.Serialize(@event, eventType, _serializerOptions);
         }
         catch (JsonException ex)
         {
             throw new EventSerializationException(
-                    $"Failed to serialize event of type '{domainEvent.GetType().Name}'", ex);
+                    $"Failed to serialize event of type '{@event.GetType().Name}'", ex);
         }
     }
 
 
 
-    public IDomainEvent Deserialize(string eventData, string eventType)
+    public IDomainEvent<AggregateRootId> Deserialize(string eventData, string eventType)
     {
         if (string.IsNullOrWhiteSpace(eventData))
             throw new EventSerializerArgumentNullException(nameof(eventData));
@@ -74,7 +73,7 @@ public class EventSerializer : IEventSerializer
                 ?? throw new EventSerializationException(
                     $"Deserialization returned null for event type: {eventType}");
 
-            return (IDomainEvent)@event;
+            return (IDomainEvent<AggregateRootId>)@event;
         }
         catch (Exception ex)
         {
@@ -90,26 +89,20 @@ public class EventSerializer : IEventSerializer
     private void RegisterEventTypes()
     {
         // Scan assemblies
-        IEnumerable<Assembly> assemblies =
-        [
-            typeof(Domain.Entities.Schedules.Events.ChecklistCreated).Assembly,
-            typeof(Domain.Entities.Users.Events.UserCreated).Assembly
-        ];
+        var assembly = typeof(IDomainEvent<AggregateRootId>).Assembly;
 
-        foreach (var assembly in assemblies)
+        var eventTypes = assembly.GetTypes()
+            .Where(t => !t.IsAbstract && !t.IsInterface
+                    && typeof(IDomainEvent<AggregateRootId>).IsAssignableFrom(t));
+
+        foreach (var eventType in eventTypes)
         {
-            var eventTypes = assembly.GetTypes()
-                .Where(t => !t.IsAbstract && !t.IsInterface && typeof(IDomainEvent).IsAssignableFrom(t));
-
-            foreach (var eventType in eventTypes)
-            {
-                var eventTypeString = eventType.FullName ?? eventType.Name;
-                _eventTypeMap.TryAdd(eventTypeString, eventType);
-                _reverseEventTypeMap.TryAdd(eventType, eventTypeString);
-            }
+            var eventTypeString = eventType.Name;
+            _eventTypeMap[eventTypeString] = eventType;
+            _reverseEventTypeMap[eventType] = eventTypeString;
         }
 
-        _logger.LogInformation($"Registered event types: {string.Join(", ", _eventTypeMap.Keys)}");
+        _logger.LogInformation($"Registered event types: {string.Join(", ", _eventTypeMap.Keys.ToArray())}");
     }
 
 
@@ -118,15 +111,10 @@ public class EventSerializer : IEventSerializer
         return new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = false,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            // WriteIndented = false,
+            // DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
-    }
-
-    public IReadOnlyDictionary<string, Type> GetRegisteredEventTypes()
-    {
-        return _eventTypeMap.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 }
 

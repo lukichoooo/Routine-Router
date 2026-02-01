@@ -24,13 +24,17 @@ public sealed class EventConfig : IEntityTypeConfiguration<Event>
                .IsRequired()
                .HasMaxLength(300);
 
+        builder.Property(e => e.CreatedAt)
+               .HasDefaultValueSql("CURRENT_TIMESTAMP") // SQLite 
+               .ValueGeneratedOnAdd();
+
         // ---------- INDEXES ----------
 
         builder.HasIndex(x => new { x.AggregateId, x.Version, x.EventType })
                .IsUnique();
 
         // ---------- ORDERING ----------
-        builder.HasIndex(x => x.Id)
+        builder.HasIndex(x => x.Version)
                .IsUnique();
     }
 }

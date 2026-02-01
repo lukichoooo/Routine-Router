@@ -1,5 +1,4 @@
 using Application.Interfaces.Command;
-using Application.UseCases.Schedules.Commands.CreateChecklist;
 using MediatR;
 
 namespace CLI;
