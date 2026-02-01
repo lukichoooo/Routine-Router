@@ -21,12 +21,7 @@ public class ChecklistRepo : BaseRepository<Checklist, ChecklistId>, IChecklistR
     }
 
 
-    public Task<Checklist?> GetByIdAsync(ChecklistId id, CancellationToken ct)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Checklist?> GetForDayAsync(UserId userId, DateOnly date, CancellationToken ct)
+    public override Task<Checklist?> GetByIdAsync(ChecklistId aggregateId, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
@@ -37,5 +32,11 @@ public class ChecklistRepo : BaseRepository<Checklist, ChecklistId>, IChecklistR
                 aggregate.DomainEvents,
                 aggregate.Version,
                 ct);
+
+
+    public Task<Checklist?> GetForDayAsync(UserId userId, DateOnly date, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }
 

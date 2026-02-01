@@ -4,6 +4,11 @@
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 
+<PropertyGroup>
+  <!-- for Configuration.Json -->
+  <NoWarn>$(NoWarn);NU1510</NoWarn>
+</PropertyGroup>
+
   <ItemGroup>
 
      <!-- EF -->

@@ -1,14 +1,13 @@
 using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users.ValueObjects;
+using Domain.SeedWork;
 
 namespace Application.UseCases.Schedules;
 
 
-public interface IChecklistRepo
+public interface IChecklistRepo : IRepository<Checklist, ChecklistId>
 {
-    Task<Checklist?> GetByIdAsync(ChecklistId id, CancellationToken ct);
     Task<Checklist?> GetForDayAsync(UserId userId, DateOnly date, CancellationToken ct);
-    Task SaveAsync(Checklist checklist, CancellationToken ct);
 }
 

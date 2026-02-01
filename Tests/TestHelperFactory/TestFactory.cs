@@ -16,12 +16,12 @@ public static class TestFactory
         fix.Behaviors.Add(new OmitOnRecursionBehavior());
 
         fix.Register<Rating>(() => new(
-                (byte)rnd.Next(0, 101),
-                (byte)rnd.Next(0, 101),
-                (byte)rnd.Next(0, 101),
-                (byte)rnd.Next(0, 101),
-                (byte)rnd.Next(0, 101),
-                (byte)rnd.Next(0, 101)));
+                (byte)rnd.Next(0, 100),
+                (byte)rnd.Next(0, 100),
+                (byte)rnd.Next(0, 100),
+                (byte)rnd.Next(0, 100),
+                (byte)rnd.Next(0, 100),
+                (byte)rnd.Next(0, 100)));
 
         return fix;
     }

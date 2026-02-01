@@ -4,7 +4,7 @@ using Infrastructure.Persistence;
 namespace Infrastructure.Repos.Common;
 
 
-public abstract class BaseRepository<TA, TID>
+public abstract class BaseRepository<TA, TID> : IRepository<TA, TID>
 where TA : AggregateRoot<TID>
 where TID : AggregateRootId
 {
@@ -15,12 +15,14 @@ where TID : AggregateRootId
         _trackedEntities = trackedEntities;
     }
 
+    protected abstract Task SaveAsyncProtected(TA aggregate, CancellationToken ct);
+
+
     public async Task SaveAsync(TA aggregate, CancellationToken ct)
     {
         await SaveAsyncProtected(aggregate, ct);
         _trackedEntities.Add(aggregate);
     }
-
-    protected abstract Task SaveAsyncProtected(TA aggregate, CancellationToken ct);
+    public abstract Task<TA?> GetByIdAsync(TID aggregateId, CancellationToken ct);
 }
 

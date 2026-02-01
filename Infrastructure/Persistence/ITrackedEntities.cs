@@ -12,6 +12,7 @@ public interface ITrackedEntities
     void Remove<TID>(AggregateRoot<TID> entity) where TID : AggregateRootId;
 
     void Clear();
+
     ReadOnlyCollection<AggregateRoot<AggregateRootId>> GetAll();
 }
 
