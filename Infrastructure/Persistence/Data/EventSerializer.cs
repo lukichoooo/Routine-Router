@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Data.Exceptions;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence.Data;
 
@@ -19,12 +18,9 @@ public class EventSerializer : IEventSerializer
     private readonly ConcurrentDictionary<string, Type> _eventTypeMap = new();
     private readonly ConcurrentDictionary<Type, string> _reverseEventTypeMap = new();
     private readonly JsonSerializerOptions _serializerOptions;
-    private readonly ILogger<EventSerializer> _logger;
 
-    public EventSerializer(ILogger<EventSerializer> logger)
+    public EventSerializer()
     {
-        _logger = logger;
-
         _serializerOptions = CreateSerializerOptions();
         RegisterEventTypes();
     }
@@ -101,8 +97,6 @@ public class EventSerializer : IEventSerializer
             _eventTypeMap[eventTypeString] = eventType;
             _reverseEventTypeMap[eventType] = eventTypeString;
         }
-
-        _logger.LogInformation($"Registered event types: {string.Join(", ", _eventTypeMap.Keys.ToArray())}");
     }
 
 
@@ -110,9 +104,9 @@ public class EventSerializer : IEventSerializer
     {
         return new JsonSerializerOptions
         {
+            WriteIndented = true, // pretty
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            // WriteIndented = false,
-            // DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
     }

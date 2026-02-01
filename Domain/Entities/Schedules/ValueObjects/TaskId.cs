@@ -7,9 +7,9 @@ public class TaskId : ValueObject
 {
     public Guid Value { get; }
 
-    public TaskId(Guid taskId)
+    public TaskId(Guid value)
     {
-        Value = taskId;
+        Value = value;
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

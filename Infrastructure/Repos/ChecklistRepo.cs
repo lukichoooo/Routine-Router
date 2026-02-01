@@ -9,14 +9,13 @@ namespace Infrastructure.Repos;
 
 public class ChecklistRepo : IChecklistRepo
 {
-    private readonly IEventStore<ChecklistId> _eventStore;
+    private readonly IEventStore _eventStore;
 
-    public ChecklistRepo(IEventStore<ChecklistId> eventStore)
+    public ChecklistRepo(IEventStore eventStore)
         => _eventStore = eventStore;
 
     public async Task AddAsync(Checklist checklist, CancellationToken ct)
         => await _eventStore.AppendAsync(
-                checklist.Id,
                 checklist.DomainEvents,
                 checklist.Version,
                 ct);

@@ -2,7 +2,7 @@ using MediatR;
 
 namespace Domain.SeedWork;
 
-public interface IDomainEvent<TAggregateRootId> : INotification
+public interface IDomainEvent<out TAggregateRootId> : INotification
     where TAggregateRootId : AggregateRootId
 {
     TAggregateRootId AggregateId { get; }

@@ -7,12 +7,12 @@ namespace Domain.Common.ValueObjects
     {
         public string Value { get; }
 
-        public Name(string name)
+        public Name(string value)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new DomainArgumentNullException(nameof(name));
+            if (string.IsNullOrWhiteSpace(value))
+                throw new DomainArgumentNullException(nameof(value));
 
-            Value = name;
+            Value = value;
         }
 
         protected override IEnumerable<object?> GetEqualityComponents()

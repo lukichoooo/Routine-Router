@@ -6,20 +6,14 @@ using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.Events;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.SeedWork;
+using FixtureProvider;
 
 namespace DomainTests
 {
     [TestFixture]
     public class ChecklistTests
     {
-        private readonly Fixture _fix = new();
-
-        [OneTimeSetUp]
-        public void Setup()
-        {
-            _fix.Behaviors.Add(new OmitOnRecursionBehavior());
-        }
-
+        private readonly Fixture _fix = FixtureFactory.GetFixture();
 
         [Test]
         public void Create_Success()
@@ -160,7 +154,7 @@ namespace DomainTests
             IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
-            var rating = new Rating(1, 2, 3, 4, 5, 6);
+            var rating = _fix.Create<Rating>();
             checklist.SetUserRating(rating);
 
             Assert.That(checklist.DomainEvents, Has.Count.EqualTo(1));
@@ -176,7 +170,7 @@ namespace DomainTests
             IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
-            var rating = new Rating(1, 2, 3, 4, 5, 6);
+            var rating = _fix.Create<Rating>();
             checklist.SetLLMRating(rating);
 
             Assert.That(checklist.DomainEvents, Has.Count.EqualTo(1));

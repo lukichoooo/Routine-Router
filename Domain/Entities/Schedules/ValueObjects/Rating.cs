@@ -5,7 +5,7 @@ namespace Domain.Entities.Schedules.ValueObjects;
 public class Rating : ValueObject // 0 - 100
 {
     public byte MoodRating { get; }
-    public byte ModivationRating { get; }
+    public byte MotivationRating { get; }
     public byte EffortRating { get; }
     public byte ProductivityRating { get; }
     public byte FocusRating { get; }
@@ -27,7 +27,7 @@ public class Rating : ValueObject // 0 - 100
         ValidateRatingCriteria(stressRating);
 
         MoodRating = moodRating;
-        ModivationRating = motivationRating;
+        MotivationRating = motivationRating;
         EffortRating = effortRating;
         ProductivityRating = productivityRating;
         FocusRating = focusRating;
@@ -44,7 +44,7 @@ public class Rating : ValueObject // 0 - 100
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return MoodRating;
-        yield return ModivationRating;
+        yield return MotivationRating;
         yield return EffortRating;
         yield return ProductivityRating;
         yield return FocusRating;
@@ -55,7 +55,7 @@ public class Rating : ValueObject // 0 - 100
     public double OverallScore()
     {
         return (MoodRating
-                + ModivationRating
+                + MotivationRating
                 + EffortRating
                 + ProductivityRating
                 + FocusRating

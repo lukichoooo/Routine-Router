@@ -43,7 +43,7 @@ namespace Infrastructure
 
             // // Event Store Infrastructure
             services.AddSingleton<IEventSerializer, EventSerializer>();
-            services.AddSingleton(typeof(IEventStore<>), typeof(SQLiteEventStore<>));
+            services.AddSingleton<IEventStore, SQLiteEventStore>();
             services.AddSingleton<IUnitOfWork, SQLiteUnitOfWork>();
 
             // repos

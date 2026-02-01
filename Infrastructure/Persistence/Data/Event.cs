@@ -11,7 +11,7 @@ public class Event
     public DateTimeOffset CreatedAt { get; private set; }
 
     [Required]
-    public required AggregateRootId AggregateId { get; set; }
+    public required Guid AggregateId { get; set; }
 
     [Required]
     public required string AggregateIdType { get; set; } = string.Empty;
@@ -32,7 +32,7 @@ public class Event
 
     public static Event From(IDomainEvent<AggregateRootId> e, string eventData) => new()
     {
-        AggregateId = e.AggregateId,
+        AggregateId = e.AggregateId.ToGuid(),
         AggregateIdType = e.AggregateId.GetType().Name,
         Version = e.Version,
         EventType = e.GetType().Name,

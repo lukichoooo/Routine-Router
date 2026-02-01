@@ -1,21 +1,19 @@
 using Domain.SeedWork;
-using MediatR;
 
 namespace Application.Common.Seedwork;
 
 /// <summary>
 /// Does Not Save Changes to Database Automatically
 /// </summary>
-public abstract class BaseDomainEventHandler<TNotification>
-    : INotificationHandler<TNotification> where TNotification : IDomainEvent
+public abstract class BaseDomainEventHandler
 {
     public Task Handle(
-            TNotification evt,
+            IDomainEvent<AggregateRootId> evt,
             CancellationToken ct)
         => ExecuteAsync(evt, ct);
 
 
     protected abstract Task ExecuteAsync(
-            TNotification evt,
+            IDomainEvent<AggregateRootId> evt,
             CancellationToken ct);
 }

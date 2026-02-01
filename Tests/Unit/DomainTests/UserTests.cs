@@ -5,19 +5,14 @@ using Domain.Entities.Users;
 using Domain.Entities.Users.Events;
 using Domain.Entities.Users.Exceptions;
 using Domain.Entities.Users.ValueObjects;
+using FixtureProvider;
 
 namespace DomainTests
 {
     [TestFixture]
     public class UserTests
     {
-        private readonly Fixture _fix = new();
-
-        [OneTimeSetUp]
-        public void Setup()
-        {
-            _fix.Behaviors.Add(new OmitOnRecursionBehavior());
-        }
+        private readonly Fixture _fix = FixtureFactory.GetFixture();
 
         [Test]
         public void Create_Success()
