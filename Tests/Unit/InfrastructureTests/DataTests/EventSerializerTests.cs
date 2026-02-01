@@ -17,16 +17,21 @@ public class EventSerializerTests
     private IEventSerializer EventSerializer =>
         new EventSerializer();
 
+    private ILogger GetLogger()
+    {
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            // builder.AddConsole();
+            builder.SetMinimumLevel(LogLevel.Debug);
+        });
+        return loggerFactory.CreateLogger<EventSerializerTests>();
+    }
+
 
     [Test]
     public void SerializeEvent_DeserializeEvent_Tests()
     {
-        var loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Debug);
-        });
-        var logger = loggerFactory.CreateLogger<EventSerializerTests>();
+        var logger = GetLogger();
 
         var assembly = typeof(UserCreated).Assembly;
         var eventTypes = assembly.GetTypes()
