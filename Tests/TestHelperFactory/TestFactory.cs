@@ -1,5 +1,7 @@
+using Application.Interfaces.Events;
 using AutoFixture;
 using Domain.Entities.Schedules.ValueObjects;
+using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -26,16 +28,23 @@ public static class TestFactory
         return fix;
     }
 
-    public static EventsContext GetDbContext()
+    public static EventsContext GetEventsContext()
     {
         var options = new DbContextOptionsBuilder<EventsContext>()
-            .UseInMemoryDatabase("TestDb")
+            .UseInMemoryDatabase("TestDb") // might need change
             .Options;
         return new EventsContext(options);
     }
 
 
+
     public static IEventSerializer GetEventSerializer()
         => new EventSerializer();
+
+    public static ITrackedEntities GetTrackedEntities()
+        => new TrackedEntities();
+
+    public static IEventStore GetEventStore()
+        => new SQLiteEventStore(GetEventSerializer(), GetEventsContext());
 }
 

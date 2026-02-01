@@ -25,7 +25,7 @@ public sealed class SQLiteUnitOfWork : IUnitOfWork
     {
         await _context.SaveChangesAsync(ct);
 
-        foreach (var entity in _trackedEntities.GetAll())
+        foreach (var entity in _trackedEntities.GetCollection())
         {
             foreach (var @event in entity.DomainEvents)
                 await _eventDispatcher.DispatchAsync(@event, ct);

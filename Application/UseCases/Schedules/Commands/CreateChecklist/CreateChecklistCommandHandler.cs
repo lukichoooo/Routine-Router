@@ -25,13 +25,16 @@ public class CreateChecklistCommandHandler
 
     protected override async Task<ChecklistId> ExecuteAsync(CreateChecklistCommand command, CancellationToken ct)
     {
+        var userId = _identity.GetCurrentUserId();
         var checklist = new Checklist();
         var checklistId = new ChecklistId(Guid.NewGuid());
-        var userId = _identity.GetCurrentUserId();
+
+        // TODO
+        var expectedVersion = checklist.Version;
 
         checklist.Create(checklistId, userId);
 
-        await _repo.SaveAsync(checklist, ct);
+        await _repo.SaveAsync(checklist, expectedVersion, ct);
 
         return checklistId;
     }

@@ -26,11 +26,15 @@ public class ChecklistRepo : BaseRepository<Checklist, ChecklistId>, IChecklistR
         throw new NotImplementedException();
     }
 
-    protected override async Task SaveAsyncProtected(Checklist aggregate, CancellationToken ct)
+    // TODO: fix expected Version
+    protected override async Task SaveAsyncProtected(
+            Checklist aggregate,
+            int expectedVersion,
+            CancellationToken ct)
         => await _eventStore.AppendAsync(
                 aggregate.Id,
                 aggregate.DomainEvents,
-                aggregate.Version,
+                expectedVersion,
                 ct);
 
 

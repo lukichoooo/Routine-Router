@@ -13,7 +13,12 @@ public interface ITrackedEntities
 
     void Clear();
 
-    ReadOnlyCollection<AggregateRoot<AggregateRootId>> GetAll();
+    ReadOnlyCollection<AggregateRoot<AggregateRootId>> GetCollection();
+
+    ReadOnlyCollection<AggregateRoot<TID>> GetCollection<TID>()
+        where TID : AggregateRootId;
+
+    ReadOnlyDictionary<Type, List<object>> GetDictionary();
 }
 
 public class TrackedEntities : ITrackedEntities
@@ -37,8 +42,17 @@ public class TrackedEntities : ITrackedEntities
     }
 
     public void Clear() => _trackedEntities.Clear();
-    public ReadOnlyCollection<AggregateRoot<AggregateRootId>> GetAll()
+
+    public ReadOnlyCollection<AggregateRoot<AggregateRootId>> GetCollection()
         => (ReadOnlyCollection<AggregateRoot<AggregateRootId>>)
         _trackedEntities.SelectMany(kv => kv.Value);
+
+    public ReadOnlyCollection<AggregateRoot<TID>> GetCollection<TID>()
+        where TID : AggregateRootId
+        => (ReadOnlyCollection<AggregateRoot<TID>>)
+        _trackedEntities.SelectMany(kv => kv.Value);
+
+    public ReadOnlyDictionary<Type, List<object>> GetDictionary()
+        => _trackedEntities.AsReadOnly();
 }
 

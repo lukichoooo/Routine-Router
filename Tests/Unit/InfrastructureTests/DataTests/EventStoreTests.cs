@@ -16,7 +16,7 @@ namespace InfrastructureTests.DataTests;
 public class EventStoreTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
-    private readonly EventsContext _context = TestFactory.GetDbContext();
+    private readonly EventsContext _context = TestFactory.GetEventsContext();
     private readonly IEventSerializer _eventSerializer = TestFactory.GetEventSerializer();
 
     [OneTimeTearDown]
@@ -146,7 +146,7 @@ public class EventStoreTests
     public async Task LoadAsyncTest_Success()
     {
         // Arrange
-        var context = TestFactory.GetDbContext();
+        var context = TestFactory.GetEventsContext();
 
 
         var aggregateId = _fix.Create<UserId>();
@@ -178,7 +178,7 @@ public class EventStoreTests
     public async Task LoadAsyncTest_Empty()
     {
         // Arrange
-        var context = TestFactory.GetDbContext();
+        var context = TestFactory.GetEventsContext();
 
         var aggregateId = _fix.Create<UserId>();
 
@@ -202,7 +202,7 @@ public class EventStoreTests
     public async Task LoadAsyncTest_FromVersion(int fromVersion, int? toVersion)
     {
         // Arrange
-        var context = TestFactory.GetDbContext();
+        var context = TestFactory.GetEventsContext();
 
         int versionCount = 1;
 
