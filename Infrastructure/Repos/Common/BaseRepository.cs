@@ -20,16 +20,14 @@ where TID : AggregateRootId
 
     protected abstract Task SaveAsyncProtected(
             TA aggregate,
-            int expectedVersion,
             CancellationToken ct);
 
 
     public async Task SaveAsync(
             TA aggregate,
-            int expectedVersion,
             CancellationToken ct)
     {
-        await SaveAsyncProtected(aggregate, expectedVersion, ct);
+        await SaveAsyncProtected(aggregate, ct);
         _trackedEntities.Add(aggregate);
     }
 

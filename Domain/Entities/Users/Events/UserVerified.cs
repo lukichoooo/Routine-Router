@@ -7,5 +7,5 @@ namespace Domain.Entities.Users.Events
             UserId AggregateId,
             int Version,
             DateTimeOffset Timestamp
-            ) : IDomainEvent<UserId>;
+            ) : BaseDomainEvent<UserId>;
 }

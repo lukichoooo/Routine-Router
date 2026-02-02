@@ -8,12 +8,12 @@ namespace Application.Common.Seedwork;
 public abstract class BaseDomainEventHandler
 {
     public Task Handle(
-            IDomainEvent<AggregateRootId> evt,
+            BaseDomainEvent<AggregateRootId> evt,
             CancellationToken ct)
         => ExecuteAsync(evt, ct);
 
 
     protected abstract Task ExecuteAsync(
-            IDomainEvent<AggregateRootId> evt,
+            BaseDomainEvent<AggregateRootId> evt,
             CancellationToken ct);
 }

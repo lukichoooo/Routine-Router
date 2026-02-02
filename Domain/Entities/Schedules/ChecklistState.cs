@@ -2,10 +2,11 @@ using Domain.Common.Exceptions;
 using Domain.Entities.Schedules.Events;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users.ValueObjects;
+using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
 
-public class ChecklistState
+public class ChecklistState : IState<ChecklistId>
 {
     public ChecklistId Id { get; private set; }
 

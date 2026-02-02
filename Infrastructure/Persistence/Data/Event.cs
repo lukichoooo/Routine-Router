@@ -30,7 +30,7 @@ public sealed class Event
 
 
 
-    public static Event From(IDomainEvent<AggregateRootId> e, string eventData)
+    public static Event From(IDomainEvent e, string eventData)
         => new()
         {
             AggregateId = e.AggregateId.ToGuid(),

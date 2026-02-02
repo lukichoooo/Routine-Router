@@ -1,6 +1,10 @@
 namespace Domain.SeedWork;
 
 
+// <summary>
+// Base Class for all Aggregate Root Id
+// inherits from ValueObject
+// </summary>
 public abstract class AggregateRootId : ValueObject
 {
     public Guid Value { get; }

@@ -22,7 +22,7 @@ public class SQLiteEventStore : IEventStore
 
     public async Task AppendAsync(
             AggregateRootId aggregateId,
-            IReadOnlyCollection<IDomainEvent<AggregateRootId>> events,
+            IReadOnlyCollection<IDomainEvent> events,
             int? expectedVersion,
             CancellationToken ct)
     {
@@ -41,7 +41,7 @@ public class SQLiteEventStore : IEventStore
         await _context.Events.AddRangeAsync(newEvents);
     }
 
-    public async Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
+    public async Task<IReadOnlyCollection<IDomainEvent>> LoadAsync(
             AggregateRootId aggregateId,
             CancellationToken ct,
             int fromVersion = 0,

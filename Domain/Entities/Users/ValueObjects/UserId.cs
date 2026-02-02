@@ -1,9 +1,10 @@
 using Domain.SeedWork;
 
-namespace Domain.Entities.Users.ValueObjects
+namespace Domain.Entities.Users.ValueObjects;
+
+
+public class UserId : AggregateRootId
 {
-    public class UserId : AggregateRootId
-    {
-        public UserId(Guid value) : base(value) { }
-    }
+    public UserId(Guid value) : base(value) { }
 }
+

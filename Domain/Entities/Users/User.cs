@@ -8,32 +8,11 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Users;
 
-public sealed class User : AggregateRoot<UserId>
+public sealed class User : AggregateRoot<UserId, UserState>
 {
-    private readonly UserState State;
+    public User(IEnumerable<BaseDomainEvent<UserId>>? history = null)
+        : base(history) { }
 
-    public override UserId Id => State.Id;
-
-
-    // ---------- FACTORY ----------
-    public User(IEnumerable<IDomainEvent<UserId>>? events = null)
-    {
-        State = new UserState();
-        foreach (var e in events ?? [])
-        {
-            ((dynamic)State).Apply((dynamic)e);
-            Version = e.Version;
-        }
-    }
-
-    private void AppendEvent(IDomainEvent<UserId> e)
-    {
-        AddDomainEvent(e);
-        ((dynamic)State).Apply((dynamic)e);
-        Version = e.Version;
-    }
-
-    // ---------- COMMANDS ----------
 
     public void Create(UserId id, Name name, PasswordHash passwordHash)
         => AppendEvent(new UserCreated(

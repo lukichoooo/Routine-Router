@@ -1,10 +1,11 @@
 using Domain.Common.ValueObjects;
 using Domain.Entities.Users.Events;
 using Domain.Entities.Users.ValueObjects;
+using Domain.SeedWork;
 
 namespace Domain.Entities.Users;
 
-public class UserState
+public class UserState : IState<UserId>
 {
     public UserId Id { get; private set; }
     public Name Name { get; private set; }

@@ -9,6 +9,6 @@ namespace Domain.Entities.Users.Events
             int Version,
             DateTimeOffset Timestamp,
             Name Name,
-            PasswordHash PasswordHash) : IDomainEvent<UserId>;
+            PasswordHash PasswordHash) : BaseDomainEvent<UserId>;
 
 }

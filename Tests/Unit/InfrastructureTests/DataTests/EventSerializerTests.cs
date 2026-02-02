@@ -36,13 +36,13 @@ public class EventSerializerTests
         var assembly = typeof(UserCreated).Assembly;
         var eventTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface
-                && typeof(IDomainEvent<AggregateRootId>).IsAssignableFrom(t));
+                && typeof(BaseDomainEvent<AggregateRootId>).IsAssignableFrom(t));
 
         var events = eventTypes
             .Select(t => _fix.Create(t, new SpecimenContext(_fix)))
             .ToList();
 
-        foreach (IDomainEvent<AggregateRootId> e in events)
+        foreach (BaseDomainEvent<AggregateRootId> e in events)
         {
             string serialized = EventSerializer.Serialize(e);
             var deserialized = EventSerializer.Deserialize(serialized, e.GetType().Name);

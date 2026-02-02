@@ -6,11 +6,11 @@ public interface IEventStore
 {
     Task AppendAsync(
         AggregateRootId aggregateId,
-        IReadOnlyCollection<IDomainEvent<AggregateRootId>> events,
+        IReadOnlyCollection<IDomainEvent> events,
         int? expectedVersion,
         CancellationToken ct);
 
-    Task<IReadOnlyCollection<IDomainEvent<AggregateRootId>>> LoadAsync(
+    Task<IReadOnlyCollection<IDomainEvent>> LoadAsync(
         AggregateRootId aggregateId,
         CancellationToken ct,
         int fromVersion = 0,

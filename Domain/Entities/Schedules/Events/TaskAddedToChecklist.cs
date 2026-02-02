@@ -13,5 +13,5 @@ namespace Domain.Entities.Schedules.Events
             TaskType TaskType,
             Schedule Planned,
             string? Metadata
-         ) : IDomainEvent<ChecklistId>;
+         ) : BaseDomainEvent<ChecklistId>;
 }

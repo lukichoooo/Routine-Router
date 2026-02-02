@@ -48,7 +48,7 @@ namespace DomainTests
         {
             var evt = _fix.Create<ChecklistCreated>();
             var evt2 = _fix.Create<TaskAddedToChecklist>();
-            IEnumerable<IDomainEvent<ChecklistId>> events = [evt, evt2];
+            IEnumerable<BaseDomainEvent<ChecklistId>> events = [evt, evt2];
             var checklist = new Checklist(events);
 
             Assert.That(checklist.DomainEvents, Is.Empty);
@@ -61,7 +61,7 @@ namespace DomainTests
         public void RemoveTask_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
+            IEnumerable<BaseDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
             var taskName = _fix.Create<Name>();
@@ -82,7 +82,7 @@ namespace DomainTests
         public void StartTask_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
+            IEnumerable<BaseDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
             var taskName = _fix.Create<Name>();
@@ -104,7 +104,7 @@ namespace DomainTests
         public void CompleteTask_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
+            IEnumerable<BaseDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
             var taskName = _fix.Create<Name>();
@@ -129,7 +129,7 @@ namespace DomainTests
         public void CompleteTask_Fail_TaskNotStarted()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
+            IEnumerable<BaseDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
             var taskName = _fix.Create<Name>();
@@ -151,7 +151,7 @@ namespace DomainTests
         public void SetUserRating_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
+            IEnumerable<BaseDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
             var rating = _fix.Create<Rating>();
@@ -167,7 +167,7 @@ namespace DomainTests
         public void SetLLMRating_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            IEnumerable<IDomainEvent<ChecklistId>> events = [evt];
+            IEnumerable<BaseDomainEvent<ChecklistId>> events = [evt];
             var checklist = new Checklist(events);
 
             var rating = _fix.Create<Rating>();

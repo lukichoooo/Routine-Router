@@ -9,5 +9,5 @@ namespace Domain.Entities.Schedules.Events
             int Version,
             DateTimeOffset Timestamp,
             UserId UserId
-            ) : IDomainEvent<ChecklistId>;
+            ) : BaseDomainEvent<ChecklistId>;
 }

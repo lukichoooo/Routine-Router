@@ -8,32 +8,11 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
 
-public sealed class Checklist : AggregateRoot<ChecklistId>
+public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
 {
-    private readonly ChecklistState State;
+    public Checklist(IEnumerable<BaseDomainEvent<ChecklistId>>? history = null)
+        : base(history) { }
 
-    public override ChecklistId Id => State.Id;
-
-    // ---------- FACTORY ----------
-
-    public Checklist(IEnumerable<IDomainEvent<ChecklistId>>? events = null)
-    {
-        State = new ChecklistState();
-        foreach (var e in events ?? [])
-        {
-            ((dynamic)State).Apply((dynamic)e);
-            Version = e.Version;
-        }
-    }
-
-    private void AppendEvent(IDomainEvent<ChecklistId> e)
-    {
-        AddDomainEvent(e);
-        ((dynamic)State).Apply((dynamic)e);
-        Version = e.Version;
-    }
-
-    // ---------- COMMANDS ----------
 
     public void Create(ChecklistId id, UserId userId)
         => AppendEvent(new ChecklistCreated(
@@ -129,7 +108,4 @@ public sealed class Checklist : AggregateRoot<ChecklistId>
                     rating));
 
 
-#pragma warning disable CS8618 
-    private Checklist() { }
-#pragma warning restore CS8618
 }

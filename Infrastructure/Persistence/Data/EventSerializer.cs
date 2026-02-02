@@ -8,8 +8,8 @@ namespace Infrastructure.Persistence.Data;
 
 public interface IEventSerializer
 {
-    string Serialize(IDomainEvent<AggregateRootId> domainEvent);
-    IDomainEvent<AggregateRootId> Deserialize(string eventData, string eventType);
+    string Serialize(IDomainEvent domainEvent);
+    IDomainEvent Deserialize(string eventData, string eventType);
 }
 
 
@@ -25,7 +25,7 @@ public class EventSerializer : IEventSerializer
         RegisterEventTypes();
     }
 
-    public string Serialize(IDomainEvent<AggregateRootId> @event)
+    public string Serialize(IDomainEvent @event)
     {
         if (@event == null)
             throw new EventSerializerArgumentNullException(nameof(@event));
@@ -51,7 +51,7 @@ public class EventSerializer : IEventSerializer
 
 
 
-    public IDomainEvent<AggregateRootId> Deserialize(string eventData, string eventType)
+    public IDomainEvent Deserialize(string eventData, string eventType)
     {
         if (string.IsNullOrWhiteSpace(eventData))
             throw new EventSerializerArgumentNullException(nameof(eventData));
@@ -69,7 +69,7 @@ public class EventSerializer : IEventSerializer
                 ?? throw new EventSerializationException(
                     $"Deserialization returned null for event type: {eventType}");
 
-            return (IDomainEvent<AggregateRootId>)@event;
+            return (BaseDomainEvent<AggregateRootId>)@event;
         }
         catch (Exception ex)
         {
@@ -85,11 +85,11 @@ public class EventSerializer : IEventSerializer
     private void RegisterEventTypes()
     {
         // Scan assemblies
-        var assembly = typeof(IDomainEvent<AggregateRootId>).Assembly;
+        var assembly = typeof(BaseDomainEvent<AggregateRootId>).Assembly;
 
         var eventTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface
-                    && typeof(IDomainEvent<AggregateRootId>).IsAssignableFrom(t));
+                    && typeof(BaseDomainEvent<AggregateRootId>).IsAssignableFrom(t));
 
         foreach (var eventType in eventTypes)
         {

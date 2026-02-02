@@ -7,5 +7,5 @@ namespace Domain.Entities.Schedules.Events
             ChecklistId AggregateId,
             int Version,
             DateTimeOffset Timestamp,
-            Rating UserRating) : IDomainEvent<ChecklistId>;
+            Rating UserRating) : BaseDomainEvent<ChecklistId>;
 }
