@@ -22,9 +22,13 @@ public class ChecklistRepo : BaseRepository<Checklist, ChecklistId>, IChecklistR
     }
 
 
-    public override Task<Checklist?> GetByIdAsync(ChecklistId aggregateId, CancellationToken ct)
+    public override async Task<Checklist?> GetByIdAsync(ChecklistId aggregateId, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var events = await _eventStore.LoadAsync(aggregateId, ct);
+        if (events.Count == 0)
+            return null;
+
+        return new Checklist(events);
     }
 
     protected override async Task SaveAsyncProtected(

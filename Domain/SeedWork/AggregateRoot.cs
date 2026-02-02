@@ -54,7 +54,7 @@ where TS : notnull, IState<TID>, new()
     // <summary>
     // history must be in ASC order by Version
     // </summary>
-    protected AggregateRoot(IEnumerable<BaseDomainEvent<TID>>? history)
+    protected AggregateRoot(IEnumerable<IDomainEvent>? history)
     {
         State = new TS();
         foreach (var e in history ?? [])
@@ -67,9 +67,9 @@ where TS : notnull, IState<TID>, new()
     // <summary>
     // matches Version field to the appended events verson
     // </summary>
-    protected void AppendEvent(BaseDomainEvent<TID> e)
+    protected void AppendEvent(IDomainEvent e)
     {
-        AddDomainEvent(e);
+        AddDomainEvent((BaseDomainEvent<TID>)e);
         ((dynamic)State).Apply((dynamic)e); // hack to call Apply override
         Version = e.Version;
     }

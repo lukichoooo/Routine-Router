@@ -1,3 +1,4 @@
+using Application.Interfaces.Events;
 using Application.UseCases.Identity;
 using Domain.Entities.Users;
 using Domain.Entities.Users.ValueObjects;
@@ -9,8 +10,13 @@ namespace Infrastructure.Repos;
 
 public class UserRepo : BaseRepository<User, UserId>, IUserRepo
 {
-    public UserRepo(ITrackedEntities trackedEntities) : base(trackedEntities)
+    private readonly IEventStore _eventStore;
+
+    public UserRepo(
+            IEventStore eventStore,
+            ITrackedEntities trackedEntities) : base(trackedEntities)
     {
+        _eventStore = eventStore;
     }
 
     public override Task<User?> GetByIdAsync(UserId aggregateId, CancellationToken ct)

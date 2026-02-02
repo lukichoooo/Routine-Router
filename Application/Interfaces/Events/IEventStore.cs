@@ -10,7 +10,7 @@ public interface IEventStore
         int? expectedVersion,
         CancellationToken ct);
 
-    Task<IReadOnlyCollection<IDomainEvent>> LoadAsync(
+    Task<List<IDomainEvent>> LoadAsync(
         AggregateRootId aggregateId,
         CancellationToken ct,
         int fromVersion = 0,

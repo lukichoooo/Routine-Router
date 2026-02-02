@@ -10,7 +10,7 @@ namespace Domain.Entities.Schedules;
 
 public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
 {
-    public Checklist(IEnumerable<BaseDomainEvent<ChecklistId>>? history = null)
+    public Checklist(IEnumerable<IDomainEvent>? history = null)
         : base(history) { }
 
 

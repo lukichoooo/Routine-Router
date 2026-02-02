@@ -20,7 +20,7 @@ public interface IJsonEventMapper
 
 
 // <summary>
-//     Serializes a domain event to a JSON Payload
+//     Serializes a domain event to a JSON Payload.
 //     uses reflection
 // </summary>
 public class JsonEventMapper : IJsonEventMapper
@@ -31,14 +31,6 @@ public class JsonEventMapper : IJsonEventMapper
     private readonly IReadOnlyDictionary<Type, List<PropertyInfo>> _typeToValidProps;
 
     private readonly IReadOnlyDictionary<string, Type> _typeNameToType;
-
-    private static readonly JsonSerializerOptions _jsonOptoins = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() },
-    };
 
     public JsonEventMapper()
     {

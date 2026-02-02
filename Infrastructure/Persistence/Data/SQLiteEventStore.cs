@@ -27,13 +27,15 @@ public class SQLiteEventStore : IEventStore
             int? expectedVersion,
             CancellationToken ct)
     {
-        var currentVersion = await _context.Events
-            .FirstOrDefaultAsync(e => e.AggregateId == aggregateId.Value, ct);
+        int? maxVersion = await _context.Events
+            .Where(e => e.AggregateId == aggregateId.Value)
+            .Select(e => (int?)e.Version)
+            .MaxAsync(ct);
 
-        if (currentVersion?.Version != expectedVersion)
+        if (maxVersion != expectedVersion)
         {
             throw new ConcurrencyException(
-                $"Expected version {expectedVersion} but found {currentVersion}.");
+                $"Expected version {expectedVersion} but found {maxVersion}.");
         }
 
         IEnumerable<Event> newEvents = events.Select(
@@ -42,23 +44,21 @@ public class SQLiteEventStore : IEventStore
         await _context.Events.AddRangeAsync(newEvents);
     }
 
-    public async Task<IReadOnlyCollection<IDomainEvent>> LoadAsync(
+    public async Task<List<IDomainEvent>> LoadAsync(
             AggregateRootId aggregateId,
             CancellationToken ct,
             int fromVersion = 0,
             int? toVersion = null)
     {
-        var dbEvents = _context.Events
+        var dbEvents = await _context.Events
             .AsNoTracking()
             .Where(e => e.AggregateId == aggregateId.Value)
             .OrderBy(e => e.Version)
             .Where(e => e.Version >= fromVersion
-                    && (toVersion == null || e.Version <= toVersion));
+                    && (toVersion == null || e.Version <= toVersion))
+            .ToListAsync(ct);
 
-        return dbEvents
-            .Select(_mapper.ToDomainEvent)
-            .ToList()
-            .AsReadOnly();
+        return dbEvents.ConvertAll(_mapper.ToDomainEvent);
     }
 }
 

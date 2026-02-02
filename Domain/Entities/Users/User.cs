@@ -10,7 +10,7 @@ namespace Domain.Entities.Users;
 
 public sealed class User : AggregateRoot<UserId, UserState>
 {
-    public User(IEnumerable<BaseDomainEvent<UserId>>? history = null)
+    public User(IEnumerable<IDomainEvent>? history = null)
         : base(history) { }
 
 

@@ -50,7 +50,7 @@ public class EventStoreTests
 
         // Assert
         var onDbEventVersions = _context.Events
-            .Where(e => e.AggregateId == aggregateId)
+            .Where(e => e.AggregateId == aggregateId.Value)
             .Select(e => e.Version)
             .ToList();
 
@@ -95,7 +95,7 @@ public class EventStoreTests
 
         // Assert
         var onDbEventVersions = _context.Events
-            .Where(e => e.AggregateId == aggregateId)
+            .Where(e => e.AggregateId == aggregateId.Value)
             .Select(e => e.Version)
             .ToList();
 
