@@ -38,10 +38,10 @@ public class ChecklistState : IState<ChecklistId>
     }
 
     public void Apply(TaskStarted e)
-        => TryGetTask(e.TaskId).StartInternal(e.Timestamp);
+        => TryGetTask(e.TaskId).Start(e.Timestamp);
 
     public void Apply(TaskCompleted e)
-        => TryGetTask(e.TaskId).CompleteInternal(e.Timestamp);
+        => TryGetTask(e.TaskId).Complete(e.Timestamp);
 
     public void Apply(TaskRemovedFromChecklist e)
         => _tasks.Remove(TryGetTask(e.TaskId));

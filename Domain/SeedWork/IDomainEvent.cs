@@ -14,8 +14,7 @@ public interface IDomainEvent : INotification
 }
 
 // <summary>
-// BaseDomainEvent AbstractClass
-// for domain usage
+// Abstract Class for domain usage
 // </summary>
 public abstract record BaseDomainEvent<TAggregateRootId> : IDomainEvent
     where TAggregateRootId : AggregateRootId

@@ -10,35 +10,58 @@ public sealed class Event
 
     public DateTimeOffset CreatedAt { get; private set; }
 
+
+    // ignored on Payload
     [Required]
     public required Guid AggregateId { get; set; }
 
-    [Required]
-    public required string AggregateIdType { get; set; } = string.Empty;
-
+    // ignored on Payload
     [Required]
     public required int Version { get; set; }
 
+    // ignored on Payload
     [Required]
-    public required string EventType { get; set; } = string.Empty;
+    public required DateTimeOffset Timestamp { get; set; }
+
 
     [Required]
-    public required string EventData { get; set; } = string.Empty;
+    public required string AggregateIdType { get; set; }
 
     [Required]
-    public required DateTimeOffset TimeStamp { get; set; }
+    public required string EventType { get; set; }
+
+    [Required]
+    public required string Payload { get; set; }
 
 
-
-    public static Event From(IDomainEvent e, string eventData)
+    public static Event From(IDomainEvent e, string payload)
         => new()
         {
             AggregateId = e.AggregateId.ToGuid(),
             AggregateIdType = e.AggregateId.GetType().Name,
             Version = e.Version,
             EventType = e.GetType().Name,
-            EventData = eventData,
-            TimeStamp = e.Timestamp
+            Payload = payload,
+            Timestamp = e.Timestamp
         };
+
+
+    public static IReadOnlySet<string> IgnoredOnPayloadFields
+        => new HashSet<string>
+        {
+            nameof(IDomainEvent.AggregateId),
+            nameof(IDomainEvent.Version),
+            nameof(IDomainEvent.Timestamp)
+        };
+
+
+    public IEnumerable<(object field, string propName)> GetIgnoredOnPayloadFields()
+    {
+        yield return (AggregateId, nameof(AggregateId));
+        yield return (Version, nameof(Version));
+        yield return (Timestamp, nameof(Timestamp));
+    }
+
+
 }
 

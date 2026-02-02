@@ -3,7 +3,6 @@ using System;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,11 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(EventsContext))]
-    [Migration("20260131224655_initialm")]
-    partial class initialm
+    partial class EventsContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -27,6 +24,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("AggregateId")
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AggregateIdType")
@@ -35,18 +33,20 @@ namespace Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EventData")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("EventType")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("TimeStamp")
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Version")
@@ -54,8 +54,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
+                    b.HasIndex("Version");
 
                     b.HasIndex("AggregateId", "Version", "EventType")
                         .IsUnique();

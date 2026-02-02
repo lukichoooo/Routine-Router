@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initialm : Migration
+    public partial class initala : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,13 +17,13 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    AggregateId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    AggregateIdType = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    AggregateId = table.Column<Guid>(type: "TEXT", maxLength: 200, nullable: false),
                     Version = table.Column<int>(type: "INTEGER", nullable: false),
+                    Timestamp = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    AggregateIdType = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     EventType = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
-                    EventData = table.Column<string>(type: "TEXT", nullable: false),
-                    TimeStamp = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
+                    Payload = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,10 +37,9 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_Id",
+                name: "IX_Events_Version",
                 table: "Events",
-                column: "Id",
-                unique: true);
+                column: "Version");
         }
 
         /// <inheritdoc />

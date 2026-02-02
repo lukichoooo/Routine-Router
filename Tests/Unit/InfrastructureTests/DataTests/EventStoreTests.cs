@@ -7,6 +7,7 @@ using Infrastructure.Persistence.Data.Exceptions;
 using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Persistence.Data.Serializer;
 
 
 namespace InfrastructureTests.DataTests;
@@ -17,7 +18,7 @@ public class EventStoreTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
     private readonly EventsContext _context = TestFactory.GetEventsContext();
-    private readonly IEventSerializer _eventSerializer = TestFactory.GetEventSerializer();
+    private readonly IJsonEventMapper _eventSerializer = TestFactory.GetEventMapper();
 
     [OneTimeTearDown]
     public async Task OneTimeTearDownAsync()
@@ -68,13 +69,13 @@ public class EventStoreTests
                 _context);
 
         var aggregateId = _fix.Create<UserId>();
-        var existingEvent = _fix.Build<UserCreated>()
+        var domainEvent = _fix.Build<UserCreated>()
             .With(e => e.AggregateId, aggregateId)
             .Create();
 
         var dbEvent = Event.From(
-                existingEvent,
-                _eventSerializer.Serialize(existingEvent));
+                domainEvent,
+                _eventSerializer.ToPayload(domainEvent));
 
         await _context.Events.AddAsync(dbEvent);
         await _context.SaveChangesAsync();
@@ -88,7 +89,7 @@ public class EventStoreTests
         await sut.AppendAsync(
                 aggregateId: aggregateId,
                 events: createUserEvents,
-                expectedVersion: existingEvent.Version,
+                expectedVersion: domainEvent.Version,
                 ct: default);
         await _context.SaveChangesAsync();
 
@@ -98,7 +99,7 @@ public class EventStoreTests
             .Select(e => e.Version)
             .ToList();
 
-        List<IDomainEvent> allEvents = [existingEvent, .. createUserEvents];
+        List<IDomainEvent> allEvents = [domainEvent, .. createUserEvents];
 
         Assert.That(onDbEventVersions,
                 Is.EquivalentTo(allEvents.Select(e => e.Version)));
@@ -122,7 +123,7 @@ public class EventStoreTests
         var upToDateVersion = _fix.Create<int>();
         var dbEvent = Event.From(
                 createUserEvents[0],
-                _eventSerializer.Serialize(createUserEvents[0]));
+                _eventSerializer.ToPayload(createUserEvents[0]));
         dbEvent.Version = upToDateVersion;
 
         await _context.AddAsync(dbEvent);
@@ -157,7 +158,7 @@ public class EventStoreTests
 
         var onDbEvent = Event.From(
                 responseEvent,
-                _eventSerializer.Serialize(responseEvent));
+                _eventSerializer.ToPayload(responseEvent));
         await context.AddAsync(onDbEvent);
         await context.SaveChangesAsync();
 
@@ -215,7 +216,7 @@ public class EventStoreTests
 
 
         var onDbEvents = responseEvents.Select(e =>
-                Event.From(e, _eventSerializer.Serialize(e)));
+                Event.From(e, _eventSerializer.ToPayload(e)));
 
         await context.AddRangeAsync(onDbEvents);
         await context.SaveChangesAsync();

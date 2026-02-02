@@ -20,6 +20,10 @@ public sealed class EventConfig : IEntityTypeConfiguration<Event>
                .IsRequired()
                .HasMaxLength(200);
 
+        builder.Property(x => x.AggregateId)
+               .IsRequired()
+               .HasMaxLength(200);
+
         builder.Property(x => x.EventType)
                .IsRequired()
                .HasMaxLength(300);
@@ -34,8 +38,7 @@ public sealed class EventConfig : IEntityTypeConfiguration<Event>
                .IsUnique();
 
         // ---------- ORDERING ----------
-        builder.HasIndex(x => x.Version)
-               .IsUnique();
+        builder.HasIndex(x => x.Version);
     }
 }
 

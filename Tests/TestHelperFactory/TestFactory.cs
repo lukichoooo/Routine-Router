@@ -4,6 +4,7 @@ using Domain.Entities.Schedules.ValueObjects;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
+using Infrastructure.Persistence.Data.Serializer;
 using Microsoft.EntityFrameworkCore;
 
 namespace TestHelperFactory;
@@ -38,13 +39,13 @@ public static class TestFactory
 
 
 
-    public static IEventSerializer GetEventSerializer()
-        => new JsonEventSerializer();
+    public static IJsonEventMapper GetEventMapper()
+        => new JsonEventMapper();
 
     public static ITrackedEntities GetTrackedEntities()
         => new InMemoryTrackedEntities();
 
     public static IEventStore GetEventStore()
-        => new SQLiteEventStore(GetEventSerializer(), GetEventsContext());
+        => new SQLiteEventStore(GetEventMapper(), GetEventsContext());
 }
 

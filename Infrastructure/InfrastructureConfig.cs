@@ -5,9 +5,11 @@ using Application.Interfaces.Events;
 using Application.UseCases.Identity;
 using Application.UseCases.Schedules;
 using Infrastructure.Configs;
+using Infrastructure.EventPublishing;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
+using Infrastructure.Persistence.Data.Serializer;
 using Infrastructure.Repos;
 using Infrastructure.Services.Command;
 using Infrastructure.Services.Identity;
@@ -46,8 +48,9 @@ namespace Infrastructure
             services.AddSingleton<IIdentityProvider, IdentityProvider>();
 
             // // Event Store Infrastructure
-            services.AddSingleton<IEventSerializer, JsonEventSerializer>();
+            services.AddSingleton<IJsonEventMapper, JsonEventMapper>();
             services.AddSingleton<IEventStore, SQLiteEventStore>();
+            services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddSingleton<IUnitOfWork, SQLiteUnitOfWork>();
 
             // entity tracking
@@ -55,6 +58,7 @@ namespace Infrastructure
 
             // repos
             services.AddSingleton<IChecklistRepo, ChecklistRepo>();
+            services.AddSingleton<IUserRepo, UserRepo>();
 
             // Services
             // TODO: create an interface for each llm service 

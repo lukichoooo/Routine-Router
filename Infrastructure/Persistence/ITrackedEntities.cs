@@ -12,14 +12,14 @@ public interface ITrackedEntities
 
     void Clear();
 
-    IReadOnlyCollection<IAggregateRoot> GetCollection();
+    IEnumerable<IAggregateRoot> GetCollection();
 
-    IReadOnlyDictionary<Type, HashSet<object>> GetDictionary();
+    IReadOnlyDictionary<Type, HashSet<IAggregateRoot>> GetDictionary();
 }
 
 public class InMemoryTrackedEntities : ITrackedEntities
 {
-    private readonly ConcurrentDictionary<Type, HashSet<object>> _trackedEntities = [];
+    private readonly ConcurrentDictionary<Type, HashSet<IAggregateRoot>> _trackedEntities = [];
 
     public void Add(IAggregateRoot entity)
     {
@@ -39,11 +39,11 @@ public class InMemoryTrackedEntities : ITrackedEntities
 
     public void Clear() => _trackedEntities.Clear();
 
-    public IReadOnlyCollection<IAggregateRoot> GetCollection()
-        => (IReadOnlyCollection<IAggregateRoot>)
+    public IEnumerable<IAggregateRoot> GetCollection()
+        =>
         _trackedEntities.SelectMany(kv => kv.Value);
 
-    public IReadOnlyDictionary<Type, HashSet<object>> GetDictionary()
+    public IReadOnlyDictionary<Type, HashSet<IAggregateRoot>> GetDictionary()
         => _trackedEntities.AsReadOnly();
 }
 

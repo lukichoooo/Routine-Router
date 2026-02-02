@@ -34,8 +34,8 @@ public class CreateChecklistCommandHandler
         var checklist = new Checklist();
         var checklistId = new ChecklistId(Guid.NewGuid());
 
-        _ = await _userRepo.GetByIdAsync(userId, ct)
-             ?? throw new ApplicationArgumentException($"User not found with Id={userId}");
+        // _ = await _userRepo.GetByIdAsync(userId, ct)
+        //      ?? throw new ApplicationArgumentException($"User not found with Id={userId}");
 
         checklist.Create(checklistId, userId);
 
