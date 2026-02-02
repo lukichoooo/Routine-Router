@@ -1,5 +1,5 @@
-using Application.Common.Seedwork;
 using Application.Interfaces.Command;
+using Application.Seedwork;
 using Application.UseCases.Schedules.Commands.CreateChecklist;
 using OpenAI.Chat;
 

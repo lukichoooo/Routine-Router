@@ -1,6 +1,5 @@
 using AutoFixture;
 using AutoFixture.Kernel;
-using Domain.Entities.Users.Events;
 using Domain.SeedWork;
 using TestHelperFactory;
 using Infrastructure.Persistence.Data;
@@ -15,7 +14,7 @@ public class EventSerializerTests
     private readonly Fixture _fix = TestFactory.GetFixture();
 
     private IEventSerializer EventSerializer =>
-        new EventSerializer();
+        new JsonEventSerializer();
 
     private ILogger GetLogger()
     {
@@ -33,16 +32,16 @@ public class EventSerializerTests
     {
         var logger = GetLogger();
 
-        var assembly = typeof(UserCreated).Assembly;
+        var assembly = typeof(IDomainEvent).Assembly;
         var eventTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface
-                && typeof(BaseDomainEvent<AggregateRootId>).IsAssignableFrom(t));
+                && typeof(IDomainEvent).IsAssignableFrom(t));
 
         var events = eventTypes
             .Select(t => _fix.Create(t, new SpecimenContext(_fix)))
             .ToList();
 
-        foreach (BaseDomainEvent<AggregateRootId> e in events)
+        foreach (IDomainEvent e in events)
         {
             string serialized = EventSerializer.Serialize(e);
             var deserialized = EventSerializer.Deserialize(serialized, e.GetType().Name);

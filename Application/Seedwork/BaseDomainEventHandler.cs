@@ -1,6 +1,6 @@
 using Domain.SeedWork;
 
-namespace Application.Common.Seedwork;
+namespace Application.Seedwork;
 
 /// <summary>
 /// Does Not Save Changes to Database Automatically

@@ -39,10 +39,10 @@ public static class TestFactory
 
 
     public static IEventSerializer GetEventSerializer()
-        => new EventSerializer();
+        => new JsonEventSerializer();
 
     public static ITrackedEntities GetTrackedEntities()
-        => new TrackedEntities();
+        => new InMemoryTrackedEntities();
 
     public static IEventStore GetEventStore()
         => new SQLiteEventStore(GetEventSerializer(), GetEventsContext());

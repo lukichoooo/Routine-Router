@@ -98,7 +98,7 @@ public class EventStoreTests
             .Select(e => e.Version)
             .ToList();
 
-        List<BaseDomainEvent<AggregateRootId>> allEvents = [existingEvent, .. createUserEvents];
+        List<IDomainEvent> allEvents = [existingEvent, .. createUserEvents];
 
         Assert.That(onDbEventVersions,
                 Is.EquivalentTo(allEvents.Select(e => e.Version)));

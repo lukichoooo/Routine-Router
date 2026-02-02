@@ -1,4 +1,4 @@
-using Application.Common.Seedwork;
+using Application.Seedwork;
 using Domain.Entities.Schedules.ValueObjects;
 
 namespace Application.UseCases.Schedules.Commands.CreateChecklist

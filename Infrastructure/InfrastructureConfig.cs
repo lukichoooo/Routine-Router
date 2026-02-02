@@ -30,22 +30,28 @@ namespace Infrastructure
                 .AddJsonFile("infrastructure.json", optional: false, reloadOnChange: true)
                 .Build();
 
+            // settings
+            services.Configure<LLMConfig>(config.GetSection("LLMConfig"));
+            services.Configure<EventStoreConfig>(config.GetSection("EventStoreConfig"));
+
+
+            // Logging
             services.AddLogging();
+
 
             //EF
             services.AddDbContext<EventsContext>(options =>
                 options.UseSqlite(config.GetConnectionString("RoutineContext")));
 
-            // settings
-            services.Configure<LLMConfig>(config.GetSection("LLMConfig"));
-            services.Configure<EventStoreConfig>(config.GetSection("EventStoreConfig"));
-
             services.AddSingleton<IIdentityProvider, IdentityProvider>();
 
             // // Event Store Infrastructure
-            services.AddSingleton<IEventSerializer, EventSerializer>();
+            services.AddSingleton<IEventSerializer, JsonEventSerializer>();
             services.AddSingleton<IEventStore, SQLiteEventStore>();
             services.AddSingleton<IUnitOfWork, SQLiteUnitOfWork>();
+
+            // entity tracking
+            services.AddSingleton<ITrackedEntities, InMemoryTrackedEntities>();
 
             // repos
             services.AddSingleton<IChecklistRepo, ChecklistRepo>();

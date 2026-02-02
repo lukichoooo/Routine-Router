@@ -1,5 +1,6 @@
-using Application.Common.Seedwork;
+using Application.Common.Exceptions;
 using Application.Interfaces.Data;
+using Application.Seedwork;
 using Application.UseCases.Identity;
 using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
@@ -12,15 +13,18 @@ public class CreateChecklistCommandHandler
     : BaseCommandHandler<CreateChecklistCommand, ChecklistId>
 {
     private readonly IIdentityProvider _identity;
-    private readonly IChecklistRepo _repo;
+    private readonly IChecklistRepo _checklistRepo;
+    private readonly IUserRepo _userRepo;
 
     public CreateChecklistCommandHandler(
             IIdentityProvider identity,
-            IChecklistRepo repo,
+            IChecklistRepo checklistRepo,
+            IUserRepo userRepo,
             IUnitOfWork uow) : base(uow)
     {
         _identity = identity;
-        _repo = repo;
+        _checklistRepo = checklistRepo;
+        _userRepo = userRepo;
     }
 
     protected override async Task<ChecklistId> ExecuteAsync(CreateChecklistCommand command, CancellationToken ct)
@@ -30,9 +34,12 @@ public class CreateChecklistCommandHandler
         var checklist = new Checklist();
         var checklistId = new ChecklistId(Guid.NewGuid());
 
+        _ = await _userRepo.GetByIdAsync(userId, ct)
+             ?? throw new ApplicationArgumentException($"User not found with Id={userId}");
+
         checklist.Create(checklistId, userId);
 
-        await _repo.SaveAsync(checklist, ct);
+        await _checklistRepo.SaveAsync(checklist, ct);
 
         return checklistId;
     }

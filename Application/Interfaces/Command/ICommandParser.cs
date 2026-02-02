@@ -1,4 +1,4 @@
-using Application.Common.Seedwork;
+using Application.Seedwork;
 
 namespace Application.Interfaces.Command;
 

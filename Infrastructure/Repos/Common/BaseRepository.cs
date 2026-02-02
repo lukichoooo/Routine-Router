@@ -18,11 +18,6 @@ where TID : AggregateRootId
         _trackedEntities = trackedEntities;
     }
 
-    protected abstract Task SaveAsyncProtected(
-            TA aggregate,
-            CancellationToken ct);
-
-
     public async Task SaveAsync(
             TA aggregate,
             CancellationToken ct)
@@ -31,6 +26,10 @@ where TID : AggregateRootId
         _trackedEntities.Add(aggregate);
     }
 
+
     public abstract Task<TA?> GetByIdAsync(TID aggregateId, CancellationToken ct);
+
+    protected abstract Task SaveAsyncProtected(TA aggregate, CancellationToken ct);
+
 }
 

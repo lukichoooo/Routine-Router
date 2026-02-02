@@ -15,7 +15,8 @@ public class ChecklistRepo : BaseRepository<Checklist, ChecklistId>, IChecklistR
 
     public ChecklistRepo(
             IEventStore eventStore,
-            ITrackedEntities trackedEntities) : base(trackedEntities)
+            ITrackedEntities trackedEntities)
+        : base(trackedEntities)
     {
         _eventStore = eventStore;
     }

@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Application.Common.Seedwork;
+namespace Application.Seedwork;
 
 public interface IQuery<TResult> : IRequest<TResult>;
 

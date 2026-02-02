@@ -1,6 +1,5 @@
 
 using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
 using Domain.SeedWork;
 
 namespace Infrastructure.Persistence;
@@ -8,51 +7,43 @@ namespace Infrastructure.Persistence;
 
 public interface ITrackedEntities
 {
-    void Add<TID>(AggregateRoot<TID> entity) where TID : AggregateRootId;
-    void Remove<TID>(AggregateRoot<TID> entity) where TID : AggregateRootId;
+    void Add(IAggregateRoot entity);
+    void Remove(IAggregateRoot entity);
 
     void Clear();
 
-    ReadOnlyCollection<AggregateRoot<AggregateRootId>> GetCollection();
+    IReadOnlyCollection<IAggregateRoot> GetCollection();
 
-    ReadOnlyCollection<AggregateRoot<TID>> GetCollection<TID>()
-        where TID : AggregateRootId;
-
-    ReadOnlyDictionary<Type, List<object>> GetDictionary();
+    IReadOnlyDictionary<Type, HashSet<object>> GetDictionary();
 }
 
-public class TrackedEntities : ITrackedEntities
+public class InMemoryTrackedEntities : ITrackedEntities
 {
-    private readonly ConcurrentDictionary<Type, List<object>> _trackedEntities = [];
+    private readonly ConcurrentDictionary<Type, HashSet<object>> _trackedEntities = [];
 
-    public void Add<TID>(AggregateRoot<TID> entity) where TID : AggregateRootId
+    public void Add(IAggregateRoot entity)
     {
-        var type = typeof(AggregateRoot<TID>);
+        var type = entity.GetType();
         if (!_trackedEntities.ContainsKey(type))
             _trackedEntities[type] = [];
 
         _trackedEntities[type].Add(entity);
     }
 
-    public void Remove<TID>(AggregateRoot<TID> entity) where TID : AggregateRootId
+    public void Remove(IAggregateRoot entity)
     {
-        var type = typeof(AggregateRoot<TID>);
+        var type = entity.GetType();
         if (_trackedEntities.TryGetValue(type, out var entities))
             entities.Remove(entity);
     }
 
     public void Clear() => _trackedEntities.Clear();
 
-    public ReadOnlyCollection<AggregateRoot<AggregateRootId>> GetCollection()
-        => (ReadOnlyCollection<AggregateRoot<AggregateRootId>>)
+    public IReadOnlyCollection<IAggregateRoot> GetCollection()
+        => (IReadOnlyCollection<IAggregateRoot>)
         _trackedEntities.SelectMany(kv => kv.Value);
 
-    public ReadOnlyCollection<AggregateRoot<TID>> GetCollection<TID>()
-        where TID : AggregateRootId
-        => (ReadOnlyCollection<AggregateRoot<TID>>)
-        _trackedEntities.SelectMany(kv => kv.Value);
-
-    public ReadOnlyDictionary<Type, List<object>> GetDictionary()
+    public IReadOnlyDictionary<Type, HashSet<object>> GetDictionary()
         => _trackedEntities.AsReadOnly();
 }
 

@@ -1,7 +1,7 @@
 using Application.Interfaces.Data;
 using MediatR;
 
-namespace Application.Common.Seedwork;
+namespace Application.Seedwork;
 
 /// <summary>
 /// Saves Changes to Database Automatically

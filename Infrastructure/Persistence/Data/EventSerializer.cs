@@ -13,13 +13,13 @@ public interface IEventSerializer
 }
 
 
-public class EventSerializer : IEventSerializer
+public class JsonEventSerializer : IEventSerializer
 {
     private readonly ConcurrentDictionary<string, Type> _eventTypeMap = new();
     private readonly ConcurrentDictionary<Type, string> _reverseEventTypeMap = new();
     private readonly JsonSerializerOptions _serializerOptions;
 
-    public EventSerializer()
+    public JsonEventSerializer()
     {
         _serializerOptions = CreateSerializerOptions();
         RegisterEventTypes();
@@ -69,7 +69,7 @@ public class EventSerializer : IEventSerializer
                 ?? throw new EventSerializationException(
                     $"Deserialization returned null for event type: {eventType}");
 
-            return (BaseDomainEvent<AggregateRootId>)@event;
+            return (IDomainEvent)@event;
         }
         catch (Exception ex)
         {
@@ -85,11 +85,11 @@ public class EventSerializer : IEventSerializer
     private void RegisterEventTypes()
     {
         // Scan assemblies
-        var assembly = typeof(BaseDomainEvent<AggregateRootId>).Assembly;
+        var assembly = typeof(IDomainEvent).Assembly;
 
         var eventTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface
-                    && typeof(BaseDomainEvent<AggregateRootId>).IsAssignableFrom(t));
+                    && typeof(IDomainEvent).IsAssignableFrom(t));
 
         foreach (var eventType in eventTypes)
         {

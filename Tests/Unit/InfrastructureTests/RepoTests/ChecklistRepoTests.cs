@@ -20,7 +20,7 @@ public class ChecklistRepoTests // TODO:
 
 
     [Test]
-    public async Task SaveAsync_Success()
+    public async Task SaveAsync_Empty()
     {
         // Arrange
         var checklist = new Checklist();
@@ -41,7 +41,32 @@ public class ChecklistRepoTests // TODO:
         var checklistEntities = trackedEntities[typeof(Checklist)];
 
         Assert.That(checklistEntities, Does.Contain(checklist));
-        // Assert.That(res, Is.EqualTo(checklist));
+        Assert.That(res, Is.Empty);
+    }
+
+    [Test]
+    public async Task SaveAsync_Events()
+    {
+        // Arrange
+        var checklist = new Checklist();
+        var checklistId = _fix.Create<ChecklistId>();
+        var userId = _fix.Create<UserId>();
+        checklist.Create(checklistId, userId);
+
+        var sut = new ChecklistRepo(store, _trackedEntities);
+
+        // Act
+        await sut.SaveAsync(checklist, default);
+
+
+        // Assert
+        var res = await store.LoadAsync(checklist.Id, default);
+
+        var trackedEntities = _trackedEntities.GetDictionary();
+        var checklistEntities = trackedEntities[typeof(Checklist)];
+
+        Assert.That(checklistEntities, Does.Contain(checklist));
+        Assert.That(res, Is.Empty);
     }
 
 }

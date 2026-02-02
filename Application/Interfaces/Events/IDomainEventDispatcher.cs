@@ -6,7 +6,7 @@ namespace Application.Interfaces.Events;
 public interface IDomainEventDispatcher
 {
     Task DispatchAsync(
-            BaseDomainEvent<AggregateRootId> domainEvent,
+            IDomainEvent domainEvent,
             CancellationToken ct);
 }
 
