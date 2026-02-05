@@ -5,9 +5,8 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Users;
 
-public class UserState : IState<UserId>
+public class UserState : State<UserId>
 {
-    public UserId Id { get; private set; }
     public Name Name { get; private set; }
     public PasswordHash PasswordHash { get; private set; }
 

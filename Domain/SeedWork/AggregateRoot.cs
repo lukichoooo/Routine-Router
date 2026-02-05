@@ -23,6 +23,8 @@ public abstract class AggregateRoot<TID> : IAggregateRoot
 where TID : AggregateRootId
 {
     public abstract TID Id { get; }
+    public abstract int Version { get; }
+    public int? StoredVersion { get; protected set; } = null;
 
     private readonly List<BaseDomainEvent<TID>> _domainEvents = [];
 
@@ -33,9 +35,6 @@ where TID : AggregateRootId
     protected void RemoveDomainEvent(BaseDomainEvent<TID> eventItem) => _domainEvents.Remove(eventItem);
     public void ClearDomainEvents() => _domainEvents.Clear();
 
-    public int Version { get; protected set; } = 0;
-    public int NextVersion => Version + 1;
-    public int? StoredVersion { get; protected set; } = null;
 }
 
 
@@ -46,10 +45,13 @@ where TID : AggregateRootId
 // </summary>
 public abstract class AggregateRoot<TID, TS> : AggregateRoot<TID>
 where TID : AggregateRootId
-where TS : notnull, IState<TID>, new()
+where TS : notnull, State<TID>, new()
 {
-    public override TID Id => State.Id;
     protected TS State { get; init; }
+
+    public override TID Id => State.Id;
+    public override int Version => State.Version;
+    public int NextVersion => State.Version + 1;
 
     // <summary>
     // history must be in ASC order by Version
@@ -60,8 +62,17 @@ where TS : notnull, IState<TID>, new()
         foreach (var e in history ?? [])
         {
             ((dynamic)State).Apply((dynamic)e); // hack to call Apply override
-            StoredVersion = Version = e.Version;
+            StoredVersion = State.Version = e.Version;
         }
+    }
+
+    // <summary>
+    // history must be in ASC order by Version
+    // </summary>
+    protected AggregateRoot(TS storedState, int version)
+    {
+        State = storedState;
+        StoredVersion = version;
     }
 
     // <summary>
@@ -71,7 +82,7 @@ where TS : notnull, IState<TID>, new()
     {
         AddDomainEvent((BaseDomainEvent<TID>)e);
         ((dynamic)State).Apply((dynamic)e); // hack to call Apply override
-        Version = e.Version;
+        State.Version = e.Version;
     }
 }
 

@@ -6,10 +6,8 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
 
-public class ChecklistState : IState<ChecklistId>
+public class ChecklistState : State<ChecklistId>
 {
-    public ChecklistId Id { get; private set; }
-
     private readonly List<TaskEntity> _tasks = [];
     public IReadOnlyCollection<TaskEntity> Tasks => _tasks;
 

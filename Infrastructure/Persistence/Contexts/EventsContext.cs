@@ -1,4 +1,4 @@
-using System.Reflection;
+using Infrastructure.Persistence.Configs;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,7 @@ public class EventsContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfiguration(new EventConfig());
     }
 }
 

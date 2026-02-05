@@ -13,6 +13,9 @@ public sealed class User : AggregateRoot<UserId, UserState>
     public User(IEnumerable<IDomainEvent>? history = null)
         : base(history) { }
 
+    public User(UserState state, int version)
+        : base(state, version) { }
+
 
     public void Create(UserId id, Name name, PasswordHash passwordHash)
         => AppendEvent(new UserCreated(

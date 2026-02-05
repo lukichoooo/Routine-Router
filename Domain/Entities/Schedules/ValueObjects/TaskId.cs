@@ -16,6 +16,9 @@ public class TaskId : ValueObject
     {
         yield return Value;
     }
+
+
+    private TaskId() { }
 }
 
 

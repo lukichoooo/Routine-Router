@@ -27,6 +27,9 @@ public class Statistics : ValueObject
         yield return UserRating;
         yield return LLMRating;
     }
+
+
+    private Statistics() { }
 }
 
 

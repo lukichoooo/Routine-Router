@@ -51,5 +51,9 @@ public sealed class TaskEntity
 
     public bool IsStarted()
         => ActualSchedule?.StartTime is not null;
+
+#pragma warning disable CS8618 
+    private TaskEntity() { }
+#pragma warning restore CS8618
 }
 

@@ -10,21 +10,21 @@ public sealed class EventConfig : IEntityTypeConfiguration<Event>
     public void Configure(EntityTypeBuilder<Event> builder)
     {
         // ---------- PRIMARY KEY ----------
-        builder.HasKey(x => x.Id);
+        builder.HasKey(e => e.Id);
 
-        builder.Property(x => x.Id)
+        builder.Property(e => e.Id)
                .ValueGeneratedOnAdd();
 
         // ---------- REQUIRED FIELDS ----------
-        builder.Property(x => x.AggregateIdType)
+        builder.Property(e => e.AggregateIdType)
                .IsRequired()
                .HasMaxLength(200);
 
-        builder.Property(x => x.AggregateId)
+        builder.Property(e => e.AggregateId)
                .IsRequired()
                .HasMaxLength(200);
 
-        builder.Property(x => x.EventType)
+        builder.Property(e => e.EventType)
                .IsRequired()
                .HasMaxLength(300);
 
@@ -34,11 +34,11 @@ public sealed class EventConfig : IEntityTypeConfiguration<Event>
 
         // ---------- INDEXES ----------
 
-        builder.HasIndex(x => new { x.AggregateId, x.Version, x.EventType })
+        builder.HasIndex(e => new { e.AggregateId, e.Version, e.EventType })
                .IsUnique();
 
         // ---------- ORDERING ----------
-        builder.HasIndex(x => x.Version);
+        builder.HasIndex(e => e.Version);
     }
 }
 

@@ -13,6 +13,9 @@ public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
     public Checklist(IEnumerable<IDomainEvent>? history = null)
         : base(history) { }
 
+    public Checklist(ChecklistState state, int version)
+        : base(state, version) { }
+
 
     public void Create(ChecklistId id, UserId userId)
         => AppendEvent(new ChecklistCreated(
