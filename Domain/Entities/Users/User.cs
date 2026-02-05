@@ -13,8 +13,8 @@ public sealed class User : AggregateRoot<UserId, UserState>
     public User(IEnumerable<IDomainEvent>? history = null)
         : base(history) { }
 
-    public User(UserState state)
-        : base(state) { }
+    public User(ref UserState state)
+        : base(ref state) { }
 
 
     public void Create(UserId id, Name name, PasswordHash passwordHash)

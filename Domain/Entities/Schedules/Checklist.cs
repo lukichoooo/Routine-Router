@@ -13,8 +13,8 @@ public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
     public Checklist(IEnumerable<IDomainEvent>? history = null)
         : base(history) { }
 
-    public Checklist(ChecklistState state)
-        : base(state) { }
+    public Checklist(ref ChecklistState state)
+        : base(ref state) { }
 
     public UserId UserId => State.UserId;
 

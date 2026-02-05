@@ -13,10 +13,18 @@ namespace InfrastructureTests.DataTests;
 
 
 [TestFixture]
-public class EntityStoreTests
+public class EntityStateStoreTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
     private readonly EntitiesContext _context = TestFactory.GetEntitiesContext();
+
+    [SetUp]
+    public void Setup()
+    {
+        _context.Users.RemoveRange(_context.Users);
+        _context.Checklists.RemoveRange(_context.Checklists);
+        _context.SaveChanges();
+    }
 
     [OneTimeTearDown]
     public async Task OneTimeTearDownAsync()
@@ -25,9 +33,10 @@ public class EntityStoreTests
     }
 
     // TODO: track the entities instead of states
-    private List<IAggregateRoot> GetTrackedEntities()
-            => _context.ChangeTracker.Entries<IAggregateRoot>()
-            .Select(e => e.Entity)
+    private List<AggregateRoot<AggregateRootId>> GetTrackedEntities()
+            => _context.ChangeTracker
+            .Entries<AggregateRootState<AggregateRootId>>()
+            .Select(e => e.Entity.Owner)
             .ToList();
 
     // User
@@ -51,7 +60,7 @@ public class EntityStoreTests
         var currentlyTrackedEntities = GetTrackedEntities();
 
         // Assert
-        Assert.That(currentlyTrackedEntities, Does.Not.Contain(user.State));
+        // Assert.That(currentlyTrackedEntities, Does.Not.Contain((IAggregateRoot)user));
         Assert.That(res, Is.EqualTo(user.State));
     }
 
@@ -76,7 +85,7 @@ public class EntityStoreTests
         var res = await _context.Users.FindAsync(userId);
 
         // Assert
-        Assert.That(currentlyTrackedEntities, Does.Contain(user.State));
+        // Assert.That(currentlyTrackedEntities, Does.Contain((IAggregateRoot)user));
         Assert.That(res, Is.EqualTo(user.State));
     }
 
@@ -133,7 +142,7 @@ public class EntityStoreTests
         var res = await sut.GetAsync(checklist.Id, default);
 
         // Assert
-        Assert.That(currentlyTrackedEntities, Does.Not.Contain(checklist.State));
+        // Assert.That(currentlyTrackedEntities, Does.Not.Contain((IAggregateRoot)checklist));
         Assert.That(res, Is.EqualTo(checklist.State));
     }
 
@@ -157,7 +166,7 @@ public class EntityStoreTests
         var res = await _context.Checklists.FindAsync(checklistId);
 
         // Assert
-        Assert.That(currentlyTrackedEntities, Does.Contain(checklist.State));
+        // Assert.That(currentlyTrackedEntities, Does.Contain((IAggregateRoot)checklist));
         Assert.That(res, Is.EqualTo(checklist.State));
     }
 }

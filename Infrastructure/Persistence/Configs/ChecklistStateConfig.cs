@@ -12,7 +12,12 @@ public class ChecklistStateConfig : IEntityTypeConfiguration<ChecklistState>
 {
     public void Configure(EntityTypeBuilder<ChecklistState> builder)
     {
-        builder.Ignore(s => s.Owner);
+        // keeping the owner tracked by EF
+        builder.Property(s => s.Owner)
+            .HasConversion(
+                    o => o.GetHashCode(),
+                    o => null!
+                    );
 
         // ---------- PRIMARY KEY ----------
 
@@ -31,8 +36,8 @@ public class ChecklistStateConfig : IEntityTypeConfiguration<ChecklistState>
                    v => new UserId(v)
                );
         builder.HasOne<UserState>()
-               .WithOne()
-               .HasForeignKey<ChecklistState>(x => x.UserId)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
                .IsRequired();
 
         builder.HasMany(x => x.Tasks)

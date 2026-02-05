@@ -19,9 +19,20 @@ public class UserRepo : BaseRepository<User, UserId, UserState>, IUserRepo
         _eventStore = eventStore;
     }
 
-    public override Task<User?> GetByIdAsync(UserId aggregateId, CancellationToken ct)
+    public override async Task<User?> GetByIdAsync(UserId aggregateId, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var userState = await _stateStore.GetAsync(aggregateId, ct);
+        if (userState is not null)
+            return new User(ref userState);
+
+        var events = await _eventStore.LoadAsync(aggregateId, ct);
+        if (events.Count == 0)
+            return null;
+
+        var user = new User(events);
+        await _stateStore.AddAsync(user.State, ct);
+
+        return user;
     }
 
     protected override Task SaveEventsAsync(User aggregate, CancellationToken ct)

@@ -24,12 +24,13 @@ where TID : AggregateRootId
 {
     public abstract TID Id { get; }
     public abstract int Version { get; }
-    public int? StoredVersion { get; protected set; } = null;
+    public abstract int? StoredVersion { get; }
 
     private readonly List<BaseDomainEvent<TID>> _domainEvents = [];
 
     public IReadOnlyCollection<BaseDomainEvent<TID>> DomainEvents => _domainEvents.AsReadOnly();
     IReadOnlyCollection<IDomainEvent> IAggregateRoot.DomainEvents => DomainEvents;
+
 
     protected void AddDomainEvent(BaseDomainEvent<TID> eventItem) => _domainEvents.Add(eventItem);
     protected void RemoveDomainEvent(BaseDomainEvent<TID> eventItem) => _domainEvents.Remove(eventItem);
@@ -52,6 +53,7 @@ where TS : notnull, AggregateRootState<TID>, IAggregateRootStateFactory<TS, TID>
     public override TID Id => State.Id;
     public override int Version => State.Version;
     public int NextVersion => State.Version + 1;
+    public override int? StoredVersion { get; }
 
     // <summary>
     // history must be in ASC order by Version
@@ -69,7 +71,7 @@ where TS : notnull, AggregateRootState<TID>, IAggregateRootStateFactory<TS, TID>
     // <summary>
     // history must be in ASC order by Version
     // </summary>
-    protected AggregateRoot(TS storedState)
+    protected AggregateRoot(ref TS storedState)
     {
         State = storedState;
         StoredVersion = State.Version;

@@ -4,6 +4,7 @@ using Domain.Entities.Users;
 using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
@@ -19,6 +20,7 @@ public interface IEntityStateStore<TS, TID>
     Task<TS?> GetAsync(TID aggregateId, CancellationToken ct);
 
     Task AddAsync(TS aggregate, CancellationToken ct);
+    void Update(TS aggregate);
 }
 
 
@@ -32,11 +34,16 @@ public class SQLiteChecklistStateStore : IEntityStateStore<ChecklistState, Check
     }
 
 
-    public async Task<ChecklistState?> GetAsync(ChecklistId aggregateId, CancellationToken ct)
-        => await _context.Checklists.FindAsync(aggregateId, ct);
+    public Task<ChecklistState?> GetAsync(ChecklistId aggregateId, CancellationToken ct)
+        => _context.Checklists
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == aggregateId, ct);
 
     public async Task AddAsync(ChecklistState aggregateState, CancellationToken ct)
         => await _context.Checklists.AddAsync(aggregateState, ct);
+
+    public void Update(ChecklistState aggregate)
+        => _context.Checklists.Update(aggregate);
 }
 
 
@@ -50,10 +57,15 @@ public class SQLiteUserStateStore : IEntityStateStore<UserState, UserId>
     }
 
 
-    public async Task<UserState?> GetAsync(UserId aggregateId, CancellationToken ct)
-        => await _context.Users.FindAsync(aggregateId, ct);
+    public Task<UserState?> GetAsync(UserId aggregateId, CancellationToken ct)
+        => _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == aggregateId, ct);
 
     public async Task AddAsync(UserState aggregateState, CancellationToken ct)
         => await _context.Users.AddAsync(aggregateState, ct);
+
+    public void Update(UserState aggregate)
+        => _context.Users.Update(aggregate);
 }
 

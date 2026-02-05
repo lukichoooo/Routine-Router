@@ -40,6 +40,15 @@ public class TaskEntityConfig : IEntityTypeConfiguration<TaskEntity>
                     nb.Property(n => n.Name).HasColumnName("TaskType_Name");
                     nb.Property(n => n.Category).HasColumnName("TaskType_Category");
                 });
+
+        builder.Property(t => t.ChecklistId)
+            .HasConversion(
+                v => v.Value,
+                v => new ChecklistId(v));
+        builder.HasOne<ChecklistState>()
+            .WithMany()
+            .HasForeignKey(t => t.ChecklistId)
+            .IsRequired();
     }
 }
 

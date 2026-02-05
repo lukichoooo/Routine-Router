@@ -15,8 +15,8 @@ public class ChecklistRepo : BaseRepository<Checklist, ChecklistId, ChecklistSta
 
     public ChecklistRepo(
             IEventStore eventStore,
-            IEntityStateStore<ChecklistState, ChecklistId> entityStore)
-        : base(entityStore)
+            IEntityStateStore<ChecklistState, ChecklistId> stateStore)
+        : base(stateStore)
     {
         _eventStore = eventStore;
     }
@@ -39,13 +39,16 @@ public class ChecklistRepo : BaseRepository<Checklist, ChecklistId, ChecklistSta
     {
         var checklistState = await _stateStore.GetAsync(aggregateId, ct);
         if (checklistState is not null)
-            return new Checklist(checklistState);
+            return new Checklist(ref checklistState);
 
         var events = await _eventStore.LoadAsync(aggregateId, ct);
         if (events.Count == 0)
             return null;
 
-        return new Checklist(events);
+        var checklist = new Checklist(events);
+        await _stateStore.AddAsync(checklist.State, ct);
+
+        return checklist;
     }
 
 }

@@ -187,7 +187,7 @@ namespace DomainTests
         public void State_Create_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
             Assert.That(state, Is.Not.Null);
@@ -200,7 +200,7 @@ namespace DomainTests
         public void State_AddTask_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
             var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
@@ -217,7 +217,7 @@ namespace DomainTests
         public void State_RemoveTask_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
             var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
@@ -239,7 +239,7 @@ namespace DomainTests
         public void State_StartTask_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
             var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
@@ -265,7 +265,7 @@ namespace DomainTests
         public void State_CompleteTask_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
             var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();
@@ -300,7 +300,7 @@ namespace DomainTests
         public void State_SetUserRating_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
 
@@ -321,7 +321,7 @@ namespace DomainTests
         public void State_SetLLMRating_Success()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
 
@@ -342,7 +342,7 @@ namespace DomainTests
         public void State_SetMetadata()
         {
             var evt = _fix.Create<ChecklistCreated>();
-            var state = new ChecklistState();
+            var state = ChecklistState.CreateState(null!);
             state.Apply(evt);
 
             var addTaskToChecklist = _fix.Create<TaskAddedToChecklist>();

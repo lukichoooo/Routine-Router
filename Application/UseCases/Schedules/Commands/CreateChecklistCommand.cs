@@ -5,10 +5,12 @@ using Application.UseCases.Identity;
 using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
 
-namespace Application.UseCases.Schedules.Commands.CreateChecklist;
+namespace Application.UseCases.Schedules.Commands;
 
 
-// TODO: write tests
+public sealed record CreateChecklistCommand : ICommand<ChecklistId>;
+
+
 public class CreateChecklistCommandHandler
     : BaseCommandHandler<CreateChecklistCommand, ChecklistId>
 {
@@ -27,15 +29,17 @@ public class CreateChecklistCommandHandler
         _userRepo = userRepo;
     }
 
-    protected override async Task<ChecklistId> ExecuteAsync(CreateChecklistCommand command, CancellationToken ct)
+    protected override async Task<ChecklistId> ExecuteAsync(
+            CreateChecklistCommand command,
+            CancellationToken ct)
     {
         var userId = _identity.GetCurrentUserId();
 
         var checklist = new Checklist();
         var checklistId = new ChecklistId(Guid.NewGuid());
 
-        _ = await _userRepo.GetByIdAsync(userId, ct)
-             ?? throw new ApplicationArgumentException($"User not found with Id={userId}");
+        if (await _userRepo.GetByIdAsync(userId, ct) is null)
+            throw new ApplicationArgumentException($"User not found with Id={userId}");
 
         checklist.Create(checklistId, userId);
 
@@ -44,4 +48,5 @@ public class CreateChecklistCommandHandler
         return checklistId;
     }
 }
+
 

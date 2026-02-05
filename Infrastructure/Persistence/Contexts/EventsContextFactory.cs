@@ -11,6 +11,9 @@ public class EventsContextFactory : IDesignTimeDbContextFactory<EventsContext>
         var optionsBuilder = new DbContextOptionsBuilder<EventsContext>();
         optionsBuilder.UseSqlite("Data Source=events.db");
 
+
+        optionsBuilder.EnableSensitiveDataLogging();
+
         return new EventsContext(optionsBuilder.Options);
     }
 }

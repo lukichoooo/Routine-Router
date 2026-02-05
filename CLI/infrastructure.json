@@ -6,6 +6,7 @@
     },
     "ConnectionStrings": {
         "RoutineContext": "Data Source=../Infrastructure/events.db",
+        "EntitiesContext": "Data Source=../Infrastructure/entities.db",
         "CreateDatabaseIfNotExists": true
     }
 }

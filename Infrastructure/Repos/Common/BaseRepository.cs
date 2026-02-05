@@ -15,9 +15,9 @@ where TS : AggregateRootState<TID>, IAggregateRootStateFactory<TS, TID>
 {
     protected readonly IEntityStateStore<TS, TID> _stateStore;
 
-    protected BaseRepository(IEntityStateStore<TS, TID> stateStore)
+    protected BaseRepository(IEntityStateStore<TS, TID> entityStore)
     {
-        _stateStore = stateStore;
+        _stateStore = entityStore;
     }
 
     // Save

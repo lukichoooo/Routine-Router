@@ -22,6 +22,9 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Owner")
+                        .HasColumnType("INTEGER");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
 
@@ -30,8 +33,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Checklists");
                 });
@@ -44,12 +46,17 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("ChecklistId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChecklistStateId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Metadata")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChecklistId");
+
+                    b.HasIndex("ChecklistStateId");
 
                     b.ToTable("TaskEntity");
                 });
@@ -58,6 +65,9 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Owner")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Version")
                         .HasColumnType("INTEGER");
@@ -70,8 +80,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Schedules.ChecklistState", b =>
                 {
                     b.HasOne("Domain.Entities.Users.UserState", null)
-                        .WithOne()
-                        .HasForeignKey("Domain.Entities.Schedules.ChecklistState", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -176,10 +186,14 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Schedules.TaskEntity", b =>
                 {
                     b.HasOne("Domain.Entities.Schedules.ChecklistState", null)
-                        .WithMany("Tasks")
+                        .WithMany()
                         .HasForeignKey("ChecklistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.Schedules.ChecklistState", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("ChecklistStateId");
 
                     b.OwnsOne("Domain.Entities.Schedules.ValueObjects.Schedule", "ActualSchedule", b1 =>
                         {

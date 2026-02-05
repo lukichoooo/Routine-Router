@@ -78,7 +78,7 @@ namespace DomainTests
         public void State_Create_Success()
         {
             var evt = _fix.Create<UserCreated>();
-            var state = new UserState();
+            var state = UserState.CreateState(null!);
             state.Apply(evt);
 
             Assert.That(state, Is.Not.Null);
@@ -90,7 +90,7 @@ namespace DomainTests
         public void State_Update_Success()
         {
             var evt = _fix.Create<UserCreated>();
-            var state = new UserState();
+            var state = UserState.CreateState(null!);
             state.Apply(evt);
 
             var newName = _fix.Create<Name>();
@@ -114,7 +114,7 @@ namespace DomainTests
         public void State_Verify()
         {
             var evt = _fix.Create<UserCreated>();
-            var state = new UserState();
+            var state = UserState.CreateState(null!);
             state.Apply(evt);
             var verifyEvent = _fix.Create<UserVerified>();
             state.Apply(verifyEvent);
