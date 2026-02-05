@@ -13,8 +13,10 @@ public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
     public Checklist(IEnumerable<IDomainEvent>? history = null)
         : base(history) { }
 
-    public Checklist(ChecklistState state, int version)
-        : base(state, version) { }
+    public Checklist(ChecklistState state)
+        : base(state) { }
+
+    public UserId UserId => State.UserId;
 
 
     public void Create(ChecklistId id, UserId userId)
@@ -111,4 +113,5 @@ public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
                     rating));
 
 
+    private Checklist() { }
 }

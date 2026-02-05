@@ -4,6 +4,10 @@ using Application.Interfaces.Data;
 using Application.Interfaces.Events;
 using Application.UseCases.Identity;
 using Application.UseCases.Schedules;
+using Domain.Entities.Schedules;
+using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users;
+using Domain.Entities.Users.ValueObjects;
 using Infrastructure.Configs;
 using Infrastructure.EventPublishing;
 using Infrastructure.Persistence;
@@ -54,7 +58,8 @@ namespace Infrastructure
             services.AddSingleton<IUnitOfWork, SQLiteUnitOfWork>();
 
             // entity tracking
-            services.AddSingleton<ITrackedEntities, InMemoryTrackedEntities>();
+            services.AddSingleton<IEntityStateStore<ChecklistState, ChecklistId>, SQLiteChecklistStateStore>();
+            services.AddSingleton<IEntityStateStore<UserState, UserId>, SQLiteUserStateStore>();
 
             // repos
             services.AddSingleton<IChecklistRepo, ChecklistRepo>();

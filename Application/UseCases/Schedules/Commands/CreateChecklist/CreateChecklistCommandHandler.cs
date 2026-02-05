@@ -39,7 +39,7 @@ public class CreateChecklistCommandHandler
 
         checklist.Create(checklistId, userId);
 
-        await _checklistRepo.SaveAsync(checklist, ct);
+        await _checklistRepo.AddAsync(checklist, ct);
 
         return checklistId;
     }

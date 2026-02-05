@@ -6,30 +6,30 @@ namespace Infrastructure.Repos.Common;
 
 // <summary>
 // Base Repository for Infrastructure Repos
+// automatically manages state storage
 // </summary>
-public abstract class BaseRepository<TA, TID> : IRepository<TA, TID>
-where TA : AggregateRoot<TID>
+public abstract class BaseRepository<TA, TID, TS> : IRepository<TA, TID>
+where TA : AggregateRoot<TID, TS>
 where TID : AggregateRootId
+where TS : AggregateRootState<TID>, IAggregateRootStateFactory<TS, TID>
 {
-    protected readonly ITrackedEntities _trackedEntities;
+    protected readonly IEntityStateStore<TS, TID> _stateStore;
 
-    protected BaseRepository(ITrackedEntities trackedEntities)
+    protected BaseRepository(IEntityStateStore<TS, TID> stateStore)
     {
-        _trackedEntities = trackedEntities;
+        _stateStore = stateStore;
     }
 
-    public async Task SaveAsync(
-            TA aggregate,
-            CancellationToken ct)
+    // Save
+    public async Task AddAsync(TA aggregate, CancellationToken ct)
     {
-        await SaveAsyncProtected(aggregate, ct);
-        _trackedEntities.Add(aggregate);
+        await SaveEventsAsync(aggregate, ct);
+        await _stateStore.AddAsync(aggregate.State, ct);
     }
+    protected abstract Task SaveEventsAsync(TA aggregate, CancellationToken ct);
 
-
+    // Query
     public abstract Task<TA?> GetByIdAsync(TID aggregateId, CancellationToken ct);
-
-    protected abstract Task SaveAsyncProtected(TA aggregate, CancellationToken ct);
 
 }
 

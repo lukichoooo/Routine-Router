@@ -45,9 +45,9 @@ where TID : AggregateRootId
 // </summary>
 public abstract class AggregateRoot<TID, TS> : AggregateRoot<TID>
 where TID : AggregateRootId
-where TS : notnull, State<TID>, new()
+where TS : notnull, AggregateRootState<TID>, IAggregateRootStateFactory<TS, TID>
 {
-    protected TS State { get; init; }
+    public TS State { get; private init; }
 
     public override TID Id => State.Id;
     public override int Version => State.Version;
@@ -58,7 +58,7 @@ where TS : notnull, State<TID>, new()
     // </summary>
     protected AggregateRoot(IEnumerable<IDomainEvent>? history)
     {
-        State = new TS();
+        State = TS.CreateState(this);
         foreach (var e in history ?? [])
         {
             ((dynamic)State).Apply((dynamic)e); // hack to call Apply override
@@ -69,11 +69,13 @@ where TS : notnull, State<TID>, new()
     // <summary>
     // history must be in ASC order by Version
     // </summary>
-    protected AggregateRoot(TS storedState, int version)
+    protected AggregateRoot(TS storedState)
     {
         State = storedState;
-        StoredVersion = version;
+        StoredVersion = State.Version;
     }
+
+
 
     // <summary>
     // matches Version field to the appended events verson
@@ -84,5 +86,13 @@ where TS : notnull, State<TID>, new()
         ((dynamic)State).Apply((dynamic)e); // hack to call Apply override
         State.Version = e.Version;
     }
+
+
+#pragma warning disable CS8618 
+    // <summary>
+    // For entity Framework
+    // </summary>
+    protected AggregateRoot() { }
+#pragma warning restore CS8618 
 }
 

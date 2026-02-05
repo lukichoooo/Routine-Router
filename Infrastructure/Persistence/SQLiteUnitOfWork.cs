@@ -1,5 +1,6 @@
 using Application.Interfaces.Data;
 using Application.Interfaces.Events;
+using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
 
 namespace Infrastructure.Persistence;
@@ -7,33 +8,37 @@ namespace Infrastructure.Persistence;
 
 public sealed class SQLiteUnitOfWork : IUnitOfWork
 {
-    private readonly EventsContext _context;
-    private readonly ITrackedEntities _trackedEntities;
+    private readonly EventsContext _eventsContext;
+    private readonly EntitiesContext _entitiesContext;
     private readonly IDomainEventDispatcher _eventDispatcher;
 
     public SQLiteUnitOfWork(
-            EventsContext context,
-            ITrackedEntities trackedEntities,
+            EventsContext eventsContext,
+            EntitiesContext entitiesContext,
             IDomainEventDispatcher domainDispatcher)
     {
-        _context = context;
-        _trackedEntities = trackedEntities;
+        _eventsContext = eventsContext;
+        _entitiesContext = entitiesContext;
         _eventDispatcher = domainDispatcher;
     }
 
-    public async Task CommitAsync(CancellationToken ct = default)
+    public async Task CommitAsync(CancellationToken ct)
     {
-        await _context.SaveChangesAsync(ct);
+        await _eventsContext.SaveChangesAsync(ct);
+        await _entitiesContext.SaveChangesAsync(ct);
 
-        foreach (var entity in _trackedEntities.GetCollection())
+        var entities = _entitiesContext.ChangeTracker
+            .Entries<AggregateRootState<AggregateRootId>>()
+            .Select(e => e.Entity.Owner)
+            .ToList();
+
+        foreach (var entity in entities)
         {
             foreach (var @event in entity.DomainEvents)
-                await _eventDispatcher.DispatchAsync(@event, ct);
+                await _eventDispatcher.DispatchAsync(@event, ct); // TODO: async Dispatch
 
             entity.ClearDomainEvents();
         }
-
-        _trackedEntities.Clear();
     }
 }
 

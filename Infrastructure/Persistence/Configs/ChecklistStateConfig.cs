@@ -12,6 +12,8 @@ public class ChecklistStateConfig : IEntityTypeConfiguration<ChecklistState>
 {
     public void Configure(EntityTypeBuilder<ChecklistState> builder)
     {
+        builder.Ignore(s => s.Owner);
+
         // ---------- PRIMARY KEY ----------
 
         builder.Property(x => x.Id)

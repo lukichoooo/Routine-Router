@@ -6,13 +6,13 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
 
-public class ChecklistState : State<ChecklistId>
+public class ChecklistState : AggregateRootState<ChecklistId>, IAggregateRootStateFactory<ChecklistState, ChecklistId>
 {
     private readonly List<TaskEntity> _tasks = [];
     public IReadOnlyCollection<TaskEntity> Tasks => _tasks;
 
     public UserId UserId { get; private set; }
-    public Statistics Statistics { get; private set; } = null!;
+    public Statistics Statistics { get; private set; }
 
     // ---------- APPLY  ----------
 
@@ -60,8 +60,16 @@ public class ChecklistState : State<ChecklistId>
         _tasks.FirstOrDefault(t => t.Id == id)
         ?? throw new DomainArgumentException($"Task {id} not found");
 
+
+    public static ChecklistState CreateState(AggregateRoot<ChecklistId> owner)
+        => new(owner);
+
+#pragma warning disable CS8618 
+    private ChecklistState(AggregateRoot<ChecklistId> owner) : base(owner) { }
+#pragma warning restore CS8618
+
 #pragma warning disable CS8618
-    public ChecklistState() { }
+    private ChecklistState() { }
 #pragma warning restore CS8618
 }
 

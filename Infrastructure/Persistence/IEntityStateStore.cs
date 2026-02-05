@@ -8,14 +8,17 @@ using Infrastructure.Persistence.Contexts;
 namespace Infrastructure.Persistence;
 
 
+// <summary>
+// does NOT call SaveChanges()
+// only saves most recent version of each entity
+// </summary>
 public interface IEntityStateStore<TS, TID>
-        where TS : State<TID>
+        where TS : AggregateRootState<TID>
         where TID : AggregateRootId
 {
     Task<TS?> GetAsync(TID aggregateId, CancellationToken ct);
 
     Task AddAsync(TS aggregate, CancellationToken ct);
-    void Update(TS aggregate);
 }
 
 
@@ -32,11 +35,8 @@ public class SQLiteChecklistStateStore : IEntityStateStore<ChecklistState, Check
     public async Task<ChecklistState?> GetAsync(ChecklistId aggregateId, CancellationToken ct)
         => await _context.Checklists.FindAsync(aggregateId, ct);
 
-    public async Task AddAsync(ChecklistState aggregate, CancellationToken ct)
-        => await _context.Checklists.AddAsync(aggregate, ct);
-
-    public void Update(ChecklistState aggregate)
-        => _context.Checklists.Update(aggregate);
+    public async Task AddAsync(ChecklistState aggregateState, CancellationToken ct)
+        => await _context.Checklists.AddAsync(aggregateState, ct);
 }
 
 
@@ -51,12 +51,9 @@ public class SQLiteUserStateStore : IEntityStateStore<UserState, UserId>
 
 
     public async Task<UserState?> GetAsync(UserId aggregateId, CancellationToken ct)
-        => await _context.Users.FindAsync(aggregateId.Value, ct);
+        => await _context.Users.FindAsync(aggregateId, ct);
 
-    public async Task AddAsync(UserState aggregate, CancellationToken ct)
-        => await _context.Users.AddAsync(aggregate, ct);
-
-    public void Update(UserState aggregate)
-        => _context.Users.Update(aggregate);
+    public async Task AddAsync(UserState aggregateState, CancellationToken ct)
+        => await _context.Users.AddAsync(aggregateState, ct);
 }
 

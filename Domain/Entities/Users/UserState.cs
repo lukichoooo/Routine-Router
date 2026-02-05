@@ -5,7 +5,7 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Users;
 
-public class UserState : State<UserId>
+public class UserState : AggregateRootState<UserId>, IAggregateRootStateFactory<UserState, UserId>
 {
     public Name Name { get; private set; }
     public PasswordHash PasswordHash { get; private set; }
@@ -27,8 +27,18 @@ public class UserState : State<UserId>
     public void Apply(UserVerified e) { }
 
 
+    public static UserState CreateState(AggregateRoot<UserId> owner)
+    {
+        return new(owner);
+    }
+
+
+#pragma warning disable CS8618 
+    private UserState(AggregateRoot<UserId> owner) : base(owner) { }
+#pragma warning restore CS8618
+
 #pragma warning disable CS8618
-    public UserState() { }
+    private UserState() { }
 #pragma warning restore CS8618
 }
 

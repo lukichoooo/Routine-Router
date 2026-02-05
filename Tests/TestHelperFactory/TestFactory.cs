@@ -1,6 +1,9 @@
 using Application.Interfaces.Events;
 using AutoFixture;
+using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users;
+using Domain.Entities.Users.ValueObjects;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
@@ -32,20 +35,33 @@ public static class TestFactory
     public static EventsContext GetEventsContext()
     {
         var options = new DbContextOptionsBuilder<EventsContext>()
-            .UseInMemoryDatabase("TestDb") // might need change
+            .UseInMemoryDatabase("EventsTestDb") // might need change
             .Options;
-        return new EventsContext(options);
+        return new(options);
     }
 
+
+    public static EntitiesContext GetEntitiesContext()
+    {
+        var options = new DbContextOptionsBuilder<EntitiesContext>()
+            .UseInMemoryDatabase("EntitiesTestDb") // might need change
+            .Options;
+        return new(options);
+    }
 
 
     public static IJsonEventMapper GetEventMapper()
         => new JsonEventMapper();
 
-    public static ITrackedEntities GetTrackedEntities()
-        => new InMemoryTrackedEntities();
-
     public static IEventStore GetEventStore()
         => new SQLiteEventStore(GetEventMapper(), GetEventsContext());
+
+
+    // Entity State Stores
+    public static IEntityStateStore<ChecklistState, ChecklistId> GetChecklistStateStore()
+        => new SQLiteChecklistStateStore(GetEntitiesContext());
+
+    public static IEntityStateStore<UserState, UserId> GetUserStateStore()
+        => new SQLiteUserStateStore(GetEntitiesContext());
 }
 

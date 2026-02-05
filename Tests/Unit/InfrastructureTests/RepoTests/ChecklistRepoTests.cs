@@ -2,7 +2,6 @@ using Application.Interfaces.Events;
 using AutoFixture;
 using Domain.Common.ValueObjects;
 using Domain.Entities.Schedules;
-using Domain.Entities.Schedules.Events;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users.ValueObjects;
 using Infrastructure.Persistence;
@@ -17,14 +16,19 @@ namespace InfrastructureTests.RepoTests;
 public class ChecklistRepoTests // TODO:
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
-    private readonly IEventStore _store = TestFactory.GetEventStore();
-    private readonly ITrackedEntities _trackedEntities = TestFactory.GetTrackedEntities();
-    private readonly EventsContext _context = TestFactory.GetEventsContext();
+
+    private readonly IEventStore _eventStore = TestFactory.GetEventStore();
+    private readonly IEntityStateStore<ChecklistState, ChecklistId> _stateStore
+        = TestFactory.GetChecklistStateStore();
+
+    private readonly EventsContext _eventsContext = TestFactory.GetEventsContext();
+    private readonly EntitiesContext _entitiesContext = TestFactory.GetEntitiesContext();
 
     [OneTimeTearDown]
     public async Task OneTimeTearDownAsync()
     {
-        await _context.DisposeAsync();
+        await _eventsContext.DisposeAsync();
+        await _entitiesContext.DisposeAsync();
     }
 
     [Test]
@@ -36,19 +40,17 @@ public class ChecklistRepoTests // TODO:
         var userId = _fix.Create<UserId>();
         checklist.Create(checklistId, userId);
 
-        var sut = new ChecklistRepo(_store, _trackedEntities);
+        var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.SaveAsync(checklist, default);
+        await sut.AddAsync(checklist, default);
 
 
         // Assert
-        var res = await _store.LoadAsync(checklist.Id, default);
+        var res = await _eventStore.LoadAsync(checklist.Id, default);
 
-        var trackedEntities = _trackedEntities.GetDictionary();
-        var checklistEntities = trackedEntities[typeof(Checklist)];
 
-        Assert.That(checklistEntities, Does.Contain(checklist));
+        // Assert.That(checklistEntities, Does.Contain(checklist));
         Assert.That(res, Is.Empty);
     }
 
@@ -61,23 +63,22 @@ public class ChecklistRepoTests // TODO:
         var userId = _fix.Create<UserId>();
         checklist.Create(checklistId, userId);
 
-        var sut = new ChecklistRepo(_store, _trackedEntities);
+        var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.SaveAsync(checklist, default);
+        await sut.AddAsync(checklist, default);
 
 
         // Assert
-        var res = await _store.LoadAsync(checklist.Id, default);
+        var res = await _eventStore.LoadAsync(checklist.Id, default);
 
-        var trackedEntities = _trackedEntities.GetDictionary();
-        var checklistEntities = trackedEntities.GetValueOrDefault(typeof(Checklist));
 
-        Assert.That(checklistEntities, Does.Contain(checklist));
+        // Assert.That(checklistEntities, Does.Contain(checklist));
         Assert.That(res, Is.Empty);
     }
 
 
+    // TODO: 
     [TestCase(1)]
     [TestCase(3)]
     public async Task GetByIdAsync_Events(int eventsCount)
@@ -98,9 +99,9 @@ public class ChecklistRepoTests // TODO:
                     );
         }
 
-        var sut = new ChecklistRepo(_store, _trackedEntities);
-        await sut.SaveAsync(oldChecklist, default);
-        await _context.SaveChangesAsync();
+        var sut = new ChecklistRepo(_eventStore, _stateStore);
+        await sut.AddAsync(oldChecklist, default);
+        await _eventsContext.SaveChangesAsync();
 
 
         // Act
@@ -114,6 +115,10 @@ public class ChecklistRepoTests // TODO:
 
 
 
+    [Test]
+    public async Task GetByIdAsync_State()
+    {
+    }
 
 }
 

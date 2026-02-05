@@ -10,6 +10,8 @@ public class UserStateConfig : IEntityTypeConfiguration<UserState>
 {
     public void Configure(EntityTypeBuilder<UserState> builder)
     {
+        builder.Ignore(s => s.Owner);
+
         builder.Property(u => u.Id)
                 .HasConversion(
                         v => v.Value,
@@ -17,12 +19,10 @@ public class UserStateConfig : IEntityTypeConfiguration<UserState>
                     );
         builder.HasKey(u => u.Id);
 
-        builder.OwnsOne(
-                x => x.Name,
+        builder.OwnsOne(x => x.Name,
                 nb => nb.Property(n => n.Value).HasColumnName("Name"));
 
-        builder.OwnsOne(
-                x => x.PasswordHash,
+        builder.OwnsOne(x => x.PasswordHash,
                 pb => pb.Property(p => p.Value).HasColumnName("PasswordHash"));
     }
 }

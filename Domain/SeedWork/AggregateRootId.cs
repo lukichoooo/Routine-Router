@@ -26,5 +26,7 @@ public abstract class AggregateRootId : ValueObject
         => obj is AggregateRootId other && Value == other.Value;
 
     public override int GetHashCode() => Value.GetHashCode();
+
+    protected AggregateRootId() { }
 }
 

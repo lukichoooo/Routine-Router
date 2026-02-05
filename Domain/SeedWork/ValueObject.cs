@@ -42,4 +42,10 @@ public abstract class ValueObject
 
     public static bool operator !=(ValueObject left, ValueObject right)
         => NotEqualOperator(left, right);
+
+
+    // <summary>
+    // for entity framework
+    // </summary>
+    protected ValueObject() { }
 }

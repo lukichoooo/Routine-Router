@@ -8,13 +8,13 @@ using Infrastructure.Repos.Common;
 namespace Infrastructure.Repos;
 
 
-public class UserRepo : BaseRepository<User, UserId>, IUserRepo
+public class UserRepo : BaseRepository<User, UserId, UserState>, IUserRepo
 {
     private readonly IEventStore _eventStore;
 
     public UserRepo(
             IEventStore eventStore,
-            ITrackedEntities trackedEntities) : base(trackedEntities)
+            IEntityStateStore<UserState, UserId> entityStore) : base(entityStore)
     {
         _eventStore = eventStore;
     }
@@ -24,9 +24,11 @@ public class UserRepo : BaseRepository<User, UserId>, IUserRepo
         throw new NotImplementedException();
     }
 
-    protected override Task SaveAsyncProtected(User aggregate, CancellationToken ct)
-    {
-        throw new NotImplementedException();
-    }
+    protected override Task SaveEventsAsync(User aggregate, CancellationToken ct)
+        => _eventStore.AppendAsync(
+                aggregate.Id,
+                aggregate.DomainEvents,
+                expectedVersion: aggregate.StoredVersion,
+                ct);
 }
 
