@@ -31,23 +31,24 @@ public sealed class SQLiteUnitOfWork : IUnitOfWork
     public async Task CommitAsync(CancellationToken ct)
     {
         await _eventsContext.SaveChangesAsync(ct);
-        await _entitiesContext.SaveChangesAsync(ct); // TODO: fix exceptions
+        await _entitiesContext.SaveChangesAsync(ct);
         _logger.LogInformation("Commited changes");
 
 
-        var entries = _entitiesContext.ChangeTracker
+        var states = _entitiesContext.ChangeTracker
             .Entries<IAggregateRootState>()
             .Select(e => e.Entity)
             .ToList();
 
 
-        _logger.LogInformation($"Entries count: {entries.Count}");
-        foreach (var entry in entries)
+        _logger.LogInformation($"Entries count: {states.Count}");
+        foreach (var entry in states)
         {
             _logger.LogInformation($"Entry entity type: {entry.GetType().Name}");
             _logger.LogInformation($"Owner is null: {entry.Owner == null}");
         }
-        var entities = entries.ConvertAll(e => e.Owner);
+
+        var entities = states.ConvertAll(e => e.Owner);
         _logger.LogInformation($"Owners count: {entities.Count}");
         _logger.LogInformation($"Non-null owners: {entities.Count(e => e != null)}");
 

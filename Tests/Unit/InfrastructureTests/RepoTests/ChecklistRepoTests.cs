@@ -39,6 +39,7 @@ public class ChecklistRepoTests // TODO:
         var checklistId = _fix.Create<ChecklistId>();
         var userId = _fix.Create<UserId>();
         checklist.Create(checklistId, userId);
+        var domainEvents = checklist.DomainEvents;
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
 
@@ -49,32 +50,33 @@ public class ChecklistRepoTests // TODO:
         // Assert
         var res = await _eventStore.LoadAsync(checklist.Id, default);
 
-
-        // Assert.That(checklistEntities, Does.Contain(checklist));
-        Assert.That(res, Is.Empty);
+        Assert.That(res, Is.EquivalentTo(domainEvents));
     }
+
 
     [Test]
     public async Task SaveAsync_Events()
     {
         // Arrange
-        var checklist = new Checklist();
         var checklistId = _fix.Create<ChecklistId>();
         var userId = _fix.Create<UserId>();
+
+        var checklist = new Checklist();
         checklist.Create(checklistId, userId);
+        var domainEvents = checklist.DomainEvents;
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
         await sut.AddAsync(checklist, default);
+        await _eventsContext.SaveChangesAsync();
 
 
         // Assert
         var res = await _eventStore.LoadAsync(checklist.Id, default);
 
 
-        // Assert.That(checklistEntities, Does.Contain(checklist));
-        Assert.That(res, Is.Empty);
+        Assert.That(res, Is.EquivalentTo(domainEvents));
     }
 
 

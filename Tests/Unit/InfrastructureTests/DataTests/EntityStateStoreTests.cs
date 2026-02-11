@@ -32,10 +32,10 @@ public class EntityStateStoreTests
         await _context.DisposeAsync();
     }
 
-    // TODO: track the entities instead of states
-    private List<AggregateRoot<AggregateRootId>> GetTrackedEntities()
+
+    private List<IAggregateRoot> GetTrackedEntities()
             => _context.ChangeTracker
-            .Entries<AggregateRootState<AggregateRootId>>()
+            .Entries<IAggregateRootState>()
             .Select(e => e.Entity.Owner)
             .ToList();
 
@@ -60,7 +60,7 @@ public class EntityStateStoreTests
         var currentlyTrackedEntities = GetTrackedEntities();
 
         // Assert
-        // Assert.That(currentlyTrackedEntities, Does.Not.Contain((IAggregateRoot)user));
+        Assert.That(currentlyTrackedEntities, Does.Contain(user));
         Assert.That(res, Is.EqualTo(user.State));
     }
 
@@ -85,40 +85,9 @@ public class EntityStateStoreTests
         var res = await _context.Users.FindAsync(userId);
 
         // Assert
-        // Assert.That(currentlyTrackedEntities, Does.Contain((IAggregateRoot)user));
+        Assert.That(currentlyTrackedEntities, Does.Contain(user));
         Assert.That(res, Is.EqualTo(user.State));
     }
-
-
-    // [Test]
-    // public async Task Update_User_Success()
-    // {
-    //     // Arrange
-    //     var user = new User();
-    //     var userId = _fix.Create<UserId>();
-    //     var name = _fix.Create<Name>();
-    //     var passHash = _fix.Create<PasswordHash>();
-    //     user.Create(userId, name, passHash);
-    //     await _context.Users.AddAsync(user.State);
-    //     _context.SaveChanges();
-    //
-    //     var storedState = await _context.Users.FindAsync(userId);
-    //     var updatedUser = new User(storedState!);
-    //     var updatedName = _fix.Create<Name>();
-    //     var updatedPassword = _fix.Create<PasswordHash>();
-    //     updatedUser.Update(updatedName, updatedPassword);
-    //     _context.SaveChanges();
-    //
-    //     // Act
-    //
-    //     var res = await _context.Users.FindAsync(userId);
-    //
-    //     // Assert
-    //     var trackedEntities = GetTrackedEntities();
-    //     Assert.That(trackedEntities, Does.Contain(user));
-    //     Assert.That(res, Is.EqualTo(user.State));
-    // }
-    //
 
 
 
@@ -142,7 +111,7 @@ public class EntityStateStoreTests
         var res = await sut.GetAsync(checklist.Id, default);
 
         // Assert
-        // Assert.That(currentlyTrackedEntities, Does.Not.Contain((IAggregateRoot)checklist));
+        Assert.That(currentlyTrackedEntities, Does.Contain(checklist));
         Assert.That(res, Is.EqualTo(checklist.State));
     }
 
@@ -166,7 +135,7 @@ public class EntityStateStoreTests
         var res = await _context.Checklists.FindAsync(checklistId);
 
         // Assert
-        // Assert.That(currentlyTrackedEntities, Does.Contain((IAggregateRoot)checklist));
+        Assert.That(currentlyTrackedEntities, Does.Contain(checklist));
         Assert.That(res, Is.EqualTo(checklist.State));
     }
 }
