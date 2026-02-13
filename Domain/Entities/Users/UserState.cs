@@ -5,7 +5,7 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Users;
 
-public class UserState : AggregateRootState<UserId>, IAggregateRootStateFactory<UserState, UserId>
+public sealed class UserState : AggregateRootState<UserId>, IAggregateRootStateFactory<UserState, UserId>
 {
     public Name Name { get; private set; }
     public PasswordHash PasswordHash { get; private set; }

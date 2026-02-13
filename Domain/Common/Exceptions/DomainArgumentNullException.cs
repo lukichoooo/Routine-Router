@@ -1,19 +1,19 @@
 using Domain.SeedWork;
 
-namespace Domain.Common.Exceptions
+namespace Domain.Common.Exceptions;
+
+public class DomainArgumentNullException : DomainException
 {
-    public class DomainArgumentNullException : DomainException
+    public DomainArgumentNullException(string message) : base(message)
     {
-        public DomainArgumentNullException(string message) : base(message)
-        {
-        }
+    }
 
-        public DomainArgumentNullException() : base()
-        {
-        }
+    public DomainArgumentNullException() : base()
+    {
+    }
 
-        public DomainArgumentNullException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
+    public DomainArgumentNullException(string? message, Exception? innerException) : base(message, innerException)
+    {
     }
 }
+

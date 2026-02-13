@@ -1,11 +1,11 @@
-namespace Domain.Entities.Schedules.Enums
+namespace Domain.Entities.Schedules.Enums;
+
+public enum TaskCategory
 {
-    public enum TaskCategory
-    {
-        Core,
-        Admin,
-        Growth,
-        Health,
-        Life
-    }
+    Core,
+    Admin,
+    Growth,
+    Health,
+    Life
 }
+

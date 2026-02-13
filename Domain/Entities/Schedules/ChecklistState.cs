@@ -6,7 +6,7 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
 
-public class ChecklistState : AggregateRootState<ChecklistId>, IAggregateRootStateFactory<ChecklistState, ChecklistId>
+public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregateRootStateFactory<ChecklistState, ChecklistId>
 {
     private readonly List<TaskEntity> _tasks = [];
     public IReadOnlyCollection<TaskEntity> Tasks => _tasks;
