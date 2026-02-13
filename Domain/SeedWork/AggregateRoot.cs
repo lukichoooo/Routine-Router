@@ -53,7 +53,7 @@ where TS : notnull, AggregateRootState<TID>, IAggregateRootStateFactory<TS, TID>
     public override TID Id => State.Id;
     public override int Version => State.Version;
     public int NextVersion => State.Version + 1;
-    public override int? StoredVersion { get; } = null;
+    public override int? StoredVersion { get; }
 
     // <summary>
     // history must be in ASC order by Version

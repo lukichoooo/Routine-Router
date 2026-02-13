@@ -39,7 +39,7 @@ public class SQLiteEventStore : IEventStore
         if (maxVersion != expectedVersion)
         {
             throw new ConcurrencyException(
-                $"Expected version {expectedVersion} but found {maxVersion}.");
+                $"Expected version: {(dynamic?)expectedVersion ?? "null"} but found: {maxVersion}.");
         }
 
         IEnumerable<Event> newEvents = events.Select(
