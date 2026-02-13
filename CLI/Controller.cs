@@ -4,7 +4,12 @@ using MediatR;
 namespace CLI;
 
 
-public class ConsoleController
+public interface IController
+{
+    public void Handle(string input);
+}
+
+public class ConsoleController : IController
 {
     private readonly ICommandParser _parser;
     private readonly ISender _sender;

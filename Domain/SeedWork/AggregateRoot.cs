@@ -6,7 +6,7 @@ namespace Domain.SeedWork;
 // </summary>
 public interface IAggregateRoot
 {
-    public IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
+    public IReadOnlyList<IDomainEvent> DomainEvents { get; }
 
     public void ClearDomainEvents();
 
@@ -28,8 +28,8 @@ where TID : AggregateRootId
 
     private readonly List<BaseDomainEvent<TID>> _domainEvents = [];
 
-    public IReadOnlyCollection<BaseDomainEvent<TID>> DomainEvents => _domainEvents.AsReadOnly();
-    IReadOnlyCollection<IDomainEvent> IAggregateRoot.DomainEvents => DomainEvents;
+    public IReadOnlyList<BaseDomainEvent<TID>> DomainEvents => _domainEvents.AsReadOnly();
+    IReadOnlyList<IDomainEvent> IAggregateRoot.DomainEvents => DomainEvents;
 
 
     protected void AddDomainEvent(BaseDomainEvent<TID> eventItem) => _domainEvents.Add(eventItem);

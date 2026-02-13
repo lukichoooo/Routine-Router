@@ -9,7 +9,7 @@ namespace Domain.Entities.Schedules;
 public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregateRootStateFactory<ChecklistState, ChecklistId>
 {
     private readonly List<TaskEntity> _tasks = [];
-    public IReadOnlyCollection<TaskEntity> Tasks => _tasks;
+    public IReadOnlyList<TaskEntity> Tasks => _tasks;
 
     public UserId UserId { get; private set; }
     public Statistics Statistics { get; private set; }

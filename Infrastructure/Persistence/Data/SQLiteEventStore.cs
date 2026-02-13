@@ -27,7 +27,7 @@ public class SQLiteEventStore : IEventStore
     // </summary>
     public async Task AppendAsync(
             AggregateRootId aggregateId,
-            IReadOnlyCollection<IDomainEvent> events,
+            IReadOnlyList<IDomainEvent> events,
             int? expectedVersion,
             CancellationToken ct)
     {

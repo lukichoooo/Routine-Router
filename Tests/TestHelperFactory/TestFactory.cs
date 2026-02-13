@@ -29,6 +29,8 @@ public static class TestFactory
                 (byte)rnd.Next(0, 100),
                 (byte)rnd.Next(0, 100)));
 
+        fix.Register<Guid>(Guid.NewGuid);
+
         return fix;
     }
 

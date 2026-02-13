@@ -2,7 +2,6 @@ using Application.Interfaces.Events;
 using AutoFixture;
 using TestHelperFactory;
 using Infrastructure.Persistence.Data;
-using Domain.Entities.Users.Events;
 using Infrastructure.Persistence.Data.Exceptions;
 using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
@@ -73,13 +72,6 @@ public class EventStoreTests
         user.Create(aggregateId, _fix.Create<Name>(), _fix.Create<PasswordHash>());
         var domainEvents = user.DomainEvents;
 
-        var dbEvent = Event.From(
-                domainEvents.First(),
-                _eventSerializer.ToPayload(domainEvents.First()));
-
-        await _context.Events.AddAsync(dbEvent);
-        await _context.SaveChangesAsync();
-
         var userHistory = await sut.LoadAsync(
                 aggregateId: aggregateId,
                 ct: default
@@ -94,7 +86,6 @@ public class EventStoreTests
                 events: newEvents,
                 expectedVersion: dbUser.StoredVersion,
                 ct: default);
-        await _context.SaveChangesAsync();
 
         // Assert
         var onDbEvents = _context.Events

@@ -2,9 +2,9 @@ namespace CLI;
 
 public class App
 {
-    private readonly ConsoleController _controller;
+    private readonly IController _controller;
 
-    public App(ConsoleController controller)
+    public App(IController controller)
         => _controller = controller;
 
     public void Run()

@@ -6,7 +6,7 @@ public interface IEventStore
 {
     Task AppendAsync(
         AggregateRootId aggregateId,
-        IReadOnlyCollection<IDomainEvent> events,
+        IReadOnlyList<IDomainEvent> events,
         int? expectedVersion,
         CancellationToken ct);
 
