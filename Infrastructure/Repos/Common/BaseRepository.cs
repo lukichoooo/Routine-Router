@@ -26,7 +26,7 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
                 expectedVersion: aggregate.StoredVersion,
                 ct);
 
-        await stateStore.AddAsync(aggregate.State, ct);
+        await stateStore.Add(aggregate.State, ct);
     }
 
     // Query
@@ -36,12 +36,12 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
         if (state is not null)
             return TEntity.Create(ref state);
 
-        var events = await eventStore.LoadAsync(aggregateId, ct);
+        var events = await eventStore.Load(aggregateId, ct);
         if (events.Count == 0)
             return null;
 
         var entity = TEntity.Create(events);
-        await stateStore.AddAsync(entity.State, ct);
+        await stateStore.Add(entity.State, ct);
 
         return entity;
     }

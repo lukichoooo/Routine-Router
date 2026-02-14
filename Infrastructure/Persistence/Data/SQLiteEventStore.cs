@@ -48,7 +48,7 @@ public class SQLiteEventStore : IEventStore
         await _context.Events.AddRangeAsync(newEvents);
     }
 
-    public async Task<List<IDomainEvent>> LoadAsync(
+    public async Task<List<IDomainEvent>> Load(
             AggregateRootId aggregateId,
             CancellationToken ct,
             int fromVersion = 0,

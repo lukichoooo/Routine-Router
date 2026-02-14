@@ -15,7 +15,7 @@ public interface IEntityStateStore<TState, TId>
 {
     Task<TState?> GetAsync(TId aggregateId, CancellationToken ct);
 
-    Task AddAsync(TState aggregateState, CancellationToken ct);
+    Task Add(TState aggregateState, CancellationToken ct);
 }
 
 
@@ -30,7 +30,7 @@ where TState : AggregateRootState<TId>
         .Set<TState>()
         .FindAsync([aggregateId], ct);
 
-    public async Task AddAsync(TState aggregateState, CancellationToken ct)
+    public async Task Add(TState aggregateState, CancellationToken ct)
         => await _context.AddAsync(aggregateState, ct);
 }
 

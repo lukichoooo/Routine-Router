@@ -10,7 +10,7 @@ public interface IEventStore
         int? expectedVersion,
         CancellationToken ct);
 
-    Task<List<IDomainEvent>> LoadAsync(
+    Task<List<IDomainEvent>> Load(
         AggregateRootId aggregateId,
         CancellationToken ct,
         int fromVersion = 0,

@@ -48,7 +48,7 @@ public class ChecklistRepoTests // TODO:
 
 
         // Assert
-        var res = await _eventStore.LoadAsync(checklist.Id, default);
+        var res = await _eventStore.Load(checklist.Id, default);
 
         Assert.That(res, Is.EquivalentTo(domainEvents));
     }
@@ -73,7 +73,7 @@ public class ChecklistRepoTests // TODO:
 
 
         // Assert
-        var res = await _eventStore.LoadAsync(checklist.Id, default);
+        var res = await _eventStore.Load(checklist.Id, default);
 
 
         Assert.That(res, Is.EquivalentTo(domainEvents));

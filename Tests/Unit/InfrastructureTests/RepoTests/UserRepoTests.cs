@@ -1,6 +1,7 @@
-namespace InfrastructureTests.RepoTests
+namespace InfrastructureTests.RepoTests;
+
+[TestFixture]
+public class UserRepoTests
 {
-    public class UserRepoTests
-    {
-    }
 }
+

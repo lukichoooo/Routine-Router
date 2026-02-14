@@ -79,7 +79,7 @@ public class EventStoreTests
 
 
         // Arrange
-        var userHistory = await sut.LoadAsync(aggregateId, ct: default);
+        var userHistory = await sut.Load(aggregateId, ct: default);
         var dbUser = new User(userHistory);
         dbUser.Update(_fix.Create<Name>(), _fix.Create<PasswordHash>());
 
@@ -125,7 +125,7 @@ public class EventStoreTests
         await _eventContext.Events.AddAsync(dbEvent);
         await _eventContext.SaveChangesAsync();
 
-        var userHistory = await sut.LoadAsync(
+        var userHistory = await sut.Load(
                 aggregateId: aggregateId,
                 ct: default
         );
