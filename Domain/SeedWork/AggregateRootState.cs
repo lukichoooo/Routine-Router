@@ -8,10 +8,12 @@ public interface IAggregateRootStateFactory<TState, TID>
     static abstract TState CreateState(AggregateRoot<TID> owner);
 }
 
+
 public interface IAggregateRootState
 {
     public IAggregateRoot Owner { get; }
 }
+
 
 public abstract class AggregateRootState<TID> : IAggregateRootState
 where TID : AggregateRootId
@@ -22,7 +24,6 @@ where TID : AggregateRootId
     public int Version { get; set; } = 0;
 
     IAggregateRoot IAggregateRootState.Owner => Owner;
-
 
 
 #pragma warning disable CS8618

@@ -61,9 +61,9 @@ public static class TestFactory
 
     // Entity State Stores
     public static IEntityStateStore<ChecklistState, ChecklistId> GetChecklistStateStore()
-        => new SQLiteChecklistStateStore(GetEntitiesContext());
+        => new SQLiteStateStore<ChecklistState, ChecklistId>(GetEntitiesContext());
 
     public static IEntityStateStore<UserState, UserId> GetUserStateStore()
-        => new SQLiteUserStateStore(GetEntitiesContext());
+        => new SQLiteStateStore<UserState, UserId>(GetEntitiesContext());
 }
 

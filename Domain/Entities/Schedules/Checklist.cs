@@ -8,13 +8,15 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules;
 
-public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
+public sealed class Checklist :
+    AggregateRoot<ChecklistId, ChecklistState>,
+    IEntityFactory<Checklist, ChecklistId, ChecklistState>
 {
-    public Checklist(IEnumerable<IDomainEvent>? history = null)
-        : base(history) { }
+    public Checklist(IEnumerable<IDomainEvent>? history = null) : base(history) { }
+    public Checklist(ref ChecklistState state) : base(ref state) { }
+    public static Checklist Create(IEnumerable<IDomainEvent>? history) => new(history);
+    public static Checklist Create(ref ChecklistState storedState) => new(ref storedState);
 
-    public Checklist(ref ChecklistState state)
-        : base(ref state) { }
 
     public UserId UserId => State.UserId;
 
@@ -111,7 +113,6 @@ public sealed class Checklist : AggregateRoot<ChecklistId, ChecklistState>
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     rating));
-
 
     private Checklist() { }
 }

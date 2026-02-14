@@ -60,8 +60,7 @@ namespace Infrastructure
             services.AddSingleton<IUnitOfWork, SQLiteUnitOfWork>();
 
             // entity tracking
-            services.AddSingleton<IEntityStateStore<ChecklistState, ChecklistId>, SQLiteChecklistStateStore>();
-            services.AddSingleton<IEntityStateStore<UserState, UserId>, SQLiteUserStateStore>();
+            services.AddSingleton(typeof(IEntityStateStore<,>), typeof(SQLiteStateStore<,>));
 
             // repos
             services.AddSingleton<IChecklistRepo, ChecklistRepo>();

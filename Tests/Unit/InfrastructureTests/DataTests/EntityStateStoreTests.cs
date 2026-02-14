@@ -53,7 +53,7 @@ public class EntityStateStoreTests
         await _context.Users.AddAsync(user.State);
         _context.SaveChanges();
 
-        var sut = new SQLiteUserStateStore(_context);
+        var sut = new SQLiteStateStore<UserState, UserId>(_context);
 
         // Act
         var res = await sut.GetAsync(user.Id, default);
@@ -74,7 +74,7 @@ public class EntityStateStoreTests
         var passHash = _fix.Create<PasswordHash>();
         user.Create(userId, name, passHash);
 
-        var sut = new SQLiteUserStateStore(_context);
+        var sut = new SQLiteStateStore<UserState, UserId>(_context);
 
         // Act
         await sut.AddAsync(user.State, default);
@@ -104,7 +104,7 @@ public class EntityStateStoreTests
         await _context.Checklists.AddAsync(checklist.State);
         _context.SaveChanges();
 
-        var sut = new SQLiteChecklistStateStore(_context);
+        var sut = new SQLiteStateStore<ChecklistState, ChecklistId>(_context);
         var currentlyTrackedEntities = GetTrackedEntities();
 
         // Act
@@ -125,7 +125,7 @@ public class EntityStateStoreTests
         var userId = _fix.Create<UserId>();
         checklist.Create(checklistId, userId);
 
-        var sut = new SQLiteChecklistStateStore(_context);
+        var sut = new SQLiteStateStore<ChecklistState, ChecklistId>(_context);
 
         // Act
         await sut.AddAsync(checklist.State, default);

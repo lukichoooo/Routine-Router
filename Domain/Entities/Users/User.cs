@@ -8,13 +8,14 @@ using Domain.SeedWork;
 
 namespace Domain.Entities.Users;
 
-public sealed class User : AggregateRoot<UserId, UserState>
+public sealed class User :
+    AggregateRoot<UserId, UserState>,
+    IEntityFactory<User, UserId, UserState>
 {
-    public User(IEnumerable<IDomainEvent>? history = null)
-        : base(history) { }
-
-    public User(ref UserState state)
-        : base(ref state) { }
+    public User(IEnumerable<IDomainEvent>? history = null) : base(history) { }
+    public User(ref UserState state) : base(ref state) { }
+    public static User Create(ref UserState storedState) => new(ref storedState);
+    public static User Create(IEnumerable<IDomainEvent>? history) => new(history);
 
 
     public void Create(UserId id, Name name, PasswordHash passwordHash)
@@ -51,7 +52,6 @@ public sealed class User : AggregateRoot<UserId, UserState>
                     Timestamp: Clock.Now
                     ));
     }
-
 
     private User() { }
 }

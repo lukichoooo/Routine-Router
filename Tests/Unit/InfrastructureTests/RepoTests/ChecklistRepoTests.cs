@@ -32,7 +32,7 @@ public class ChecklistRepoTests // TODO:
     }
 
     [Test]
-    public async Task SaveAsync_Empty()
+    public async Task AddAsync_Empty()
     {
         // Arrange
         var checklist = new Checklist();
@@ -55,7 +55,7 @@ public class ChecklistRepoTests // TODO:
 
 
     [Test]
-    public async Task SaveAsync_Events()
+    public async Task AddAsync_Events()
     {
         // Arrange
         var checklistId = _fix.Create<ChecklistId>();
