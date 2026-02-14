@@ -7,23 +7,16 @@ namespace Application.Seedwork;
 /// Saves Changes to Database Automatically
 /// (Returns result)
 /// </summary>
-public abstract class BaseCommandHandler<TCmd, TRes>
+public abstract class BaseCommandHandler<TCmd, TRes>(IUnitOfWork uow)
 : IRequestHandler<TCmd, TRes>
 where TCmd : ICommand<TRes>
 {
-    private readonly IUnitOfWork _uow;
-
-    protected BaseCommandHandler(IUnitOfWork uow)
-    {
-        _uow = uow;
-    }
-
     public async Task<TRes> Handle(
             TCmd command,
             CancellationToken ct)
     {
         var result = await ExecuteAsync(command, ct);
-        await _uow.CommitAsync(ct);
+        await uow.Commit(ct);
         return result;
     }
 

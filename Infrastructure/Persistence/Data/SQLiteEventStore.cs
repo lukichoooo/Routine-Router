@@ -25,16 +25,19 @@ public class SQLiteEventStore : IEventStore
     // Appends events to the event store.
     // expected version shold be null if this is the first event for the aggregate
     // </summary>
-    public async Task AppendAsync(
+    public async Task Append(
             AggregateRootId aggregateId,
             IReadOnlyList<IDomainEvent> events,
             int? expectedVersion,
             CancellationToken ct)
     {
-        int? maxVersion = await _context.Events
+        var onDbEventVersions = _context.Events
             .Where(e => e.AggregateId == aggregateId.Value)
-            .Select(e => e.Version)
-            .MaxAsync(ct);
+            .Select(e => e.Version);
+
+        int? maxVersion = !await onDbEventVersions.AnyAsync(ct)
+            ? null
+            : await onDbEventVersions.MaxAsync(ct);
 
         if (maxVersion != expectedVersion)
         {

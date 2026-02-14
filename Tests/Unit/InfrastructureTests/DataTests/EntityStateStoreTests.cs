@@ -42,7 +42,7 @@ public class EntityStateStoreTests
     // User
 
     [Test]
-    public async Task GetAsync_User_Success()
+    public async Task Get_User_Success()
     {
         // Arrange
         var user = new User();
@@ -56,7 +56,7 @@ public class EntityStateStoreTests
         var sut = new SQLiteStateStore<UserState, UserId>(_context);
 
         // Act
-        var res = await sut.GetAsync(user.Id, default);
+        var res = await sut.Get(user.Id, default);
         var currentlyTrackedEntities = GetTrackedEntities();
 
         // Assert
@@ -65,7 +65,7 @@ public class EntityStateStoreTests
     }
 
     [Test]
-    public async Task AddAsync_User_Success()
+    public async Task Add_User_Success()
     {
         // Arrange
         var user = new User();
@@ -94,7 +94,7 @@ public class EntityStateStoreTests
     // Checklist
 
     [Test]
-    public async Task GetAsync_Checklist_Success()
+    public async Task Get_Checklist_Success()
     {
         // Arrange
         var checklist = new Checklist();
@@ -108,7 +108,7 @@ public class EntityStateStoreTests
         var currentlyTrackedEntities = GetTrackedEntities();
 
         // Act
-        var res = await sut.GetAsync(checklist.Id, default);
+        var res = await sut.Get(checklist.Id, default);
 
         // Assert
         Assert.That(currentlyTrackedEntities, Does.Contain(checklist));
@@ -117,7 +117,7 @@ public class EntityStateStoreTests
 
 
     [Test]
-    public async Task AddAsync_Checklist_Success()
+    public async Task Add_Checklist_Success()
     {
         // Arrange
         var checklist = new Checklist();

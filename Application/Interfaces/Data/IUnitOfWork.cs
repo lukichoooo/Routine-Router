@@ -2,5 +2,5 @@ namespace Application.Interfaces.Data;
 
 public interface IUnitOfWork
 {
-    Task CommitAsync(CancellationToken ct = default);
+    Task Commit(CancellationToken ct = default);
 }

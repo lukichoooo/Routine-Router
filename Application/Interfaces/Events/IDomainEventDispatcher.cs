@@ -5,7 +5,7 @@ namespace Application.Interfaces.Events;
 
 public interface IDomainEventDispatcher
 {
-    Task DispatchAsync(
+    Task Dispatch(
             IDomainEvent domainEvent,
             CancellationToken ct);
 }

@@ -40,7 +40,7 @@ public class EventStoreTests
         var userEvents = user.DomainEvents;
 
         // Act
-        await sut.AppendAsync(
+        await sut.Append(
                 aggregateId: user.Id,
                 events: user.DomainEvents,
                 expectedVersion: null,
@@ -60,7 +60,7 @@ public class EventStoreTests
 
 
     [Test]
-    public async Task AppendAsyncTest_WithExpectedVersion()
+    public async Task AppendTest_WithExpectedVersion()
     {
         // Arrange
         var sut = new SQLiteEventStore(_eventSerializer, _eventContext);
@@ -70,7 +70,7 @@ public class EventStoreTests
         ogUser.Create(aggregateId, _fix.Create<Name>(), _fix.Create<PasswordHash>());
 
         // Act
-        await sut.AppendAsync(
+        await sut.Append(
                 aggregateId: aggregateId,
                 events: ogUser.DomainEvents,
                 expectedVersion: ogUser.StoredVersion,
@@ -84,7 +84,7 @@ public class EventStoreTests
         dbUser.Update(_fix.Create<Name>(), _fix.Create<PasswordHash>());
 
         // Act
-        await sut.AppendAsync(
+        await sut.Append(
                 aggregateId: aggregateId,
                 events: dbUser.DomainEvents,
                 expectedVersion: dbUser.StoredVersion,
@@ -139,7 +139,7 @@ public class EventStoreTests
         var wrongVersion = 100;
 
         Assert.ThrowsAsync<ConcurrencyException>(async () =>
-                await sut.AppendAsync(
+                await sut.Append(
                     aggregateId: aggregateId,
                     events: newEvents,
                     expectedVersion: wrongVersion,

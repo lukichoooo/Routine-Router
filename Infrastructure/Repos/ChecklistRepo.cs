@@ -13,7 +13,7 @@ public class ChecklistRepo
 (IEventStore eventStore, IEntityStateStore<ChecklistState, ChecklistId> stateStore)
     : BaseRepository<Checklist, ChecklistId, ChecklistState>(stateStore, eventStore), IChecklistRepo
 {
-    public Task<Checklist?> GetForDayAsync(UserId userId, DateOnly date, CancellationToken ct)
+    public Task<Checklist?> GetForDay(UserId userId, DateOnly date, CancellationToken ct)
     {
         throw new NotImplementedException();
     }

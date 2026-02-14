@@ -107,7 +107,7 @@ public class ChecklistRepoTests // TODO:
 
 
         // Act
-        var checklist = await sut.GetByIdAsync(checklistId, default);
+        var checklist = await sut.GetById(checklistId, default);
 
         // Assert
 

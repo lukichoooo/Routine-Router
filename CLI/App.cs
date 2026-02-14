@@ -1,12 +1,7 @@
 namespace CLI;
 
-public class App
+public class App(IController controller)
 {
-    private readonly IController _controller;
-
-    public App(IController controller)
-        => _controller = controller;
-
     public void Run()
     {
         Console.WriteLine("Welcome to Routine-Router!");
@@ -21,7 +16,7 @@ public class App
                 return;
 
 
-            _controller.Handle(input);
+            controller.Handle(input);
         }
     }
 }

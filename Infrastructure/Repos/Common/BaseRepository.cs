@@ -20,7 +20,7 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
     // Save
     public async Task AddAsync(TEntity aggregate, CancellationToken ct)
     {
-        await eventStore.AppendAsync(
+        await eventStore.Append(
                 aggregate.Id,
                 aggregate.DomainEvents,
                 expectedVersion: aggregate.StoredVersion,
@@ -30,9 +30,9 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
     }
 
     // Query
-    public async Task<TEntity?> GetByIdAsync(TId aggregateId, CancellationToken ct)
+    public async Task<TEntity?> GetById(TId aggregateId, CancellationToken ct)
     {
-        var state = await stateStore.GetAsync(aggregateId, ct);
+        var state = await stateStore.Get(aggregateId, ct);
         if (state is not null)
             return TEntity.Create(ref state);
 

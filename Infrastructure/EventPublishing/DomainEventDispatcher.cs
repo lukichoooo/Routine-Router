@@ -5,18 +5,11 @@ using MediatR;
 namespace Infrastructure.EventPublishing;
 
 
-public class DomainEventDispatcher : IDomainEventDispatcher
+public class DomainEventDispatcher(IPublisher publisher) : IDomainEventDispatcher
 {
-    private readonly IPublisher _publisher;
-
-    public DomainEventDispatcher(IPublisher publisher)
+    public Task Dispatch(IDomainEvent domainEvent, CancellationToken ct)
     {
-        _publisher = publisher;
-    }
-
-    public Task DispatchAsync(IDomainEvent domainEvent, CancellationToken ct)
-    {
-        return _publisher.Publish(domainEvent, ct);
+        return publisher.Publish(domainEvent, ct);
     }
 }
 

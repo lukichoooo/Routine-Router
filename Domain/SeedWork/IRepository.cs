@@ -10,5 +10,5 @@ public interface IRepository<TA, TID>
 {
     Task AddAsync(TA aggregate, CancellationToken ct);
 
-    Task<TA?> GetByIdAsync(TID aggregateId, CancellationToken ct);
+    Task<TA?> GetById(TID aggregateId, CancellationToken ct);
 }

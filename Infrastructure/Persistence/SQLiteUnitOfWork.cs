@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using Application.Interfaces.Data;
 using Application.Interfaces.Events;
-using Domain.Entities.Users;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.Extensions.Logging;
@@ -9,56 +7,43 @@ using Microsoft.Extensions.Logging;
 namespace Infrastructure.Persistence;
 
 
-public sealed class SQLiteUnitOfWork : IUnitOfWork
+public sealed class SQLiteUnitOfWork(
+        ILogger<SQLiteUnitOfWork> logger,
+        EventsContext eventsContext,
+        EntitiesContext entitiesContext,
+        IDomainEventDispatcher domainEventDispatcher) : IUnitOfWork
 {
-    private readonly EventsContext _eventsContext;
-    private readonly EntitiesContext _entitiesContext;
-    private readonly IDomainEventDispatcher _eventDispatcher;
-    private readonly ILogger<SQLiteUnitOfWork> _logger;
-
-    public SQLiteUnitOfWork(
-            ILogger<SQLiteUnitOfWork> logger,
-            EventsContext eventsContext,
-            EntitiesContext entitiesContext,
-            IDomainEventDispatcher domainDispatcher)
+    public async Task Commit(CancellationToken ct)
     {
-        _logger = logger;
-        _eventsContext = eventsContext;
-        _entitiesContext = entitiesContext;
-        _eventDispatcher = domainDispatcher;
-    }
-
-    public async Task CommitAsync(CancellationToken ct)
-    {
-        await _eventsContext.SaveChangesAsync(ct);
-        await _entitiesContext.SaveChangesAsync(ct);
-        _logger.LogInformation("Commited changes");
+        await eventsContext.SaveChangesAsync(ct);
+        await entitiesContext.SaveChangesAsync(ct);
+        logger.LogInformation("Commited changes");
 
 
-        var states = _entitiesContext.ChangeTracker
+        var states = entitiesContext.ChangeTracker
             .Entries<IAggregateRootState>()
             .Select(e => e.Entity)
             .ToList();
 
 
-        _logger.LogInformation($"Entries count: {states.Count}");
+        logger.LogInformation($"Entries count: {states.Count}");
         foreach (var entry in states)
         {
-            _logger.LogInformation($"Entry entity type: {entry.GetType().Name}");
-            _logger.LogInformation($"Owner is null: {entry.Owner == null}");
+            logger.LogInformation($"Entry entity type: {entry.GetType().Name}");
+            logger.LogInformation($"Owner is null: {entry.Owner == null}");
         }
 
         var entities = states.ConvertAll(e => e.Owner);
-        _logger.LogInformation($"Owners count: {entities.Count}");
-        _logger.LogInformation($"Non-null owners: {entities.Count(e => e != null)}");
+        logger.LogInformation($"Owners count: {entities.Count}");
+        logger.LogInformation($"Non-null owners: {entities.Count(e => e != null)}");
 
         foreach (var entity in entities)
         {
-            _logger.LogInformation("Dispatching events");
+            logger.LogInformation("Dispatching events");
             foreach (var @event in entity.DomainEvents)
             {
-                await _eventDispatcher.DispatchAsync(@event, ct); // TODO: async Dispatch
-                _logger.LogInformation($"Dispatched event: {@event.GetType().Name}");
+                await domainEventDispatcher.Dispatch(@event, ct); // TODO: async Dispatch
+                logger.LogInformation($"Dispatched event: {@event.GetType().Name}");
             }
 
             entity.ClearDomainEvents();

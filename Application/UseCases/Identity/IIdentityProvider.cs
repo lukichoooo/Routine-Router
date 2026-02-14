@@ -1,10 +1,11 @@
 using Domain.Entities.Users.ValueObjects;
 
-namespace Application.UseCases.Identity
+namespace Application.UseCases.Identity;
+
+
+public interface IIdentityProvider
 {
-    public interface IIdentityProvider
-    {
-        public string GetCurrentUserName();
-        public UserId GetCurrentUserId();
-    }
+    public string GetCurrentUserName();
+    public UserId GetCurrentUserId();
 }
+

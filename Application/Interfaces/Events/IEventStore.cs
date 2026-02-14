@@ -4,7 +4,7 @@ namespace Application.Interfaces.Events;
 
 public interface IEventStore
 {
-    Task AppendAsync(
+    Task Append(
         AggregateRootId aggregateId,
         IReadOnlyList<IDomainEvent> events,
         int? expectedVersion,

@@ -16,7 +16,7 @@ public class CommandParser : ICommandParser
         _client = client;
     }
 
-    public Task<ICommand<object>> ParseAsync(string command)
+    public Task<ICommand<object>> Parse(string command)
     {
         // TODO: implement
 
