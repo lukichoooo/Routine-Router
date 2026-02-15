@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations.Entities
 {
     /// <inheritdoc />
     public partial class initial : Migration
@@ -18,7 +18,6 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
-                    Owner = table.Column<int>(type: "INTEGER", nullable: false),
                     Version = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -45,7 +44,6 @@ namespace Infrastructure.Migrations
                     LLM_ProductivityRating = table.Column<byte>(type: "INTEGER", nullable: true),
                     LLM_FocusRating = table.Column<byte>(type: "INTEGER", nullable: true),
                     LLM_StressRating = table.Column<byte>(type: "INTEGER", nullable: true),
-                    Owner = table.Column<int>(type: "INTEGER", nullable: false),
                     Version = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -72,8 +70,7 @@ namespace Infrastructure.Migrations
                     PlannedSchedule_End = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     ActualSchedule_Start = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     ActualSchedule_End = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    ChecklistId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChecklistStateId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    ChecklistId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,11 +81,6 @@ namespace Infrastructure.Migrations
                         principalTable: "Checklists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaskEntity_Checklists_ChecklistStateId",
-                        column: x => x.ChecklistStateId,
-                        principalTable: "Checklists",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -100,11 +92,6 @@ namespace Infrastructure.Migrations
                 name: "IX_TaskEntity_ChecklistId",
                 table: "TaskEntity",
                 column: "ChecklistId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TaskEntity_ChecklistStateId",
-                table: "TaskEntity",
-                column: "ChecklistStateId");
         }
 
         /// <inheritdoc />

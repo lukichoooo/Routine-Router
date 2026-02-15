@@ -37,7 +37,8 @@ public class EntityStateStoreTests
             => _context.ChangeTracker
             .Entries<IAggregateRootState>()
             .Select(e => e.Entity.Owner)
-            .ToList();
+            .Where(e => e != null)
+            .ToList()!;
 
     // User
 

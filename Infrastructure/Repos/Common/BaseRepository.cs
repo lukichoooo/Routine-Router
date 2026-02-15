@@ -34,7 +34,7 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
     {
         var state = await stateStore.Get(aggregateId, ct);
         if (state is not null)
-            return TEntity.Create(ref state);
+            return TEntity.Create(state);
 
         var events = await eventStore.Load(aggregateId, ct);
         if (events.Count == 0)

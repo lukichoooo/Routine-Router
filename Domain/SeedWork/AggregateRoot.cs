@@ -11,7 +11,7 @@ public interface IEntityFactory<TEntity, TId, TState> : IEntityFactory<TEntity>
     where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
     where TEntity : AggregateRoot<TId, TState>
 {
-    static abstract TEntity Create(ref TState storedState);
+    static abstract TEntity Create(TState storedState);
 }
 
 
@@ -85,7 +85,7 @@ where TState : notnull, AggregateRootState<TId>, IAggregateRootStateFactory<TSta
     // <summary>
     // history must be in ASC order by Version
     // </summary>
-    protected AggregateRoot(ref TState storedState)
+    protected AggregateRoot(TState storedState)
     {
         State = storedState;
         StoredVersion = State.Version;

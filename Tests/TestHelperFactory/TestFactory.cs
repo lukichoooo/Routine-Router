@@ -37,7 +37,7 @@ public static class TestFactory
     public static EventsContext GetEventsContext()
     {
         var options = new DbContextOptionsBuilder<EventsContext>()
-            .UseInMemoryDatabase("EventsTestDb") // might need change
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
         return new(options);
     }

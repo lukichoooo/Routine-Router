@@ -11,19 +11,19 @@ public interface IAggregateRootStateFactory<TState, TID>
 
 public interface IAggregateRootState
 {
-    public IAggregateRoot Owner { get; }
+    public IAggregateRoot? Owner { get; }
 }
 
 
 public abstract class AggregateRootState<TID> : IAggregateRootState
 where TID : AggregateRootId
 {
-    public AggregateRoot<TID> Owner { get; }
+    public AggregateRoot<TID>? Owner { get; }
 
     public TID Id { get; protected set; }
-    public int Version { get; set; } = 0;
+    public int Version { get; set; }
 
-    IAggregateRoot IAggregateRootState.Owner => Owner;
+    IAggregateRoot IAggregateRootState.Owner => Owner!;
 
 
 #pragma warning disable CS8618

@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations.Entities
 {
     [DbContext(typeof(EntitiesContext))]
-    [Migration("20260205214330_initial")]
+    [Migration("20260215105528_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -24,9 +24,6 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Owner")
-                        .HasColumnType("INTEGER");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
@@ -49,17 +46,12 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("ChecklistId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("ChecklistStateId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Metadata")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChecklistId");
-
-                    b.HasIndex("ChecklistStateId");
 
                     b.ToTable("TaskEntity");
                 });
@@ -68,9 +60,6 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Owner")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Version")
                         .HasColumnType("INTEGER");
@@ -189,14 +178,10 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Schedules.TaskEntity", b =>
                 {
                     b.HasOne("Domain.Entities.Schedules.ChecklistState", null)
-                        .WithMany()
+                        .WithMany("Tasks")
                         .HasForeignKey("ChecklistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Domain.Entities.Schedules.ChecklistState", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("ChecklistStateId");
 
                     b.OwnsOne("Domain.Entities.Schedules.ValueObjects.Schedule", "ActualSchedule", b1 =>
                         {

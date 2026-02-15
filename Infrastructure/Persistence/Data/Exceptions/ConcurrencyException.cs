@@ -1,5 +1,6 @@
 namespace Infrastructure.Persistence.Data.Exceptions;
 
+
 public class ConcurrencyException : Exception
 {
     public ConcurrencyException() : base()

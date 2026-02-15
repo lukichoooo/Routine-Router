@@ -8,19 +8,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Persistence.Data;
 
 
-public class SQLiteEventStore : IEventStore
+public class SQLiteEventStore(
+        IJsonEventMapper mapper,
+        EventsContext context) : IEventStore
 {
-    private readonly IJsonEventMapper _mapper;
-    private readonly EventsContext _context;
-
-    public SQLiteEventStore(
-            IJsonEventMapper serializer,
-            EventsContext context)
-    {
-        _mapper = serializer;
-        _context = context;
-    }
-
     // <summary>
     // Appends events to the event store.
     // expected version shold be null if this is the first event for the aggregate
@@ -31,7 +22,7 @@ public class SQLiteEventStore : IEventStore
             int? expectedVersion,
             CancellationToken ct)
     {
-        var onDbEventVersions = _context.Events
+        var onDbEventVersions = context.Events
             .Where(e => e.AggregateId == aggregateId.Value)
             .Select(e => e.Version);
 
@@ -41,14 +32,15 @@ public class SQLiteEventStore : IEventStore
 
         if (maxVersion != expectedVersion)
         {
-            throw new ConcurrencyException(
-                $"Expected version: {(dynamic?)expectedVersion ?? "null"} but found: {maxVersion}.");
+            throw new ConcurrencyException(@$"
+                Expected version: {(dynamic?)expectedVersion ?? "null"} 
+                but found: {(dynamic?)maxVersion ?? "null"}.");
         }
 
         IEnumerable<Event> newEvents = events.Select(
-                e => Event.From(e, _mapper.ToPayload(e)));
+                e => Event.From(e, mapper.ToPayload(e)));
 
-        await _context.Events.AddRangeAsync(newEvents);
+        await context.Events.AddRangeAsync(newEvents, ct);
     }
 
     public async Task<List<IDomainEvent>> Load(
@@ -57,7 +49,7 @@ public class SQLiteEventStore : IEventStore
             int fromVersion = 0,
             int? toVersion = null)
     {
-        var dbEvents = await _context.Events
+        var dbEvents = await context.Events
             .AsNoTracking()
             .Where(e => e.AggregateId == aggregateId.Value)
             .OrderBy(e => e.Version)
@@ -65,7 +57,7 @@ public class SQLiteEventStore : IEventStore
                     && (toVersion == null || e.Version <= toVersion))
             .ToListAsync(ct);
 
-        return dbEvents.ConvertAll(_mapper.ToDomainEvent);
+        return dbEvents.ConvertAll(mapper.ToDomainEvent);
     }
 }
 

@@ -28,6 +28,9 @@ public sealed class EventConfig : IEntityTypeConfiguration<Event>
                .IsRequired()
                .HasMaxLength(300);
 
+        builder.Property(e => e.Payload)
+               .HasMaxLength(2000);
+
         builder.Property(e => e.CreatedAt)
                .HasDefaultValueSql("CURRENT_TIMESTAMP") // SQLite 
                .ValueGeneratedOnAdd();

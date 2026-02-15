@@ -9,10 +9,7 @@ public abstract class AggregateRootId : ValueObject
 {
     public Guid Value { get; }
 
-    public AggregateRootId(Guid value)
-    {
-        Value = value;
-    }
+    protected AggregateRootId(Guid value) => Value = value;
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {

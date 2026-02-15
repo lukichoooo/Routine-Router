@@ -10,11 +10,7 @@ public class UserStateConfig : IEntityTypeConfiguration<UserState>
 {
     public void Configure(EntityTypeBuilder<UserState> builder)
     {
-        builder.Property(s => s.Owner)
-            .HasConversion(
-                    o => o.GetHashCode(),
-                    o => null!
-                    );
+        builder.Ignore(s => s.Owner);
 
         builder.Property(u => u.Id)
                 .HasConversion(

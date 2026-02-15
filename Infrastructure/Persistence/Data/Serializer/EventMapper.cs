@@ -45,11 +45,11 @@ public class JsonEventMapper : IJsonEventMapper
     {
         if (!_typeNameToType.TryGetValue(dbEvent.EventType, out var domainEventType))
         {
-            throw new EventSerializationException($"Unknown event type: {dbEvent.EventType}");
+            throw new EventMapperException($"Unknown event type: {dbEvent.EventType}");
         }
 
         var node = JsonSerializer.Deserialize<JsonObject>(dbEvent.Payload)
-            ?? throw new EventSerializationException($"Failed to deserialize event of type: {domainEventType.Name}");
+            ?? throw new EventMapperException($"Failed to deserialize event of type: {domainEventType.Name}");
 
         foreach (var (value, propName) in dbEvent.GetIgnoredOnPayloadFields())
         {
@@ -67,7 +67,7 @@ public class JsonEventMapper : IJsonEventMapper
         }
 
         var domainEvent = node.Deserialize(domainEventType)
-            ?? throw new EventSerializationException($"Failed to deserialize event of type: {domainEventType.Name}");
+            ?? throw new EventMapperException($"Failed to deserialize event of type: {domainEventType.Name}");
 
         return (IDomainEvent)domainEvent;
     }

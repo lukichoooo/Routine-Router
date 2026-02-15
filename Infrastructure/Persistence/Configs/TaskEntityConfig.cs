@@ -45,10 +45,6 @@ public class TaskEntityConfig : IEntityTypeConfiguration<TaskEntity>
             .HasConversion(
                 v => v.Value,
                 v => new ChecklistId(v));
-        builder.HasOne<ChecklistState>()
-            .WithMany()
-            .HasForeignKey(t => t.ChecklistId)
-            .IsRequired();
     }
 }
 

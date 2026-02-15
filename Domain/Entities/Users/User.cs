@@ -13,8 +13,8 @@ public sealed class User :
     IEntityFactory<User, UserId, UserState>
 {
     public User(IEnumerable<IDomainEvent>? history = null) : base(history) { }
-    public User(ref UserState state) : base(ref state) { }
-    public static User Create(ref UserState storedState) => new(ref storedState);
+    public User(UserState state) : base(state) { }
+    public static User Create(UserState storedState) => new(storedState);
     public static User Create(IEnumerable<IDomainEvent>? history) => new(history);
 
 
@@ -33,7 +33,7 @@ public sealed class User :
             throw new DomainArgumentException("User Update has same fields");
 
         AppendEvent(new UserUpdated(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     name,
@@ -47,7 +47,7 @@ public sealed class User :
             throw new WrongUserCredentialsException();
 
         AppendEvent(new UserVerified(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now
                     ));

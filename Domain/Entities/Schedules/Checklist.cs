@@ -13,9 +13,9 @@ public sealed class Checklist :
     IEntityFactory<Checklist, ChecklistId, ChecklistState>
 {
     public Checklist(IEnumerable<IDomainEvent>? history = null) : base(history) { }
-    public Checklist(ref ChecklistState state) : base(ref state) { }
+    public Checklist(ChecklistState state) : base(state) { }
     public static Checklist Create(IEnumerable<IDomainEvent>? history) => new(history);
-    public static Checklist Create(ref ChecklistState storedState) => new(ref storedState);
+    public static Checklist Create(ChecklistState storedState) => new(storedState);
 
 
     public UserId UserId => State.UserId;
@@ -32,7 +32,7 @@ public sealed class Checklist :
     {
         var taskId = new TaskId(Guid.NewGuid());
         AppendEvent(new TaskAddedToChecklist(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     TaskId: taskId,
@@ -50,7 +50,7 @@ public sealed class Checklist :
             throw new DomainRuleViolation("Can't start already completed Task");
 
         AppendEvent(new TaskStarted(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     taskId));
@@ -78,7 +78,7 @@ public sealed class Checklist :
     {
         State.TryGetTask(taskId);
         AppendEvent(new TaskRemovedFromChecklist(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     taskId
@@ -92,7 +92,7 @@ public sealed class Checklist :
         State.TryGetTask(taskId);
 
         AppendEvent(new TaskMetadataUpdated(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     taskId,
@@ -102,14 +102,14 @@ public sealed class Checklist :
 
     public void SetUserRating(Rating rating)
         => AppendEvent(new UserRatingSet(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     rating));
 
     public void SetLLMRating(Rating rating)
         => AppendEvent(new LLMRatingSet(
-                    AggregateId: State.Id,
+                    AggregateId: Id,
                     Version: NextVersion,
                     Timestamp: Clock.Now,
                     rating));

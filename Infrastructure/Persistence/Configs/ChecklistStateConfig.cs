@@ -13,11 +13,7 @@ public class ChecklistStateConfig : IEntityTypeConfiguration<ChecklistState>
     public void Configure(EntityTypeBuilder<ChecklistState> builder)
     {
         // keeping the owner tracked by EF
-        builder.Property(s => s.Owner)
-            .HasConversion(
-                    o => o.GetHashCode(),
-                    o => null!
-                    );
+        builder.Ignore(x => x.Owner);
 
         // ---------- PRIMARY KEY ----------
 

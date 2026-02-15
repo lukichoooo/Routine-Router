@@ -39,7 +39,13 @@ public sealed class SQLiteUnitOfWork(
 
         foreach (var entity in entities)
         {
-            logger.LogInformation("Dispatching events");
+            if (entity is null)
+            {
+                logger.LogInformation($"Entity:{entity} is null");
+                continue;
+            }
+
+            logger.LogInformation($"Dispatching events for Entity:{entity}");
             foreach (var @event in entity.DomainEvents)
             {
                 await domainEventDispatcher.Dispatch(@event, ct); // TODO: async Dispatch
@@ -48,6 +54,9 @@ public sealed class SQLiteUnitOfWork(
 
             entity.ClearDomainEvents();
         }
+
+        eventsContext.ChangeTracker.Clear();
+        entitiesContext.ChangeTracker.Clear();
     }
 }
 

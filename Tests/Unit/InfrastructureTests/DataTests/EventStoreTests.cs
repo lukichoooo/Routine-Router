@@ -9,6 +9,7 @@ using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data.Serializer;
 using Domain.Entities.Users;
 using Domain.Common.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace InfrastructureTests.DataTests;
@@ -27,8 +28,16 @@ public class EventStoreTests
         await _eventContext.DisposeAsync();
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        _eventContext.Events.RemoveRange(_eventContext.Events);
+        _eventContext.SaveChanges();
+        _eventContext.ChangeTracker.Clear();
+    }
+
     [Test]
-    public async Task AppendAsyncTest_Success()
+    public async Task AppendTest_Success()
     {
         // Arrange
         IEventStore sut = new SQLiteEventStore(
@@ -68,6 +77,7 @@ public class EventStoreTests
         var aggregateId = new UserId(Guid.NewGuid());
         var ogUser = new User();
         ogUser.Create(aggregateId, _fix.Create<Name>(), _fix.Create<PasswordHash>());
+        List<IDomainEvent> allEvents = [ogUser.DomainEvents[0]];
 
         // Act
         await sut.Append(
@@ -81,7 +91,10 @@ public class EventStoreTests
         // Arrange
         var userHistory = await sut.Load(aggregateId, ct: default);
         var dbUser = new User(userHistory);
+        Assert.That(dbUser.StoredVersion, Is.EqualTo(ogUser.Version));
+        Assert.That(dbUser.DomainEvents, Has.Count.EqualTo(0));
         dbUser.Update(_fix.Create<Name>(), _fix.Create<PasswordHash>());
+        allEvents.Add(dbUser.DomainEvents[0]);
 
         // Act
         await sut.Append(
@@ -93,11 +106,9 @@ public class EventStoreTests
 
 
         // Assert
-        var onDbEvents = _eventContext.Events
+        var onDbEvents = await _eventContext.Events
             .Where(e => e.AggregateId == aggregateId.Value)
-            .ToList();
-
-        List<IDomainEvent> allEvents = [.. ogUser.DomainEvents, .. dbUser.DomainEvents];
+            .ToListAsync();
 
         Assert.That(onDbEvents.Select(e => e.Version),
                 Is.EquivalentTo(allEvents.Select(e => e.Version)));
@@ -106,7 +117,7 @@ public class EventStoreTests
 
 
     [Test]
-    public async Task AppendAsyncTest_ConcurrencyException()
+    public async Task AppendTest_ConcurrencyException()
     {
         // Arrange
         IEventStore sut = new SQLiteEventStore(

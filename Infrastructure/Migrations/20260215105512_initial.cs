@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Infrastructure.Migrations.Events
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class initial : Migration
@@ -23,7 +23,7 @@ namespace Infrastructure.Migrations.Events
                     Timestamp = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     AggregateIdType = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     EventType = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
-                    Payload = table.Column<string>(type: "TEXT", nullable: false)
+                    Payload = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false)
                 },
                 constraints: table =>
                 {
