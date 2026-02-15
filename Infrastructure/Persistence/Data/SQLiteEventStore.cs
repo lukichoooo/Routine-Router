@@ -33,12 +33,12 @@ public class SQLiteEventStore(
         if (maxVersion != expectedVersion)
         {
             throw new ConcurrencyException(@$"
-                Expected version: {(dynamic?)expectedVersion ?? "null"} 
-                but found: {(dynamic?)maxVersion ?? "null"}.");
+                Expected version: {expectedVersion.ToString() ?? "null"} 
+                but found: {maxVersion.ToString() ?? "null"}.");
         }
 
-        IEnumerable<Event> newEvents = events.Select(
-                e => Event.From(e, mapper.ToPayload(e)));
+        IEnumerable<Event> newEvents = events
+            .Select(e => Event.From(e, mapper.ToPayload(e)));
 
         await context.Events.AddRangeAsync(newEvents, ct);
     }

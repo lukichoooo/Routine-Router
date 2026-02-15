@@ -54,9 +54,6 @@ public sealed class SQLiteUnitOfWork(
 
             entity.ClearDomainEvents();
         }
-
-        eventsContext.ChangeTracker.Clear();
-        entitiesContext.ChangeTracker.Clear();
     }
 }
 

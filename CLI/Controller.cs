@@ -15,7 +15,7 @@ public class ConsoleController(ICommandParser parser, ISender sender) : IControl
     {
         dynamic cmd = await parser.Parse(input);
 
-        var result = await sender.Send(cmd);
+        dynamic result = await sender.Send(cmd);
 
         if (result != null)
             Console.WriteLine(result);

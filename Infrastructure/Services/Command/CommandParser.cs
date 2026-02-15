@@ -7,15 +7,8 @@ using OpenAI.Chat;
 namespace Infrastructure.Services.Command;
 
 
-public class CommandParser : ICommandParser
+public class CommandParser(ChatClient client) : ICommandParser
 {
-    private readonly ChatClient _client;
-
-    public CommandParser(ChatClient client)
-    {
-        _client = client;
-    }
-
     public Task<ICommand<object>> Parse(string command)
     {
         // TODO: implement

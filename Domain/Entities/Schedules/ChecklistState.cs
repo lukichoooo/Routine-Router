@@ -58,7 +58,7 @@ public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregate
 
     public TaskEntity TryGetTask(TaskId id) =>
         _tasks.FirstOrDefault(t => t.Id == id)
-        ?? throw new DomainArgumentException($"Task {id} not found");
+        ?? throw new DomainRuleViolation($"Task {id} not found");
 
 
     public static ChecklistState CreateState(AggregateRoot<ChecklistId> owner)

@@ -18,28 +18,30 @@ public class UserTests
     [Test]
     public void Create_Success()
     {
-        var evt = _fix.Create<UserCreated>();
-        var user = new User([evt]);
+        var user = new User();
+        user.Create(_fix.Create<UserId>(), _fix.Create<Name>(), _fix.Create<PasswordHash>());
 
         Assert.That(user, Is.Not.Null);
-        Assert.That(user.DomainEvents, Is.Empty);
-        Assert.That(user.Version, Is.EqualTo(evt.Version));
+        Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserCreated>());
+        Assert.That(user.DomainEvents, Has.Count.EqualTo(1));
+        Assert.That(user.Version, Is.EqualTo(1));
     }
 
     [Test]
     public void Update_Success()
     {
-        var evt = _fix.Create<UserCreated>();
-        var user = new User([evt]);
+        var user = new User();
+        user.Create(_fix.Create<UserId>(), _fix.Create<Name>(), _fix.Create<PasswordHash>());
 
         var newName = _fix.Create<Name>();
         var newPasswordHash = _fix.Create<PasswordHash>();
         user.Update(newName, newPasswordHash);
 
         Assert.That(user, Is.Not.Null);
-        Assert.That(user.DomainEvents, Has.Count.EqualTo(1));
+        Assert.That(user.DomainEvents, Has.Count.EqualTo(2));
+        Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserCreated>());
         Assert.That(user.DomainEvents, Has.Exactly(1).InstanceOf<UserUpdated>());
-        Assert.That(user.Version, Is.EqualTo(evt.Version + 1));
+        Assert.That(user.Version, Is.EqualTo(2));
     }
 
 

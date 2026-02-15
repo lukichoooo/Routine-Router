@@ -19,30 +19,30 @@ namespace InfrastructureTests.DataTests;
 public class EventStoreTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
-    private readonly EventsContext _eventContext = TestFactory.GetEventsContext();
+    private readonly EventsContext _eventsContext = TestFactory.GetEventsContext();
     private readonly IJsonEventMapper _eventSerializer = TestFactory.GetEventMapper();
 
     [OneTimeTearDown]
     public async Task OneTimeTearDownAsync()
     {
-        await _eventContext.DisposeAsync();
+        await _eventsContext.DisposeAsync();
     }
 
     [TearDown]
     public void TearDown()
     {
-        _eventContext.Events.RemoveRange(_eventContext.Events);
-        _eventContext.SaveChanges();
-        _eventContext.ChangeTracker.Clear();
+        _eventsContext.Events.RemoveRange(_eventsContext.Events);
+        _eventsContext.SaveChanges();
+        _eventsContext.ChangeTracker.Clear();
     }
 
     [Test]
     public async Task AppendTest_Success()
     {
         // Arrange
-        IEventStore sut = new SQLiteEventStore(
+        var sut = new SQLiteEventStore(
                 _eventSerializer,
-                _eventContext);
+                _eventsContext);
 
         var user = new User();
         user.Create(_fix.Create<UserId>(), _fix.Create<Name>(), _fix.Create<PasswordHash>());
@@ -54,10 +54,10 @@ public class EventStoreTests
                 events: user.DomainEvents,
                 expectedVersion: null,
                 ct: default);
-        await _eventContext.SaveChangesAsync();
+        await _eventsContext.SaveChangesAsync();
 
         // Assert
-        var onDbEventVersions = _eventContext.Events
+        var onDbEventVersions = _eventsContext.Events
             .Where(e => e.AggregateId == user.Id.Value)
             .Select(e => e.Version)
             .ToList();
@@ -72,12 +72,11 @@ public class EventStoreTests
     public async Task AppendTest_WithExpectedVersion()
     {
         // Arrange
-        var sut = new SQLiteEventStore(_eventSerializer, _eventContext);
+        var sut = new SQLiteEventStore(_eventSerializer, _eventsContext);
 
         var aggregateId = new UserId(Guid.NewGuid());
         var ogUser = new User();
         ogUser.Create(aggregateId, _fix.Create<Name>(), _fix.Create<PasswordHash>());
-        List<IDomainEvent> allEvents = [ogUser.DomainEvents[0]];
 
         // Act
         await sut.Append(
@@ -85,16 +84,23 @@ public class EventStoreTests
                 events: ogUser.DomainEvents,
                 expectedVersion: ogUser.StoredVersion,
                 ct: default);
-        await _eventContext.SaveChangesAsync();
+        Console.WriteLine("---ogUser Events: ");
+        foreach (var e in ogUser.DomainEvents)
+            Console.WriteLine(e.GetType().Name);
+        await _eventsContext.SaveChangesAsync();
 
 
         // Arrange
-        var userHistory = await sut.Load(aggregateId, ct: default);
+        var userHistory = await _eventsContext.Events
+            .AsNoTracking()
+            .Where(e => e.AggregateId == aggregateId.Value)
+            .OrderBy(e => e.Version)
+            .Select(e => _eventSerializer.ToDomainEvent(e))
+            .ToListAsync();
         var dbUser = new User(userHistory);
         Assert.That(dbUser.StoredVersion, Is.EqualTo(ogUser.Version));
         Assert.That(dbUser.DomainEvents, Has.Count.EqualTo(0));
         dbUser.Update(_fix.Create<Name>(), _fix.Create<PasswordHash>());
-        allEvents.Add(dbUser.DomainEvents[0]);
 
         // Act
         await sut.Append(
@@ -102,16 +108,23 @@ public class EventStoreTests
                 events: dbUser.DomainEvents,
                 expectedVersion: dbUser.StoredVersion,
                 ct: default);
-        await _eventContext.SaveChangesAsync();
+        Console.WriteLine("---dbUser Events: ");
+        foreach (var e in dbUser.DomainEvents)
+            Console.WriteLine(e.GetType().Name);
+        await _eventsContext.SaveChangesAsync();
 
 
         // Assert
-        var onDbEvents = await _eventContext.Events
+        var onDbEvents = await _eventsContext.Events
             .Where(e => e.AggregateId == aggregateId.Value)
             .ToListAsync();
 
+        Console.WriteLine("---Stored Events: ");
+        foreach (var e in onDbEvents)
+            Console.WriteLine(e.EventType);
+
         Assert.That(onDbEvents.Select(e => e.Version),
-                Is.EquivalentTo(allEvents.Select(e => e.Version)));
+                Is.EquivalentTo([1, 2]));
     }
 
 
@@ -120,9 +133,9 @@ public class EventStoreTests
     public async Task AppendTest_ConcurrencyException()
     {
         // Arrange
-        IEventStore sut = new SQLiteEventStore(
+        var sut = new SQLiteEventStore(
                 _eventSerializer,
-                _eventContext);
+                _eventsContext);
 
         var aggregateId = _fix.Create<UserId>();
         var user = new User();
@@ -130,11 +143,11 @@ public class EventStoreTests
         var domainEvents = user.DomainEvents;
 
         var dbEvent = Event.From(
-                domainEvents.First(),
-                _eventSerializer.ToPayload(domainEvents.First()));
+                domainEvents[0],
+                _eventSerializer.ToPayload(domainEvents[0]));
 
-        await _eventContext.Events.AddAsync(dbEvent);
-        await _eventContext.SaveChangesAsync();
+        await _eventsContext.Events.AddAsync(dbEvent);
+        await _eventsContext.SaveChangesAsync();
 
         var userHistory = await sut.Load(
                 aggregateId: aggregateId,
