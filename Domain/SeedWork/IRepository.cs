@@ -8,7 +8,7 @@ public interface IRepository<TA, TID>
     where TA : AggregateRoot<TID>
     where TID : AggregateRootId
 {
-    Task AddAsync(TA aggregate, CancellationToken ct);
+    Task Add(TA aggregate, CancellationToken ct);
 
     Task<TA?> GetById(TID aggregateId, CancellationToken ct);
 }

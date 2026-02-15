@@ -1,7 +1,9 @@
 using Application.Common.Exceptions;
 using Application.Interfaces.Data;
 using Application.Seedwork;
+using Domain.Common.ValueObjects;
 using Domain.Entities.Users;
+using Domain.Entities.Users.ValueObjects;
 
 namespace Application.UseCases.Identity.Commands;
 
@@ -14,7 +16,7 @@ public class CreateUserCommandHandler(
         IIdentityProvider identity,
         IUnitOfWork uow) : BaseCommandHandler<CreateUserCommand, EmptyReturn>(uow)
 {
-    protected override async Task<EmptyReturn> ExecuteAsync(CreateUserCommand command, CancellationToken ct)
+    protected override async Task<EmptyReturn> Execute(CreateUserCommand command, CancellationToken ct)
     {
         var userId = identity.GetCurrentUserId();
         var user = await userRepo.GetById(userId, ct);
@@ -24,10 +26,10 @@ public class CreateUserCommandHandler(
         user = new User();
         user.Create(
                 userId,
-                new(identity.GetCurrentUserName()),
-                new("empty"));
+                new Name(identity.GetCurrentUserName()),
+                new PasswordHash("empty"));
 
-        await userRepo.AddAsync(user, ct);
+        await userRepo.Add(user, ct);
 
         return new EmptyReturn();
     }

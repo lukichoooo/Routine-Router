@@ -11,39 +11,28 @@ namespace Application.UseCases.Schedules.Commands;
 public sealed record CreateChecklistCommand : ICommand<ChecklistId>;
 
 
-public class CreateChecklistCommandHandler
-    : BaseCommandHandler<CreateChecklistCommand, ChecklistId>
+public class CreateChecklistCommandHandler(
+        IIdentityProvider identity,
+        IChecklistRepo checklistRepo,
+        IUserRepo userRepo,
+        IUnitOfWork uow)
+        : BaseCommandHandler<CreateChecklistCommand, ChecklistId>(uow)
 {
-    private readonly IIdentityProvider _identity;
-    private readonly IChecklistRepo _checklistRepo;
-    private readonly IUserRepo _userRepo;
-
-    public CreateChecklistCommandHandler(
-            IIdentityProvider identity,
-            IChecklistRepo checklistRepo,
-            IUserRepo userRepo,
-            IUnitOfWork uow) : base(uow)
-    {
-        _identity = identity;
-        _checklistRepo = checklistRepo;
-        _userRepo = userRepo;
-    }
-
-    protected override async Task<ChecklistId> ExecuteAsync(
+    protected override async Task<ChecklistId> Execute(
             CreateChecklistCommand command,
             CancellationToken ct)
     {
-        var userId = _identity.GetCurrentUserId();
+        var userId = identity.GetCurrentUserId();
 
         var checklist = new Checklist();
         var checklistId = new ChecklistId(Guid.NewGuid());
 
-        if (await _userRepo.GetById(userId, ct) is null)
+        if (await userRepo.GetById(userId, ct) is null)
             throw new ApplicationArgumentException($"User not found with Id={userId}");
 
         checklist.Create(checklistId, userId);
 
-        await _checklistRepo.AddAsync(checklist, ct);
+        await checklistRepo.Add(checklist, ct);
 
         return checklistId;
     }

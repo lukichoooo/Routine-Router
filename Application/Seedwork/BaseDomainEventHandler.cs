@@ -12,10 +12,10 @@ where TE : IDomainEvent
     public Task Handle(
             TE evt,
             CancellationToken ct)
-        => ExecuteAsync(evt, ct);
+        => Execute(evt, ct);
 
 
-    protected abstract Task ExecuteAsync(
+    protected abstract Task Execute(
             TE evt,
             CancellationToken ct);
 }

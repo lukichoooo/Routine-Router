@@ -32,7 +32,7 @@ public class ChecklistRepoTests // TODO:
     }
 
     [Test]
-    public async Task AddAsync_Empty()
+    public async Task Add_Empty()
     {
         // Arrange
         var checklist = new Checklist();
@@ -44,7 +44,7 @@ public class ChecklistRepoTests // TODO:
         var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.AddAsync(checklist, default);
+        await sut.Add(checklist, default);
 
 
         // Assert
@@ -55,7 +55,7 @@ public class ChecklistRepoTests // TODO:
 
 
     [Test]
-    public async Task AddAsync_Events()
+    public async Task Add_Events()
     {
         // Arrange
         var checklistId = _fix.Create<ChecklistId>();
@@ -68,7 +68,7 @@ public class ChecklistRepoTests // TODO:
         var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.AddAsync(checklist, default);
+        await sut.Add(checklist, default);
         await _eventsContext.SaveChangesAsync();
 
 
@@ -83,7 +83,7 @@ public class ChecklistRepoTests // TODO:
     // TODO: 
     [TestCase(1)]
     [TestCase(3)]
-    public async Task GetByIdAsync_Events(int eventsCount)
+    public async Task GetById_Events(int eventsCount)
     {
         // Arrange
         var checklistId = _fix.Create<ChecklistId>();
@@ -102,7 +102,7 @@ public class ChecklistRepoTests // TODO:
         }
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
-        await sut.AddAsync(oldChecklist, default);
+        await sut.Add(oldChecklist, default);
         await _eventsContext.SaveChangesAsync();
 
 
@@ -118,7 +118,7 @@ public class ChecklistRepoTests // TODO:
 
 
     [Test]
-    public async Task GetByIdAsync_State()
+    public async Task GetById_State()
     {
     }
 

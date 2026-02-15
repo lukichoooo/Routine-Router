@@ -18,7 +18,7 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
 
 {
     // Save
-    public async Task AddAsync(TEntity aggregate, CancellationToken ct)
+    public async Task Add(TEntity aggregate, CancellationToken ct)
     {
         await eventStore.Append(
                 aggregate.Id,

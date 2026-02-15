@@ -15,12 +15,12 @@ where TCmd : ICommand<TRes>
             TCmd command,
             CancellationToken ct)
     {
-        var result = await ExecuteAsync(command, ct);
+        var result = await Execute(command, ct);
         await uow.Commit(ct);
         return result;
     }
 
-    protected abstract Task<TRes> ExecuteAsync(
+    protected abstract Task<TRes> Execute(
             TCmd command,
             CancellationToken ct);
 }

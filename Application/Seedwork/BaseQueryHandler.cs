@@ -12,10 +12,10 @@ public abstract class BaseQueryHandler<TRes> : IRequestHandler<IQuery<TRes>, TRe
             IQuery<TRes> query,
             CancellationToken ct)
     {
-        return await ExecuteAsync(query, ct);
+        return await Execute(query, ct);
     }
 
-    protected abstract Task<TRes> ExecuteAsync(
+    protected abstract Task<TRes> Execute(
             IQuery<TRes> command,
             CancellationToken ct);
 }
