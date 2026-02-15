@@ -5,13 +5,13 @@ namespace Application.Interfaces.Events;
 public interface IEventStore
 {
     Task Append(
-        AggregateRootId aggregateId,
+        EntityId aggregateId,
         IReadOnlyList<IDomainEvent> events,
         int? expectedVersion,
         CancellationToken ct);
 
     Task<List<IDomainEvent>> Load(
-        AggregateRootId aggregateId,
+        EntityId aggregateId,
         CancellationToken ct,
         int fromVersion = 0,
         int? toVersion = null);

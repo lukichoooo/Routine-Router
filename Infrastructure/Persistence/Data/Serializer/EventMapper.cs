@@ -118,7 +118,7 @@ public class JsonEventMapper : IJsonEventMapper
         var assemblyTypes = typeof(IDomainEvent).Assembly.GetTypes();
 
         var aggregateIdTypes = assemblyTypes.Where(t => !t.IsAbstract && !t.IsInterface
-                && typeof(AggregateRootId).IsAssignableFrom(t));
+                && typeof(EntityId).IsAssignableFrom(t));
 
         return aggregateIdTypes.ToHashSet();
     }

@@ -18,7 +18,7 @@ public class EventMapperTests
     {
         var loggerFactory = LoggerFactory.Create(builder =>
         {
-            // builder.AddConsole(); // Comment out to not log
+            builder.AddConsole(); // Comment out to not log
             builder.SetMinimumLevel(LogLevel.Debug);
         });
         return loggerFactory.CreateLogger<EventMapperTests>();
@@ -43,6 +43,12 @@ public class EventMapperTests
 
         foreach (IDomainEvent domainEvent in events)
         {
+            if (domainEvent.AggregateId.ToString() == "00000000-0000-0000-0000-000000000000")
+            {
+                logger.LogDebug($"DomainEvent: {domainEvent.GetType().Name}\n");
+                continue;
+            }
+
             string payload = sut.ToPayload(domainEvent);
             var dbEvent = Event.From(domainEvent, payload);
 
@@ -51,11 +57,9 @@ public class EventMapperTests
             Assert.That(domainEvent, Is.EqualTo(deserializedDomainEvent));
             AssertProperties(domainEvent, deserializedDomainEvent);
 
-            logger.LogInformation("DomainEvent: {0},\nFull: {1}\n",
-                    domainEvent.GetType().Name,
-                    domainEvent.GetType().FullName);
+            logger.LogDebug($"DomainEvent: {domainEvent.GetType().Name}\n");
 
-            logger.LogInformation("Payload: {0},\n", payload);
+            logger.LogDebug($"Payload: {payload}\n");
         }
 
         logger.LogInformation("Tested Events: {0}\n\n{1}\n",

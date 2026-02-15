@@ -3,7 +3,7 @@ namespace Domain.SeedWork;
 
 public interface IAggregateRootStateFactory<TState, TID>
     where TState : AggregateRootState<TID>
-    where TID : AggregateRootId
+    where TID : EntityId
 {
     static abstract TState CreateState(AggregateRoot<TID> owner);
 }
@@ -16,7 +16,7 @@ public interface IAggregateRootState
 
 
 public abstract class AggregateRootState<TID> : IAggregateRootState
-where TID : AggregateRootId
+where TID : EntityId
 {
     public AggregateRoot<TID>? Owner { get; }
 

@@ -24,11 +24,14 @@ public sealed class Event
     public required DateTimeOffset Timestamp { get; set; }
 
 
+    // Type data
     [Required]
     public required string AggregateIdType { get; set; }
 
+    // Type data
     [Required]
     public required string EventType { get; set; }
+
 
     [Required]
     public required string Payload { get; set; }
@@ -39,8 +42,8 @@ public sealed class Event
         {
             AggregateId = e.AggregateId.ToGuid(),
             AggregateIdType = e.AggregateId.GetType().Name,
-            Version = e.Version,
             EventType = e.GetType().Name,
+            Version = e.Version,
             Payload = payload,
             Timestamp = e.Timestamp
         };

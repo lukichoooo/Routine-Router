@@ -3,10 +3,10 @@ using Domain.SeedWork;
 namespace Domain.Entities.Users.ValueObjects;
 
 
-public class UserId : AggregateRootId
+public class UserId : EntityId
 {
     public UserId(Guid value) : base(value) { }
 
-    public UserId() { }
+    private UserId() { }
 }
 

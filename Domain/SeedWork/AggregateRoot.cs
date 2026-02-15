@@ -7,7 +7,7 @@ public interface IEntityFactory<TEntity>
 }
 
 public interface IEntityFactory<TEntity, TId, TState> : IEntityFactory<TEntity>
-    where TId : AggregateRootId
+    where TId : EntityId
     where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
     where TEntity : AggregateRoot<TId, TState>
 {
@@ -35,7 +35,7 @@ public interface IAggregateRoot
 // with Id for public usage
 // </summary>
 public abstract class AggregateRoot<TId> : IAggregateRoot
-where TId : AggregateRootId
+where TId : EntityId
 {
     public abstract TId Id { get; }
     public abstract int Version { get; }
@@ -59,7 +59,7 @@ where TId : AggregateRootId
 // with state for Domain Correctness and Id for public usage
 // </summary>
 public abstract class AggregateRoot<TId, TState> : AggregateRoot<TId>
-where TId : AggregateRootId
+where TId : EntityId
 where TState : notnull, AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
 {
     public TState State { get; private init; }

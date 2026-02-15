@@ -1,15 +1,14 @@
-using Application.Interfaces.Events;
 using AutoFixture;
 using TestHelperFactory;
 using Infrastructure.Persistence.Data;
 using Infrastructure.Persistence.Data.Exceptions;
 using Domain.Entities.Users.ValueObjects;
-using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data.Serializer;
 using Domain.Entities.Users;
 using Domain.Common.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Domain.Entities.Users.Events;
 
 
 namespace InfrastructureTests.DataTests;
@@ -74,49 +73,55 @@ public class EventStoreTests
         // Arrange
         var sut = new SQLiteEventStore(_eventSerializer, _eventsContext);
 
-        var aggregateId = new UserId(Guid.NewGuid());
         var ogUser = new User();
-        ogUser.Create(aggregateId, _fix.Create<Name>(), _fix.Create<PasswordHash>());
+        ogUser.Create(new UserId(Guid.NewGuid()), _fix.Create<Name>(), _fix.Create<PasswordHash>());
 
         // Act
         await sut.Append(
-                aggregateId: aggregateId,
+                aggregateId: ogUser.Id,
                 events: ogUser.DomainEvents,
                 expectedVersion: ogUser.StoredVersion,
                 ct: default);
+
         Console.WriteLine("---ogUser Events: ");
         foreach (var e in ogUser.DomainEvents)
             Console.WriteLine(e.GetType().Name);
+
         await _eventsContext.SaveChangesAsync();
 
 
         // Arrange
         var userHistory = await _eventsContext.Events
             .AsNoTracking()
-            .Where(e => e.AggregateId == aggregateId.Value)
+            .Where(e => e.AggregateId == ogUser.Id.Value)
             .OrderBy(e => e.Version)
             .Select(e => _eventSerializer.ToDomainEvent(e))
             .ToListAsync();
-        var dbUser = new User(userHistory);
-        Assert.That(dbUser.StoredVersion, Is.EqualTo(ogUser.Version));
-        Assert.That(dbUser.DomainEvents, Has.Count.EqualTo(0));
-        dbUser.Update(_fix.Create<Name>(), _fix.Create<PasswordHash>());
+        Assert.That(userHistory, Has.Exactly(1).InstanceOf<UserCreated>());
+
+        // After line 103, before line 106
+        var loadedUser = new User(userHistory);
+
+        Assert.That(loadedUser.Id, Is.EqualTo(ogUser.Id));
+        Assert.That(loadedUser.StoredVersion, Is.EqualTo(ogUser.Version));
+
+        loadedUser.Update(_fix.Create<Name>(), _fix.Create<PasswordHash>());
 
         // Act
         await sut.Append(
-                aggregateId: aggregateId,
-                events: dbUser.DomainEvents,
-                expectedVersion: dbUser.StoredVersion,
+                aggregateId: loadedUser.Id,
+                events: loadedUser.DomainEvents,
+                expectedVersion: loadedUser.StoredVersion,
                 ct: default);
         Console.WriteLine("---dbUser Events: ");
-        foreach (var e in dbUser.DomainEvents)
+        foreach (var e in loadedUser.DomainEvents)
             Console.WriteLine(e.GetType().Name);
         await _eventsContext.SaveChangesAsync();
 
 
         // Assert
         var onDbEvents = await _eventsContext.Events
-            .Where(e => e.AggregateId == aggregateId.Value)
+            .Where(e => e.AggregateId == loadedUser.Id.Value)
             .ToListAsync();
 
         Console.WriteLine("---Stored Events: ");

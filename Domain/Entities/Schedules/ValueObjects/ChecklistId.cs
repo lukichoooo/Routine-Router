@@ -3,7 +3,7 @@ using Domain.SeedWork;
 namespace Domain.Entities.Schedules.ValueObjects;
 
 
-public class ChecklistId : AggregateRootId
+public class ChecklistId : EntityId
 {
     public ChecklistId(Guid value) : base(value) { }
 

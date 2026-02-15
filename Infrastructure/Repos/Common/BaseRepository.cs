@@ -13,7 +13,7 @@ public abstract class BaseRepository<TEntity, TId, TState>
 (IEntityStateStore<TState, TId> stateStore, IEventStore eventStore) : IRepository<TEntity, TId>
 
 where TEntity : AggregateRoot<TId, TState>, IEntityFactory<TEntity, TId, TState>
-where TId : AggregateRootId
+where TId : EntityId
 where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
 
 {

@@ -17,7 +17,7 @@ public class SQLiteEventStore(
     // expected version shold be null if this is the first event for the aggregate
     // </summary>
     public async Task Append(
-            AggregateRootId aggregateId,
+            EntityId aggregateId,
             IReadOnlyList<IDomainEvent> events,
             int? expectedVersion,
             CancellationToken ct)
@@ -44,7 +44,7 @@ public class SQLiteEventStore(
     }
 
     public async Task<List<IDomainEvent>> Load(
-            AggregateRootId aggregateId,
+            EntityId aggregateId,
             CancellationToken ct,
             int fromVersion = 0,
             int? toVersion = null)

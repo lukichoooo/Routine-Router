@@ -6,7 +6,7 @@ namespace Domain.SeedWork;
 // </summary>
 public interface IRepository<TA, TID>
     where TA : AggregateRoot<TID>
-    where TID : AggregateRootId
+    where TID : EntityId
 {
     Task Add(TA aggregate, CancellationToken ct);
 

@@ -10,7 +10,7 @@ namespace Infrastructure.Persistence;
 // </summary>
 public interface IEntityStateStore<TState, TId>
         where TState : AggregateRootState<TId>
-        where TId : AggregateRootId
+        where TId : EntityId
 {
     Task<TState?> Get(TId aggregateId, CancellationToken ct);
 
@@ -19,7 +19,7 @@ public interface IEntityStateStore<TState, TId>
 
 
 public class SQLiteStateStore<TState, TId>(EntitiesContext context) : IEntityStateStore<TState, TId>
-where TId : AggregateRootId
+where TId : EntityId
 where TState : AggregateRootState<TId>
 {
     public async Task<TState?> Get(TId aggregateId, CancellationToken ct)

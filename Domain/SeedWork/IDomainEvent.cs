@@ -8,7 +8,7 @@ namespace Domain.SeedWork;
 // </summary>
 public interface IDomainEvent : INotification
 {
-    AggregateRootId AggregateId { get; }
+    EntityId AggregateId { get; }
     int Version { get; }
     DateTimeOffset Timestamp { get; }
 }
@@ -17,11 +17,11 @@ public interface IDomainEvent : INotification
 // Abstract Class for domain usage
 // </summary>
 public abstract record BaseDomainEvent<TAggregateRootId> : IDomainEvent
-    where TAggregateRootId : AggregateRootId
+    where TAggregateRootId : EntityId
 {
     public abstract TAggregateRootId AggregateId { get; init; }
     public abstract int Version { get; init; }
     public abstract DateTimeOffset Timestamp { get; init; }
 
-    AggregateRootId IDomainEvent.AggregateId => AggregateId;
+    EntityId IDomainEvent.AggregateId => AggregateId;
 }

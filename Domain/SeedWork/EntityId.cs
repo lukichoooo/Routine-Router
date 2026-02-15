@@ -5,11 +5,11 @@ namespace Domain.SeedWork;
 // Base Class for all Aggregate Root Id
 // inherits from ValueObject
 // </summary>
-public abstract class AggregateRootId : ValueObject
+public abstract class EntityId : ValueObject
 {
     public Guid Value { get; }
 
-    protected AggregateRootId(Guid value) => Value = value;
+    protected EntityId(Guid value) => Value = value;
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
@@ -20,10 +20,10 @@ public abstract class AggregateRootId : ValueObject
     public Guid ToGuid() => Value;
 
     public override bool Equals(object? obj)
-        => obj is AggregateRootId other && Value == other.Value;
+        => obj is EntityId other && Value == other.Value;
 
     public override int GetHashCode() => Value.GetHashCode();
 
-    protected AggregateRootId() { }
+    protected EntityId() { }
 }
 
