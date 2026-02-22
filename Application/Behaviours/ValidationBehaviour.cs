@@ -17,15 +17,14 @@ public class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRe
         var context = new ValidationContext<TRequest>(request);
 
         var validationResults = await Task.WhenAll(
-                _validators.Select(v =>
-                    v.ValidateAsync(context, ct)));
+                _validators.Select(v => v.ValidateAsync(context, ct)));
 
         var failures = validationResults
-            .Where(r => r.Errors.Any())
+            .Where(r => r.Errors.Count > 0)
             .SelectMany(r => r.Errors)
             .ToList();
 
-        if (failures.Any())
+        if (failures.Count > 0)
             throw new ValidationException(failures);
 
         return await next();

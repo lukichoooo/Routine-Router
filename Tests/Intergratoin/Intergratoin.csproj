@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\..\..\Application\Application.csproj" />
-    <ProjectReference Include="..\..\TestHelperFactory\TestHelperFactory.csproj" />
+    <ProjectReference Include="..\..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\Application\Application.csproj" />
+    <ProjectReference Include="..\TestHelperFactory\TestHelperFactory.csproj" />
   </ItemGroup>
 
 </Project>
