@@ -29,7 +29,7 @@ public class CreateUserCommandHandler(
                 new Name(identity.GetCurrentUserName()),
                 new PasswordHash("empty"));
 
-        await userRepo.Add(user, ct);
+        await userRepo.Save(user, ct);
 
         return new EmptyReturn();
     }

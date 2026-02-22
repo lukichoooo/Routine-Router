@@ -58,7 +58,7 @@ public class UserRepoTests
         var sut = new UserRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.Add(user, default);
+        await sut.Save(user, default);
         await Commit();
 
 
@@ -80,7 +80,7 @@ public class UserRepoTests
         var sut = new UserRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.Add(user, default);
+        await sut.Save(user, default);
         await Commit();
 
         // Assert
@@ -111,7 +111,7 @@ public class UserRepoTests
         }
 
         var sut = new UserRepo(_eventStore, _stateStore);
-        await sut.Add(oldUser, default);
+        await sut.Save(oldUser, default);
         await _eventsContext.SaveChangesAsync();
 
         // Act
@@ -144,7 +144,7 @@ public class UserRepoTests
 
 
         var sut = new UserRepo(_eventStore, _stateStore);
-        await sut.Add(oldUser, default);
+        await sut.Save(oldUser, default);
         await _entitiesContext.SaveChangesAsync();
 
         // Act

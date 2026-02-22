@@ -23,16 +23,16 @@ public class CreateChecklistCommandHandler(
             CancellationToken ct)
     {
         var userId = identity.GetCurrentUserId();
+        if (await userRepo.GetById(userId, ct) is null)
+            throw new ApplicationArgumentException($"User not found with Id={userId}");
 
         var checklist = new Checklist();
         var checklistId = new ChecklistId(Guid.NewGuid());
 
-        if (await userRepo.GetById(userId, ct) is null)
-            throw new ApplicationArgumentException($"User not found with Id={userId}");
 
         checklist.Create(checklistId, userId);
 
-        await checklistRepo.Add(checklist, ct);
+        await checklistRepo.Save(checklist, ct);
 
         return checklistId;
     }

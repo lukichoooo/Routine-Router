@@ -62,7 +62,7 @@ public class ChecklistRepoTests
         var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.Add(checklist, default);
+        await sut.Save(checklist, default);
         await Commit();
 
 
@@ -87,7 +87,7 @@ public class ChecklistRepoTests
         var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
-        await sut.Add(checklist, default);
+        await sut.Save(checklist, default);
         await Commit();
 
         // Assert
@@ -121,7 +121,7 @@ public class ChecklistRepoTests
         }
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
-        await sut.Add(oldChecklist, default);
+        await sut.Save(oldChecklist, default);
         await _eventsContext.SaveChangesAsync();
 
         // Act
@@ -157,7 +157,7 @@ public class ChecklistRepoTests
         }
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
-        await sut.Add(oldChecklist, default);
+        await sut.Save(oldChecklist, default);
         await _entitiesContext.SaveChangesAsync();
 
         // Act
