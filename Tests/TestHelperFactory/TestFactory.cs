@@ -26,9 +26,11 @@ public static class TestFactory
     public static void Reset()
     {
         _eventsContext?.Dispose();
-        _entitiesContext?.Dispose();
         _eventsContext = null;
+
+        _entitiesContext?.Dispose();
         _entitiesContext = null;
+
         _eventStore = null;
         _checklistStateStore = null;
         _userStateStore = null;

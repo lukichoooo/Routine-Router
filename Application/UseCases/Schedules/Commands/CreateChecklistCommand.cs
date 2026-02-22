@@ -29,7 +29,6 @@ public class CreateChecklistCommandHandler(
         var checklist = new Checklist();
         var checklistId = new ChecklistId(Guid.NewGuid());
 
-
         checklist.Create(checklistId, userId);
 
         await checklistRepo.Save(checklist, ct);

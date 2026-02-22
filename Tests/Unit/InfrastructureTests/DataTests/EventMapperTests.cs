@@ -18,7 +18,7 @@ public class EventMapperTests
     {
         var loggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.AddConsole(); // Comment out to not log
+            // builder.AddConsole(); // Comment out to not log
             builder.SetMinimumLevel(LogLevel.Debug);
         });
         return loggerFactory.CreateLogger<EventMapperTests>();
