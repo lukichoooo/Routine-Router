@@ -14,7 +14,7 @@ public interface IEntityStateStore<TState, TId>
 {
     Task<TState?> Get(TId aggregateId, CancellationToken ct);
 
-    Task Add(TState aggregateState, CancellationToken ct);
+    Task Save(TState aggregateState, CancellationToken ct);
 }
 
 
@@ -27,7 +27,13 @@ where TState : AggregateRootState<TId>
         .Set<TState>()
         .FindAsync([aggregateId], ct);
 
-    public async Task Add(TState aggregateState, CancellationToken ct)
-        => await context.AddAsync(aggregateState, ct);
+    public async Task Save(TState aggregateState, CancellationToken ct)
+    {
+        var existing = await context.Set<TState>().FindAsync([aggregateState.Id], ct);
+        if (existing is not null)
+            context.Entry(existing).CurrentValues.SetValues(aggregateState);
+        else
+            await context.AddAsync(aggregateState, ct);
+    }
 }
 

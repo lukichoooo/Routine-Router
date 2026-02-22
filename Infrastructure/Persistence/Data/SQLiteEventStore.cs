@@ -33,8 +33,8 @@ public class SQLiteEventStore(
         if (maxVersion != expectedVersion)
         {
             throw new ConcurrencyException(@$"
-                Expected version: {expectedVersion.ToString() ?? "null"} 
-                but found: {maxVersion.ToString() ?? "null"}.");
+                Expected version: {expectedVersion} 
+                but found: {maxVersion}.");
         }
 
         IEnumerable<Event> newEvents = events

@@ -2,7 +2,12 @@ using Application.Interfaces.Data;
 using Application.Interfaces.Events;
 using Application.UseCases.Identity;
 using Application.UseCases.Schedules;
+using Application.UseCases.Schedules.Commands;
 using AutoFixture;
+using Domain.Common.ValueObjects;
+using Domain.Entities.Schedules;
+using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users;
 using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
 using Infrastructure.Persistence;
@@ -14,7 +19,7 @@ using TestHelperFactory;
 namespace Intergration;
 
 [TestFixture]
-public class AddTaskToChecklistCommandTests
+public class AddTaskCommandTests
 {
     public Fixture _fix = TestFactory.GetFixture();
 
@@ -74,8 +79,41 @@ public class AddTaskToChecklistCommandTests
 
 
     [Test]
-    public async Task CreateChecklistCommandHandlerTest_Success()
+    public async Task AddTaskCommandHandler_Success()
     {
+        var user = new User();
+        user.Create(CurrentUserId, new(CurrentUserName), _fix.Create<PasswordHash>());
+        await _userRepo.Save(user, default);
+        await _unitOfWork.Commit();
+
+        var sut = new AddTaskCommandHandler(
+                _identityMock,
+                _checklistRepo,
+                _userRepo,
+                _unitOfWork);
+
+        var checklist = new Checklist();
+        var checklistId = new ChecklistId(Guid.NewGuid());
+        checklist.Create(checklistId, CurrentUserId);
+        await _checklistRepo.Save(checklist, default);
+        await _unitOfWork.Commit();
+
+        var command = new AddTaskCommand(
+                checklistId,
+                _fix.Create<Name>(),
+                _fix.Create<TaskType>(),
+                _fix.Create<Schedule>(),
+                _fix.Create<string>());
+
+        var taskId = await sut.Handle(command, default);
+
+        var storedChecklist = await _checklistRepo.GetById(checklistId, default);
+        Assert.That(storedChecklist, Is.Not.Null);
+
+        var task = storedChecklist.Tasks[0];
+        Assert.That(task, Is.Not.Null);
+        Assert.That(task.Id, Is.EqualTo(taskId));
+        Assert.That(task.ChecklistId, Is.EqualTo(checklistId));
     }
 }
 

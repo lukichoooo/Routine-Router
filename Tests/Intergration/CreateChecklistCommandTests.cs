@@ -82,6 +82,7 @@ public class CreateChecklistCommandTests
         var user = new User();
         user.Create(CurrentUserId, new(CurrentUserName), _fix.Create<PasswordHash>());
         await _userRepo.Save(user, default);
+        await _unitOfWork.Commit();
 
         // Arrange
         var sut = new CreateChecklistCommandHandler(

@@ -19,6 +19,7 @@ public sealed class Checklist :
 
 
     public UserId UserId => State.UserId;
+    public IReadOnlyList<TaskEntity> Tasks => State.Tasks;
 
 
     public void Create(ChecklistId id, UserId userId)

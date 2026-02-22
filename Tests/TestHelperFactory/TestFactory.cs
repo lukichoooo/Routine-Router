@@ -13,6 +13,9 @@ using Microsoft.EntityFrameworkCore;
 namespace TestHelperFactory;
 
 
+// <summary>
+//  static factory using singleton pattern
+//  </summary>
 public static class TestFactory
 {
     private static Fixture? _fixture;

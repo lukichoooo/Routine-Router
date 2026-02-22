@@ -79,7 +79,7 @@ public class EntityStateStoreTests
         var sut = new SQLiteStateStore<UserState, UserId>(_context);
 
         // Act
-        await sut.Add(user.State, default);
+        await sut.Save(user.State, default);
         var currentlyTrackedEntities = GetTrackedEntities();
 
         _context.SaveChanges();
@@ -130,7 +130,7 @@ public class EntityStateStoreTests
         var sut = new SQLiteStateStore<ChecklistState, ChecklistId>(_context);
 
         // Act
-        await sut.Add(checklist.State, default);
+        await sut.Save(checklist.State, default);
         var currentlyTrackedEntities = GetTrackedEntities();
         _context.SaveChanges();
 
