@@ -7,7 +7,7 @@ using Domain.Entities.Schedules.ValueObjects;
 
 namespace Application.UseCases.Schedules.Commands;
 
-public sealed record AddTaskToChecklistCommand(
+public sealed record AddTaskCommand(
         ChecklistId ChecklistId,
         Name Name,
         TaskType TaskType,
@@ -16,15 +16,15 @@ public sealed record AddTaskToChecklistCommand(
         ) : ICommand<TaskId>;
 
 
-public class AddTaskToChecklistCommandHandler(
+public class AddTaskCommandHandler(
         IIdentityProvider identity,
         IChecklistRepo checklistRepo,
         IUserRepo userRepo,
         IUnitOfWork uow)
-        : BaseCommandHandler<AddTaskToChecklistCommand, TaskId>(uow)
+        : BaseCommandHandler<AddTaskCommand, TaskId>(uow)
 {
     protected override async Task<TaskId> Execute(
-            AddTaskToChecklistCommand command,
+            AddTaskCommand command,
             CancellationToken ct)
     {
         var userId = identity.GetCurrentUserId();
