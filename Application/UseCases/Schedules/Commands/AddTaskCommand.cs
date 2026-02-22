@@ -31,11 +31,11 @@ public class AddTaskToChecklistCommandHandler(
         if (await userRepo.GetById(userId, ct) is null)
             throw new ApplicationArgumentException($"User not found with Id={userId}");
 
-        if (command.ChecklistId != userId)
-            throw new ApplicationArgumentException($"user has no Checklist with ChecklistId={command.ChecklistId}");
-
         var checklist = await checklistRepo.GetById(command.ChecklistId, ct)
             ?? throw new ApplicationArgumentException($"Checklist not found with Id={command.ChecklistId}");
+
+        if (checklist.UserId != userId)
+            throw new ApplicationArgumentException($"user has no Checklist with ChecklistId={command.ChecklistId}");
 
         var taskId = checklist.AddTask(
                 command.Name,
