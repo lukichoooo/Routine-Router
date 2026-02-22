@@ -53,10 +53,10 @@ public class JsonEventMapper : IJsonEventMapper
 
         foreach (var (value, propName) in dbEvent.GetIgnoredOnPayloadFields())
         {
-            if (value is Guid guid)
+            if (propName == nameof(Event.AggregateId))
             {
                 var idType = _typeNameToType[dbEvent.AggregateIdType];
-                var id = Activator.CreateInstance(idType, guid);
+                var id = Activator.CreateInstance(idType, value);
 
                 node.Add(propName, JsonSerializer.SerializeToNode(id));
             }

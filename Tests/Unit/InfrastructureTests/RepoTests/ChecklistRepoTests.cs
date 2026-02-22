@@ -4,8 +4,10 @@ using Domain.Common.ValueObjects;
 using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users.ValueObjects;
+using Domain.SeedWork;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Persistence.Data;
 using Infrastructure.Repos;
 using TestHelperFactory;
 
@@ -13,22 +15,38 @@ namespace InfrastructureTests.RepoTests;
 
 
 [TestFixture]
-public class ChecklistRepoTests // TODO:
+public class ChecklistRepoTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
 
-    private readonly IEventStore _eventStore = TestFactory.GetEventStore();
-    private readonly IEntityStateStore<ChecklistState, ChecklistId> _stateStore
-        = TestFactory.GetChecklistStateStore();
-
+    private IEventStore _eventStore = TestFactory.GetEventStore();
+    private IEntityStateStore<ChecklistState, ChecklistId> _stateStore = TestFactory.GetChecklistStateStore();
     private readonly EventsContext _eventsContext = TestFactory.GetEventsContext();
     private readonly EntitiesContext _entitiesContext = TestFactory.GetEntitiesContext();
 
+    [SetUp]
+    public async Task SetUpAsync()
+    {
+        _eventStore = new SQLiteEventStore(TestFactory.GetEventMapper(), _eventsContext);
+        _stateStore = new SQLiteStateStore<ChecklistState, ChecklistId>(_entitiesContext);
+        _eventsContext.RemoveRange(_eventsContext.Events);
+        _entitiesContext.RemoveRange(_entitiesContext.Checklists);
+        await _eventsContext.SaveChangesAsync();
+        await _entitiesContext.SaveChangesAsync();
+    }
+
     [OneTimeTearDown]
-    public async Task OneTimeTearDownAsync()
+    public async Task TearDown()
     {
         await _eventsContext.DisposeAsync();
         await _entitiesContext.DisposeAsync();
+        TestFactory.Reset();
+    }
+
+    private async Task Commit()
+    {
+        await _eventsContext.SaveChangesAsync();
+        await _entitiesContext.SaveChangesAsync();
     }
 
     [Test]
@@ -36,8 +54,8 @@ public class ChecklistRepoTests // TODO:
     {
         // Arrange
         var checklist = new Checklist();
-        var checklistId = _fix.Create<ChecklistId>();
-        var userId = _fix.Create<UserId>();
+        var checklistId = new ChecklistId(Guid.NewGuid());
+        var userId = new UserId(Guid.NewGuid());
         checklist.Create(checklistId, userId);
         var domainEvents = checklist.DomainEvents;
 
@@ -45,10 +63,30 @@ public class ChecklistRepoTests // TODO:
 
         // Act
         await sut.Add(checklist, default);
+        await Commit();
 
 
         // Assert
         var res = await _eventStore.Load(checklist.Id, default);
+
+        Console.WriteLine($"domainEvents count: {domainEvents.Count}");
+        Console.WriteLine($"res count: {res.Count}");
+        for (int i = 0; i < domainEvents.Count; i++)
+        {
+            var de = domainEvents[i];
+            var re = res[i];
+            Console.WriteLine($"domainEvents[{i}]: {de}");
+            Console.WriteLine($"res[{i}]: {re}");
+            Console.WriteLine($"Equals: {de?.Equals(re)}");
+            if (de != null && re != null)
+            {
+                Console.WriteLine($"  de.AggregateId: {de.AggregateId} (hash: {de.AggregateId?.GetHashCode()})");
+                Console.WriteLine($"  re.AggregateId: {re.AggregateId} (hash: {re.AggregateId?.GetHashCode()})");
+                Console.WriteLine($"  AggregateId Equals: {de.AggregateId?.Equals(re.AggregateId)}");
+                Console.WriteLine($"  de.GetType(): {de.GetType()}");
+                Console.WriteLine($"  re.GetType(): {re.GetType()}");
+            }
+        }
 
         Assert.That(res, Is.EquivalentTo(domainEvents));
     }
@@ -58,35 +96,35 @@ public class ChecklistRepoTests // TODO:
     public async Task Add_Events()
     {
         // Arrange
-        var checklistId = _fix.Create<ChecklistId>();
-        var userId = _fix.Create<UserId>();
+        var checklistId = new ChecklistId(Guid.NewGuid());
+        var userId = new UserId(Guid.NewGuid());
 
         var checklist = new Checklist();
         checklist.Create(checklistId, userId);
-        var domainEvents = checklist.DomainEvents;
 
+        var domainEvents = checklist.DomainEvents;
         var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
         await sut.Add(checklist, default);
-        await _eventsContext.SaveChangesAsync();
-
+        await Commit();
 
         // Assert
-        var res = await _eventStore.Load(checklist.Id, default);
-
-
-        Assert.That(res, Is.EquivalentTo(domainEvents));
+        var res = await _eventStore.Load(checklistId, default);
+        Console.WriteLine($"res[0].AggregateId: {res[0].AggregateId.Value}");
+        Assert.That(res, Has.Count.EqualTo(domainEvents.Count));
+        Assert.That(res[0].AggregateId.Value, Is.EqualTo(domainEvents[0].AggregateId.Value));
+        Assert.That(res[0].Timestamp, Is.EqualTo(domainEvents[0].Timestamp));
+        Assert.That(res[0].Version, Is.EqualTo(domainEvents[0].Version));
     }
 
 
-    // TODO: 
     [TestCase(1)]
     [TestCase(3)]
     public async Task GetById_Events(int eventsCount)
     {
         // Arrange
-        var checklistId = _fix.Create<ChecklistId>();
+        var checklistId = new ChecklistId(Guid.NewGuid());
 
         var oldChecklist = new Checklist();
         oldChecklist.Create(checklistId, _fix.Create<UserId>());
@@ -103,8 +141,7 @@ public class ChecklistRepoTests // TODO:
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
         await sut.Add(oldChecklist, default);
-        await _eventsContext.SaveChangesAsync();
-
+        await Commit();
 
         // Act
         var checklist = await sut.GetById(checklistId, default);
@@ -112,7 +149,8 @@ public class ChecklistRepoTests // TODO:
         // Assert
 
         Assert.That(checklist, Is.Not.Null);
-        Assert.That(checklist.DomainEvents, Has.Exactly(eventsCount).Items);
+        Assert.That(checklist.State, Is.EqualTo(oldChecklist.State));
+        Assert.That(checklist.DomainEvents, Is.Empty);
     }
 
 

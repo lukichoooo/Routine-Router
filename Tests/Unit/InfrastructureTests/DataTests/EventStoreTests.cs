@@ -19,20 +19,20 @@ public class EventStoreTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
     private readonly EventsContext _eventsContext = TestFactory.GetEventsContext();
-    private readonly IJsonEventMapper _eventSerializer = TestFactory.GetEventMapper();
+    private readonly IJsonEventMapper _eventMapper = TestFactory.GetEventMapper();
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDownAsync()
-    {
-        await _eventsContext.DisposeAsync();
-    }
-
-    [TearDown]
-    public void TearDown()
+    [SetUp]
+    public void SetUp()
     {
         _eventsContext.Events.RemoveRange(_eventsContext.Events);
         _eventsContext.SaveChanges();
-        _eventsContext.ChangeTracker.Clear();
+    }
+
+    [OneTimeTearDown]
+    public async Task TearDown()
+    {
+        await _eventsContext.DisposeAsync();
+        TestFactory.Reset();
     }
 
     [Test]
@@ -40,7 +40,7 @@ public class EventStoreTests
     {
         // Arrange
         var sut = new SQLiteEventStore(
-                _eventSerializer,
+                _eventMapper,
                 _eventsContext);
 
         var user = new User();
@@ -71,7 +71,7 @@ public class EventStoreTests
     public async Task AppendTest_WithExpectedVersion()
     {
         // Arrange
-        var sut = new SQLiteEventStore(_eventSerializer, _eventsContext);
+        var sut = new SQLiteEventStore(_eventMapper, _eventsContext);
 
         var ogUser = new User();
         ogUser.Create(new UserId(Guid.NewGuid()), _fix.Create<Name>(), _fix.Create<PasswordHash>());
@@ -95,7 +95,7 @@ public class EventStoreTests
             .AsNoTracking()
             .Where(e => e.AggregateId == ogUser.Id.Value)
             .OrderBy(e => e.Version)
-            .Select(e => _eventSerializer.ToDomainEvent(e))
+            .Select(e => _eventMapper.ToDomainEvent(e))
             .ToListAsync();
         Assert.That(userHistory, Has.Exactly(1).InstanceOf<UserCreated>());
 
@@ -139,7 +139,7 @@ public class EventStoreTests
     {
         // Arrange
         var sut = new SQLiteEventStore(
-                _eventSerializer,
+                _eventMapper,
                 _eventsContext);
 
         var aggregateId = _fix.Create<UserId>();
@@ -149,7 +149,7 @@ public class EventStoreTests
 
         var dbEvent = Event.From(
                 domainEvents[0],
-                _eventSerializer.ToPayload(domainEvents[0]));
+                _eventMapper.ToPayload(domainEvents[0]));
 
         await _eventsContext.Events.AddAsync(dbEvent);
         await _eventsContext.SaveChangesAsync();

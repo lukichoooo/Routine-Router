@@ -27,9 +27,10 @@ public class EntityStateStoreTests
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDownAsync()
+    public async Task TearDown()
     {
         await _context.DisposeAsync();
+        TestFactory.Reset();
     }
 
 
