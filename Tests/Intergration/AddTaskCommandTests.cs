@@ -115,5 +115,8 @@ public class AddTaskCommandTests
         Assert.That(task.Id, Is.EqualTo(taskId));
         Assert.That(task.ChecklistId, Is.EqualTo(checklistId));
     }
+
+
+    // TODO: fail tests
 }
 
