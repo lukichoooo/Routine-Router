@@ -9,7 +9,7 @@ namespace Infrastructure.Repos;
 
 
 public class UserRepo
-(IEntityStateStore<UserState, UserId> stateStore, IEventStore eventStore)
+(IEventStore eventStore, IEntityStateStore<UserState, UserId> stateStore)
     : BaseRepository<User, UserId, UserState>(stateStore, eventStore), IUserRepo
 {
 }

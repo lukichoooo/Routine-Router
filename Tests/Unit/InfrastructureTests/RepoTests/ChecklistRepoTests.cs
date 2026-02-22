@@ -69,25 +69,6 @@ public class ChecklistRepoTests
         // Assert
         var res = await _eventStore.Load(checklist.Id, default);
 
-        Console.WriteLine($"domainEvents count: {domainEvents.Count}");
-        Console.WriteLine($"res count: {res.Count}");
-        for (int i = 0; i < domainEvents.Count; i++)
-        {
-            var de = domainEvents[i];
-            var re = res[i];
-            Console.WriteLine($"domainEvents[{i}]: {de}");
-            Console.WriteLine($"res[{i}]: {re}");
-            Console.WriteLine($"Equals: {de?.Equals(re)}");
-            if (de != null && re != null)
-            {
-                Console.WriteLine($"  de.AggregateId: {de.AggregateId} (hash: {de.AggregateId?.GetHashCode()})");
-                Console.WriteLine($"  re.AggregateId: {re.AggregateId} (hash: {re.AggregateId?.GetHashCode()})");
-                Console.WriteLine($"  AggregateId Equals: {de.AggregateId?.Equals(re.AggregateId)}");
-                Console.WriteLine($"  de.GetType(): {de.GetType()}");
-                Console.WriteLine($"  re.GetType(): {re.GetType()}");
-            }
-        }
-
         Assert.That(res, Is.EquivalentTo(domainEvents));
     }
 
@@ -141,7 +122,7 @@ public class ChecklistRepoTests
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
         await sut.Add(oldChecklist, default);
-        await Commit();
+        await _eventsContext.SaveChangesAsync();
 
         // Act
         var checklist = await sut.GetById(checklistId, default);
@@ -155,9 +136,37 @@ public class ChecklistRepoTests
 
 
 
-    [Test]
-    public async Task GetById_State()
+    [TestCase(1)]
+    [TestCase(3)]
+    public async Task GetById_State(int eventsCount)
     {
+        // Arrange
+        var checklistId = new ChecklistId(Guid.NewGuid());
+
+        var oldChecklist = new Checklist();
+        oldChecklist.Create(checklistId, _fix.Create<UserId>());
+
+        for (int i = 1; i < eventsCount; ++i)
+        {
+            oldChecklist.AddTask(
+                    _fix.Create<Name>(),
+                    _fix.Create<TaskType>(),
+                    _fix.Create<Schedule>(),
+                    _fix.Create<string>()
+                    );
+        }
+
+        var sut = new ChecklistRepo(_eventStore, _stateStore);
+        await sut.Add(oldChecklist, default);
+        await _entitiesContext.SaveChangesAsync();
+
+        // Act
+        var checklist = await sut.GetById(checklistId, default);
+
+        // Assert
+        Assert.That(checklist, Is.Not.Null);
+        Assert.That(checklist.State, Is.EqualTo(oldChecklist.State));
+        Assert.That(checklist.DomainEvents, Is.Empty);
     }
 
 }
