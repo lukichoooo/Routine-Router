@@ -1,3 +1,4 @@
+using Application.Common.Exceptions;
 using Application.Interfaces.Data;
 using Application.Interfaces.Events;
 using Application.UseCases.Identity;
@@ -117,6 +118,65 @@ public class AddTaskCommandTests
     }
 
 
-    // TODO: fail tests
+    [Test]
+    public async Task AddTaskCommandHandler_Fail_WhenUserDoesNotOwnChecklist()
+    {
+        var user = new User();
+        user.Create(CurrentUserId, new(CurrentUserName), _fix.Create<PasswordHash>());
+        await _userRepo.Save(user, default);
+        await _unitOfWork.Commit();
+
+        var sut = new AddTaskCommandHandler(
+                _identityMock,
+                _checklistRepo,
+                _userRepo,
+                _unitOfWork);
+
+        var otherUserId = new UserId(Guid.NewGuid());
+        var checklist = new Checklist();
+        var checklistId = new ChecklistId(Guid.NewGuid());
+        checklist.Create(checklistId, otherUserId);
+        await _checklistRepo.Save(checklist, default);
+        await _unitOfWork.Commit();
+
+        var command = new AddTaskCommand(
+                checklistId,
+                _fix.Create<Name>(),
+                _fix.Create<TaskType>(),
+                _fix.Create<Schedule>(),
+                _fix.Create<string>());
+
+        Assert.ThrowsAsync<ApplicationArgumentException>(
+            async () => await sut.Handle(command, default));
+    }
+
+
+    [Test]
+    public async Task AddTaskCommandHandler_Fail_WhenChecklistDoesNotExist()
+    {
+        var user = new User();
+        user.Create(CurrentUserId, new(CurrentUserName), _fix.Create<PasswordHash>());
+        await _userRepo.Save(user, default);
+        await _unitOfWork.Commit();
+
+        var sut = new AddTaskCommandHandler(
+                _identityMock,
+                _checklistRepo,
+                _userRepo,
+                _unitOfWork);
+
+        var nonExistentChecklistId = new ChecklistId(Guid.NewGuid());
+
+        var command = new AddTaskCommand(
+                nonExistentChecklistId,
+                _fix.Create<Name>(),
+                _fix.Create<TaskType>(),
+                _fix.Create<Schedule>(),
+                _fix.Create<string>());
+
+        Assert.ThrowsAsync<ApplicationArgumentException>(
+            async () => await sut.Handle(command, default));
+    }
+
 }
 
