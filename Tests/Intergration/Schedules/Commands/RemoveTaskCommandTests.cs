@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using TestHelperFactory;
 
-namespace Intergration;
+namespace Intergration.Schedules.Commands;
 
 [TestFixture]
 public class RemoveTaskCommandTests
