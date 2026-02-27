@@ -140,8 +140,6 @@ public class AddTaskCommandTests
                 _fix.Create<Schedule>(),
                 _fix.Create<string>());
 
-        var taskId = await sut.Handle(command, default);
-
         Assert.ThrowsAsync<ApplicationArgumentException>(
             async () => await sut.Handle(command, default));
     }
