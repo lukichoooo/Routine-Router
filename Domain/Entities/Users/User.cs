@@ -22,7 +22,7 @@ public sealed class User :
         => AppendEvent(new UserCreated(
                     AggregateId: id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     name,
                     passwordHash
         ));
@@ -35,7 +35,7 @@ public sealed class User :
         AppendEvent(new UserUpdated(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     name,
                     passwordHash
                     ));
@@ -49,7 +49,7 @@ public sealed class User :
         AppendEvent(new UserVerified(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now
+                    Timestamp: Clock.CurrentTime
                     ));
     }
 

@@ -101,7 +101,7 @@ public class UserTests
         var updateEvent = new UserUpdated(
                 state.Id,
                 100,
-                Clock.Now,
+                Clock.CurrentTime,
                 newName,
                 newPasswordHash);
         state.Apply(updateEvent);

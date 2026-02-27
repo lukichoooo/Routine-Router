@@ -26,7 +26,7 @@ public sealed class Checklist :
         => AppendEvent(new ChecklistCreated(
             AggregateId: id,
             Version: NextVersion,
-            Timestamp: Clock.Now,
+            Timestamp: Clock.CurrentTime,
             UserId: userId));
 
     public TaskId AddTask(Name name, TaskType taskType, Schedule planned, string? metadata)
@@ -35,7 +35,7 @@ public sealed class Checklist :
         AppendEvent(new TaskAddedToChecklist(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     TaskId: taskId,
                     Name: name,
                     TaskType: taskType,
@@ -53,7 +53,7 @@ public sealed class Checklist :
         AppendEvent(new TaskStarted(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     taskId));
     }
 
@@ -70,7 +70,7 @@ public sealed class Checklist :
         AppendEvent(new TaskCompleted(
                     AggregateId: State.Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     taskId
                     ));
     }
@@ -81,7 +81,7 @@ public sealed class Checklist :
         AppendEvent(new TaskRemovedFromChecklist(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     taskId
                     ));
     }
@@ -95,7 +95,7 @@ public sealed class Checklist :
         AppendEvent(new TaskMetadataUpdated(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     taskId,
                     metadata
                     ));
@@ -105,14 +105,14 @@ public sealed class Checklist :
         => AppendEvent(new UserRatingSet(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     rating));
 
     public void SetLLMRating(Rating rating)
         => AppendEvent(new LLMRatingSet(
                     AggregateId: Id,
                     Version: NextVersion,
-                    Timestamp: Clock.Now,
+                    Timestamp: Clock.CurrentTime,
                     rating));
 
     private Checklist() { }

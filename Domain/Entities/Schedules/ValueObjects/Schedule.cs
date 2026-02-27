@@ -1,3 +1,4 @@
+using Domain.Common;
 using Domain.SeedWork;
 
 namespace Domain.Entities.Schedules.ValueObjects;
@@ -25,7 +26,7 @@ public sealed class Schedule : ValueObject
         => EndTime?.Subtract(StartTime) ?? TimeSpan.Zero;
 
     public TimeSpan GetTimeFromStart()
-        => DateTimeOffset.Now.Subtract(StartTime);
+        => Clock.CurrentTime.Subtract(StartTime);
 
 
     private Schedule() { }

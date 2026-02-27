@@ -269,7 +269,7 @@ public class ChecklistTests
         var removeTaskFromChecklist = new TaskRemovedFromChecklist(
                     addTaskToChecklist.AggregateId,
                     addTaskToChecklist.Version + 1,
-                    Clock.Now,
+                    Clock.CurrentTime,
                     addTaskToChecklist.TaskId
                     );
         state.Apply(removeTaskFromChecklist);
@@ -291,7 +291,7 @@ public class ChecklistTests
         var startTask = new TaskStarted(
                         evt.AggregateId,
                         addTaskToChecklist.Version + 1,
-                        Clock.Now,
+                        Clock.CurrentTime,
                         addTaskToChecklist.TaskId
                         );
         state.Apply(startTask);
@@ -317,7 +317,7 @@ public class ChecklistTests
         var startTask = new TaskStarted(
                         evt.AggregateId,
                         addTaskToChecklist.Version + 1,
-                        Clock.Now,
+                        Clock.CurrentTime,
                         addTaskToChecklist.TaskId
                         );
         state.Apply(startTask);
@@ -325,7 +325,7 @@ public class ChecklistTests
         var completeTask = new TaskCompleted(
                         evt.AggregateId,
                         startTask.Version + 1,
-                        Clock.Now,
+                        Clock.CurrentTime,
                         startTask.TaskId
                         );
         state.Apply(completeTask);
@@ -350,7 +350,7 @@ public class ChecklistTests
         var rating = new UserRatingSet(
                         evt.AggregateId,
                         100,
-                        Clock.Now,
+                        Clock.CurrentTime,
                         new(1, 2, 3, 4, 5, 6));
         state.Apply(rating);
 
@@ -371,7 +371,7 @@ public class ChecklistTests
         var rating = new LLMRatingSet(
                         evt.AggregateId,
                         100,
-                        Clock.Now,
+                        Clock.CurrentTime,
                         new(1, 2, 3, 4, 5, 6));
         state.Apply(rating);
 
@@ -395,7 +395,7 @@ public class ChecklistTests
         var updateMetadata = new TaskMetadataUpdated(
                         evt.AggregateId,
                         100,
-                        Clock.Now,
+                        Clock.CurrentTime,
                         addTaskToChecklist.TaskId,
                         metadata);
         state.Apply(updateMetadata);
