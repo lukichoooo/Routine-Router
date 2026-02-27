@@ -14,6 +14,11 @@ public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregate
     public UserId UserId { get; private set; }
     public Statistics Statistics { get; private set; }
 
+
+    public static ChecklistState CreateState(AggregateRoot<ChecklistId> owner)
+        => new(owner);
+
+
     // ---------- APPLY  ----------
 
     public void Apply(ChecklistCreated e)
@@ -59,10 +64,6 @@ public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregate
     public TaskEntity TryGetTask(TaskId id) =>
         _tasks.FirstOrDefault(t => t.Id == id)
         ?? throw new DomainRuleViolation($"Task {id} not found");
-
-
-    public static ChecklistState CreateState(AggregateRoot<ChecklistId> owner)
-        => new(owner);
 
 #pragma warning disable CS8618 
     private ChecklistState(AggregateRoot<ChecklistId> owner) : base(owner) { }

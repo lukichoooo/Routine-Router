@@ -11,6 +11,10 @@ public sealed class UserState : AggregateRootState<UserId>, IAggregateRootStateF
     public PasswordHash PasswordHash { get; private set; }
 
 
+    public static UserState CreateState(AggregateRoot<UserId> owner)
+        => new(owner);
+
+
     public void Apply(UserCreated e)
     {
         Id = e.AggregateId;
@@ -26,11 +30,6 @@ public sealed class UserState : AggregateRootState<UserId>, IAggregateRootStateF
 
     public void Apply(UserVerified e) { }
 
-
-    public static UserState CreateState(AggregateRoot<UserId> owner)
-    {
-        return new(owner);
-    }
 
 
 #pragma warning disable CS8618 
