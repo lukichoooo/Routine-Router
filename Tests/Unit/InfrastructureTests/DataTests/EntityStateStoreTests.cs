@@ -92,7 +92,7 @@ public class EntityStateStoreTests
     }
 
     [Test]
-    public async Task Save_Update_User_Success()
+    public async Task Update_User_Success()
     {
         // Arrange
         var sut = new SQLiteStateStore<UserState, UserId>(_context);
@@ -111,7 +111,7 @@ public class EntityStateStoreTests
         storedUser.Update(_fix.Create<Name>(), _fix.Create<PasswordHash>());
 
         // Act
-        await sut.Save(storedUser.State, default);
+        sut.Update(storedUser.State);
         var currentlyTrackedEntities = GetTrackedEntityStateOwners();
         _context.SaveChanges();
 
@@ -174,7 +174,7 @@ public class EntityStateStoreTests
 
 
     [Test]
-    public async Task Save_Update_Checklist_Success()
+    public async Task Update_Checklist_Success()
     {
         // Arrange
         var sut = new SQLiteStateStore<ChecklistState, ChecklistId>(_context);
@@ -197,7 +197,7 @@ public class EntityStateStoreTests
                 _fix.Create<string>());
 
         // Act
-        await sut.Save(storedChecklist.State, default);
+        sut.Update(storedChecklist.State);
         var currentlyTrackedEntities = GetTrackedEntityStateOwners();
         _context.SaveChanges();
 
