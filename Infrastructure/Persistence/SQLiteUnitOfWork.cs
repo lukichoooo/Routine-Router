@@ -1,7 +1,10 @@
+using System.Data;
+using System.Transactions;
 using Application.Interfaces.Data;
 using Application.Interfaces.Events;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence;
@@ -15,8 +18,29 @@ public sealed class SQLiteUnitOfWork(
 {
     public async Task Commit(CancellationToken ct)
     {
-        await eventsContext.SaveChangesAsync(ct);
-        await entitiesContext.SaveChangesAsync(ct);
+        // TODO: Test Atomic Transactoin
+        using (var scope = new TransactionScope(
+                    TransactionScopeOption.Required,
+                    new TransactionOptions
+                    {
+                        IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted,
+                        Timeout = TimeSpan.FromSeconds(30),
+                    },
+                    TransactionScopeAsyncFlowOption.Enabled))
+        {
+            try
+            {
+                await entitiesContext.Database.OpenConnectionAsync(ct);
+                await eventsContext.Database.OpenConnectionAsync(ct);
+                scope.Complete();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Commit failed");
+                throw;
+            }
+        }
+
         logger.LogInformation("Commited changes");
 
 
