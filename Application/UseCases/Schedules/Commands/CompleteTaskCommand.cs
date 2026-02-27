@@ -36,7 +36,7 @@ public class CompleteTaskCommandHandler(
 
         checklist.CompleteTask(command.TaskId);
 
-        await checklistRepo.Save(checklist, ct);
+        await checklistRepo.Update(checklist, ct);
 
         return new EmptyReturn();
     }

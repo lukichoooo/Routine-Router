@@ -17,7 +17,7 @@ where TId : EntityId
 where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
 
 {
-    // Save
+    // Commands
     public async Task Save(TEntity aggregate, CancellationToken ct)
     {
         await eventStore.Append(
@@ -29,7 +29,18 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
         await stateStore.Save(aggregate.State, ct);
     }
 
-    // Query
+    public async Task Update(TEntity aggregate, CancellationToken ct)
+    {
+        await eventStore.Append(
+                aggregate.Id,
+                aggregate.DomainEvents,
+                expectedVersion: aggregate.StoredVersion,
+                ct);
+
+        stateStore.Update(aggregate.State);
+    }
+
+    // Queries
     public async Task<TEntity?> GetById(TId aggregateId, CancellationToken ct)
     {
         var state = await stateStore.Get(aggregateId, ct);
@@ -45,6 +56,5 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
 
         return entity;
     }
-
 }
 

@@ -43,7 +43,7 @@ public class AddTaskCommandHandler(
                 command.Planned,
                 command.Metadata);
 
-        await checklistRepo.Save(checklist, ct);
+        await checklistRepo.Update(checklist, ct);
 
         return taskId;
     }

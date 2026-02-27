@@ -1,6 +1,5 @@
 using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
@@ -16,6 +15,8 @@ public interface IEntityStateStore<TState, TId>
     Task<TState?> Get(TId aggregateId, CancellationToken ct);
 
     Task Save(TState aggregateState, CancellationToken ct);
+
+    void Update(TState aggregateState);
 }
 
 
@@ -29,14 +30,9 @@ where TState : AggregateRootState<TId>
         .FindAsync([aggregateId], ct);
 
     public async Task Save(TState aggregateState, CancellationToken ct)
-    {
-        var exists = await context.Set<TState>()
-            .AnyAsync(s => s.Id == aggregateState.Id, ct);
+        => await context.AddAsync(aggregateState, ct);
 
-        if (exists)
-            context.Update(aggregateState);
-        else
-            await context.AddAsync(aggregateState, ct);
-    }
+    public void Update(TState aggregateState)
+        => context.Update(aggregateState);
 }
 
