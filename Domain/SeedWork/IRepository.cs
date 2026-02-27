@@ -10,5 +10,7 @@ public interface IRepository<TA, TID>
 {
     Task Save(TA aggregate, CancellationToken ct);
 
+    Task Update(TA aggregate, CancellationToken ct);
+
     Task<TA?> GetById(TID aggregateId, CancellationToken ct);
 }
