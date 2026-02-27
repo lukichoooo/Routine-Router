@@ -18,8 +18,8 @@ public sealed class Checklist :
     public static Checklist Create(ChecklistState storedState) => new(storedState);
 
 
-    public UserId UserId => State.UserId;
-    public IReadOnlyList<TaskEntity> Tasks => State.Tasks;
+    public UserId UserId => State.UserId ?? throw new InvalidOperationException("Checklist is not created");
+    public IReadOnlyList<TaskEntity> Tasks => State.Tasks ?? throw new InvalidOperationException("Checklist is not created");
 
 
     public void Create(ChecklistId id, UserId userId)
