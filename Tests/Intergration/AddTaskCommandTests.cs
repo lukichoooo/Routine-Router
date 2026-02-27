@@ -119,6 +119,35 @@ public class AddTaskCommandTests
 
 
     [Test]
+    public async Task CompleteTaskCommandHandler_FailWhenUserDoesNotExist()
+    {
+        var sut = new AddTaskCommandHandler(
+                _identityMock,
+                _checklistRepo,
+                _userRepo,
+                _unitOfWork);
+
+        var checklist = new Checklist();
+        var checklistId = new ChecklistId(Guid.NewGuid());
+        checklist.Create(checklistId, CurrentUserId);
+        await _checklistRepo.Save(checklist, default);
+        await _unitOfWork.Commit();
+
+        var command = new AddTaskCommand(
+                checklistId,
+                _fix.Create<Name>(),
+                _fix.Create<TaskType>(),
+                _fix.Create<Schedule>(),
+                _fix.Create<string>());
+
+        var taskId = await sut.Handle(command, default);
+
+        Assert.ThrowsAsync<ApplicationArgumentException>(
+            async () => await sut.Handle(command, default));
+    }
+
+
+    [Test]
     public async Task AddTaskCommandHandler_Fail_WhenUserDoesNotOwnChecklist()
     {
         var user = new User();
