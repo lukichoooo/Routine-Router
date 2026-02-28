@@ -4,7 +4,6 @@ using Domain.Common.ValueObjects;
 using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users.ValueObjects;
-using Domain.SeedWork;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
@@ -19,34 +18,36 @@ public class ChecklistRepoTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
 
-    private IEventStore _eventStore = TestFactory.GetEventStore();
-    private IEntityStateStore<ChecklistState, ChecklistId> _stateStore = TestFactory.GetChecklistStateStore();
-    private readonly EventsContext _eventsContext = TestFactory.GetEventsContext();
-    private readonly EntitiesContext _entitiesContext = TestFactory.GetEntitiesContext();
+    private IEventStore _eventStore;
+    private IEntityStateStore<ChecklistState, ChecklistId> _stateStore;
+    private EventContext _eventContext = null!;
+    private StateContext _stateContext = null!;
 
     [SetUp]
     public async Task SetUpAsync()
     {
-        _eventStore = new SQLiteEventStore(TestFactory.GetEventMapper(), _eventsContext);
-        _stateStore = new SQLiteStateStore<ChecklistState, ChecklistId>(_entitiesContext);
-        _eventsContext.RemoveRange(_eventsContext.Events);
-        _entitiesContext.RemoveRange(_entitiesContext.Checklists);
-        await _eventsContext.SaveChangesAsync();
-        await _entitiesContext.SaveChangesAsync();
+        _eventContext = await TestFactory.GetEventContextAsync();
+        _stateContext = await TestFactory.GetStateContextAsync();
+        _eventStore = new SQLiteEventStore(TestFactory.GetEventMapper(), _eventContext);
+        _stateStore = new SQLiteStateStore<ChecklistState, ChecklistId>(_stateContext);
+        _eventContext.RemoveRange(_eventContext.Events);
+        _stateContext.RemoveRange(_stateContext.Checklists);
+        await _eventContext.SaveChangesAsync();
+        await _stateContext.SaveChangesAsync();
     }
 
     [OneTimeTearDown]
     public async Task TearDown()
     {
-        await _eventsContext.DisposeAsync();
-        await _entitiesContext.DisposeAsync();
+        await _eventContext.DisposeAsync();
+        await _stateContext.DisposeAsync();
         TestFactory.Reset();
     }
 
     private async Task Commit()
     {
-        await _eventsContext.SaveChangesAsync();
-        await _entitiesContext.SaveChangesAsync();
+        await _eventContext.SaveChangesAsync();
+        await _stateContext.SaveChangesAsync();
     }
 
     [Test]
@@ -122,7 +123,7 @@ public class ChecklistRepoTests
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
         await sut.Save(oldChecklist, default);
-        await _eventsContext.SaveChangesAsync();
+        await _eventContext.SaveChangesAsync();
 
         // Act
         var checklist = await sut.GetById(checklistId, default);
@@ -158,7 +159,7 @@ public class ChecklistRepoTests
 
         var sut = new ChecklistRepo(_eventStore, _stateStore);
         await sut.Save(oldChecklist, default);
-        await _entitiesContext.SaveChangesAsync();
+        await _stateContext.SaveChangesAsync();
 
         // Act
         var checklist = await sut.GetById(checklistId, default);

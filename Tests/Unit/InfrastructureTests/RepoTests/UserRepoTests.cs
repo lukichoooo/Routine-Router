@@ -16,34 +16,36 @@ public class UserRepoTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
 
-    private IEventStore _eventStore = TestFactory.GetEventStore();
-    private IEntityStateStore<UserState, UserId> _stateStore = TestFactory.GetUserStateStore();
-    private readonly EventsContext _eventsContext = TestFactory.GetEventsContext();
-    private readonly EntitiesContext _entitiesContext = TestFactory.GetEntitiesContext();
+    private IEventStore _eventStore;
+    private IEntityStateStore<UserState, UserId> _stateStore;
+    private EventContext _eventContext;
+    private StateContext _stateContext;
 
     [SetUp]
     public async Task SetUpAsync()
     {
-        _eventStore = new SQLiteEventStore(TestFactory.GetEventMapper(), _eventsContext);
-        _stateStore = new SQLiteStateStore<UserState, UserId>(_entitiesContext);
-        _eventsContext.RemoveRange(_eventsContext.Events);
-        _entitiesContext.RemoveRange(_entitiesContext.Checklists);
-        await _eventsContext.SaveChangesAsync();
-        await _entitiesContext.SaveChangesAsync();
+        _eventContext = await TestFactory.GetEventContextAsync();
+        _stateContext = await TestFactory.GetStateContextAsync();
+        _eventStore = new SQLiteEventStore(TestFactory.GetEventMapper(), _eventContext);
+        _stateStore = new SQLiteStateStore<UserState, UserId>(_stateContext);
+        _eventContext.RemoveRange(_eventContext.Events);
+        _stateContext.RemoveRange(_stateContext.Checklists);
+        await _eventContext.SaveChangesAsync();
+        await _stateContext.SaveChangesAsync();
     }
 
     [OneTimeTearDown]
     public async Task TearDown()
     {
-        await _eventsContext.DisposeAsync();
-        await _entitiesContext.DisposeAsync();
+        await _eventContext.DisposeAsync();
+        await _stateContext.DisposeAsync();
         TestFactory.Reset();
     }
 
     private async Task Commit()
     {
-        await _eventsContext.SaveChangesAsync();
-        await _entitiesContext.SaveChangesAsync();
+        await _eventContext.SaveChangesAsync();
+        await _stateContext.SaveChangesAsync();
     }
 
     [Test]
@@ -112,7 +114,7 @@ public class UserRepoTests
 
         var sut = new UserRepo(_eventStore, _stateStore);
         await sut.Save(oldUser, default);
-        await _eventsContext.SaveChangesAsync();
+        await _eventContext.SaveChangesAsync();
 
         // Act
         var user = await sut.GetById(userId, default);
@@ -145,7 +147,7 @@ public class UserRepoTests
 
         var sut = new UserRepo(_eventStore, _stateStore);
         await sut.Save(oldUser, default);
-        await _entitiesContext.SaveChangesAsync();
+        await _stateContext.SaveChangesAsync();
 
         // Act
         var user = await sut.GetById(userId, default);

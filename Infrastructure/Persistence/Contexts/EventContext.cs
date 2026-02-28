@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Persistence.Contexts;
 
 
-public class EventsContext(DbContextOptions<EventsContext> options) : DbContext(options)
+public class EventContext(DbContextOptions<EventContext> options) : DbContext(options)
 {
     public DbSet<Event> Events { get; set; }
 

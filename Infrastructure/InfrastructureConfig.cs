@@ -46,10 +46,10 @@ namespace Infrastructure
 
 
             //EF
-            services.AddDbContext<EventsContext>(options =>
-                options.UseSqlite(config.GetConnectionString("RoutineContext")));
-            services.AddDbContext<EntitiesContext>(options =>
-                options.UseSqlite(config.GetConnectionString("EntitiesContext")));
+            services.AddDbContext<EventContext>(options =>
+                options.UseSqlite(config.GetConnectionString("EventContext")));
+            services.AddDbContext<StateContext>(options =>
+                options.UseSqlite(config.GetConnectionString("StateContext")));
 
             services.AddSingleton<IIdentityProvider, IdentityProvider>();
 

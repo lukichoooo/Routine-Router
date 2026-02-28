@@ -16,11 +16,12 @@ namespace InfrastructureTests.DataTests;
 public class EntityStateStoreTests
 {
     private readonly Fixture _fix = TestFactory.GetFixture();
-    private readonly EntitiesContext _context = TestFactory.GetEntitiesContext();
+    private StateContext _context = null!;
 
     [SetUp]
-    public void Setup()
+    public async Task SetupAsync()
     {
+        _context = await TestFactory.GetStateContextAsync();
         _context.Users.RemoveRange(_context.Users);
         _context.Checklists.RemoveRange(_context.Checklists);
         _context.SaveChanges();

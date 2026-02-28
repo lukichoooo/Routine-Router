@@ -1,14 +1,19 @@
+using Application.Interfaces.Data;
 using Application.Interfaces.Events;
 using AutoFixture;
 using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users;
 using Domain.Entities.Users.ValueObjects;
+using Infrastructure.EventPublishing;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
 using Infrastructure.Persistence.Data.Serializer;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace TestHelperFactory;
 
@@ -19,8 +24,8 @@ namespace TestHelperFactory;
 public static class TestFactory
 {
     private static Fixture? _fixture;
-    private static EventsContext? _eventsContext;
-    private static EntitiesContext? _entitiesContext;
+    private static EventContext? _eventContext;
+    private static StateContext? _stateContext;
     private static IJsonEventMapper? _eventMapper;
     private static IEventStore? _eventStore;
     private static IEntityStateStore<ChecklistState, ChecklistId>? _checklistStateStore;
@@ -28,11 +33,11 @@ public static class TestFactory
 
     public static void Reset()
     {
-        _eventsContext?.Dispose();
-        _eventsContext = null;
+        _eventContext?.Dispose();
+        _eventContext = null;
 
-        _entitiesContext?.Dispose();
-        _entitiesContext = null;
+        _stateContext?.Dispose();
+        _stateContext = null;
 
         _eventStore = null;
         _checklistStateStore = null;
@@ -64,42 +69,55 @@ public static class TestFactory
         return fix;
     }
 
-    public static EventsContext GetEventsContext()
-        => _eventsContext ??= CreateEventsContext();
+    // DB
+    public static async Task<EventContext> GetEventContextAsync()
+        => _eventContext ??= await CreateEventContextAsync();
 
-    private static EventsContext CreateEventsContext()
+    private static async Task<EventContext> CreateEventContextAsync()
     {
-        var options = new DbContextOptionsBuilder<EventsContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+        var options = new DbContextOptionsBuilder<EventContext>()
+            .UseInMemoryDatabase("TestDb")
+            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
-        return new EventsContext(options);
+        return new EventContext(options);
+    }
+
+    public static async Task<StateContext> GetStateContextAsync()
+        => _stateContext ??= await CreateStateContextAsync();
+
+    private static async Task<StateContext> CreateStateContextAsync()
+    {
+        var options = new DbContextOptionsBuilder<StateContext>()
+            .UseInMemoryDatabase("TestDb")
+            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+            .Options;
+        return new StateContext(options);
     }
 
 
-    public static EntitiesContext GetEntitiesContext()
-        => _entitiesContext ??= CreateEntitiesContext();
+    public static async Task<IUnitOfWork> GetTestUnitOfWorkAsync(IDomainEventDispatcher eventDispatcher)
+        => new TestUnitOfWork(
+                new LoggerFactory().CreateLogger<TestUnitOfWork>(),
+                await GetEventContextAsync(),
+                await GetStateContextAsync(),
+                eventDispatcher
+                );
 
-    private static EntitiesContext CreateEntitiesContext()
-    {
-        var options = new DbContextOptionsBuilder<EntitiesContext>()
-            .UseInMemoryDatabase("EntitiesTestDb")
-            .Options;
-        return new EntitiesContext(options);
-    }
 
+    // serializer
 
     public static IJsonEventMapper GetEventMapper()
         => _eventMapper ??= new JsonEventMapper();
 
-    public static IEventStore GetEventStore()
-        => _eventStore ??= new SQLiteEventStore(GetEventMapper(), GetEventsContext());
+    public static async Task<IEventStore> GetEventStoreAsync()
+        => _eventStore ??= new SQLiteEventStore(GetEventMapper(), await GetEventContextAsync());
 
 
     // Entity State Stores
-    public static IEntityStateStore<ChecklistState, ChecklistId> GetChecklistStateStore()
-        => _checklistStateStore ??= new SQLiteStateStore<ChecklistState, ChecklistId>(GetEntitiesContext());
+    public static async Task<IEntityStateStore<ChecklistState, ChecklistId>> GetChecklistStateStoreAsync()
+        => _checklistStateStore ??= new SQLiteStateStore<ChecklistState, ChecklistId>(await GetStateContextAsync());
 
-    public static IEntityStateStore<UserState, UserId> GetUserStateStore()
-        => _userStateStore ??= new SQLiteStateStore<UserState, UserId>(GetEntitiesContext());
+    public static async Task<IEntityStateStore<UserState, UserId>> GetUserStateStoreAsync()
+        => _userStateStore ??= new SQLiteStateStore<UserState, UserId>(await GetStateContextAsync());
 }
 

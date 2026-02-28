@@ -20,7 +20,7 @@ public interface IEntityStateStore<TState, TId>
 }
 
 
-public class SQLiteStateStore<TState, TId>(EntitiesContext context) : IEntityStateStore<TState, TId>
+public class SQLiteStateStore<TState, TId>(StateContext context) : IEntityStateStore<TState, TId>
 where TId : EntityId
 where TState : AggregateRootState<TId>
 {

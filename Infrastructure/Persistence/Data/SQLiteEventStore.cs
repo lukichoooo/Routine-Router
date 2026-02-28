@@ -10,7 +10,7 @@ namespace Infrastructure.Persistence.Data;
 
 public class SQLiteEventStore(
         IJsonEventMapper mapper,
-        EventsContext context) : IEventStore
+        EventContext context) : IEventStore
 {
     // <summary>
     // Appends events to the event store.

@@ -17,21 +17,22 @@ namespace InfrastructureTests.DataTests;
 [TestFixture]
 public class EventStoreTests
 {
+    private EventContext _eventContext;
     private readonly Fixture _fix = TestFactory.GetFixture();
-    private readonly EventsContext _eventsContext = TestFactory.GetEventsContext();
     private readonly IJsonEventMapper _eventMapper = TestFactory.GetEventMapper();
 
     [SetUp]
-    public void SetUp()
+    public async Task SetUpAsync()
     {
-        _eventsContext.Events.RemoveRange(_eventsContext.Events);
-        _eventsContext.SaveChanges();
+        _eventContext = await TestFactory.GetEventContextAsync();
+        _eventContext.Events.RemoveRange(_eventContext.Events);
+        _eventContext.SaveChanges();
     }
 
     [OneTimeTearDown]
     public async Task TearDown()
     {
-        await _eventsContext.DisposeAsync();
+        await _eventContext.DisposeAsync();
         TestFactory.Reset();
     }
 
@@ -41,7 +42,7 @@ public class EventStoreTests
         // Arrange
         var sut = new SQLiteEventStore(
                 _eventMapper,
-                _eventsContext);
+                _eventContext);
 
         var user = new User();
         user.Create(_fix.Create<UserId>(), _fix.Create<Name>(), _fix.Create<PasswordHash>());
@@ -53,10 +54,10 @@ public class EventStoreTests
                 events: user.DomainEvents,
                 expectedVersion: null,
                 ct: default);
-        await _eventsContext.SaveChangesAsync();
+        await _eventContext.SaveChangesAsync();
 
         // Assert
-        var onDbEventVersions = _eventsContext.Events
+        var onDbEventVersions = _eventContext.Events
             .Where(e => e.AggregateId == user.Id.Value)
             .Select(e => e.Version)
             .ToList();
@@ -71,7 +72,7 @@ public class EventStoreTests
     public async Task AppendTest_WithExpectedVersion()
     {
         // Arrange
-        var sut = new SQLiteEventStore(_eventMapper, _eventsContext);
+        var sut = new SQLiteEventStore(_eventMapper, _eventContext);
 
         var ogUser = new User();
         ogUser.Create(new UserId(Guid.NewGuid()), _fix.Create<Name>(), _fix.Create<PasswordHash>());
@@ -87,11 +88,11 @@ public class EventStoreTests
         foreach (var e in ogUser.DomainEvents)
             Console.WriteLine(e.GetType().Name);
 
-        await _eventsContext.SaveChangesAsync();
+        await _eventContext.SaveChangesAsync();
 
 
         // Arrange
-        var userHistory = await _eventsContext.Events
+        var userHistory = await _eventContext.Events
             .AsNoTracking()
             .Where(e => e.AggregateId == ogUser.Id.Value)
             .OrderBy(e => e.Version)
@@ -116,11 +117,11 @@ public class EventStoreTests
         Console.WriteLine("---dbUser Events: ");
         foreach (var e in loadedUser.DomainEvents)
             Console.WriteLine(e.GetType().Name);
-        await _eventsContext.SaveChangesAsync();
+        await _eventContext.SaveChangesAsync();
 
 
         // Assert
-        var onDbEvents = await _eventsContext.Events
+        var onDbEvents = await _eventContext.Events
             .Where(e => e.AggregateId == loadedUser.Id.Value)
             .ToListAsync();
 
@@ -140,7 +141,7 @@ public class EventStoreTests
         // Arrange
         var sut = new SQLiteEventStore(
                 _eventMapper,
-                _eventsContext);
+                _eventContext);
 
         var aggregateId = _fix.Create<UserId>();
         var user = new User();
@@ -151,8 +152,8 @@ public class EventStoreTests
                 domainEvents[0],
                 _eventMapper.ToPayload(domainEvents[0]));
 
-        await _eventsContext.Events.AddAsync(dbEvent);
-        await _eventsContext.SaveChangesAsync();
+        await _eventContext.Events.AddAsync(dbEvent);
+        await _eventContext.SaveChangesAsync();
 
         var userHistory = await sut.Load(
                 aggregateId: aggregateId,

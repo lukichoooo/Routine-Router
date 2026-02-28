@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Persistence.Contexts;
 
 
-public class EntitiesContext(DbContextOptions<EntitiesContext> options) : DbContext(options)
+public class StateContext(DbContextOptions<StateContext> options) : DbContext(options)
 {
     public DbSet<ChecklistState> Checklists { get; set; }
     public DbSet<UserState> Users { get; set; }

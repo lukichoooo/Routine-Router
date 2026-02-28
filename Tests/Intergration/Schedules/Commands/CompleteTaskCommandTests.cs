@@ -35,15 +35,15 @@ public class CompleteTaskCommandTests
     private readonly UserId CurrentUserId = new(Guid.NewGuid());
 
     [SetUp]
-    public void Setup()
+    public async Task SetupAsync()
     {
         _checklistRepo = new ChecklistRepo(
-                            TestFactory.GetEventStore(),
-                            TestFactory.GetChecklistStateStore());
+                            await TestFactory.GetEventStoreAsync(),
+                            await TestFactory.GetChecklistStateStoreAsync());
 
         _userRepo = new UserRepo(
-                            TestFactory.GetEventStore(),
-                            TestFactory.GetUserStateStore());
+                            await TestFactory.GetEventStoreAsync(),
+                            await TestFactory.GetUserStateStoreAsync());
 
         var identityMock = new Mock<IIdentityProvider>();
         identityMock.Setup(i => i.GetCurrentUserId()).Returns(CurrentUserId);
@@ -56,20 +56,16 @@ public class CompleteTaskCommandTests
                     It.IsAny<CancellationToken>()));
         _eventDispatcherMock = domainEventDispatcherMock.Object;
 
-        _unitOfWork = new SQLiteUnitOfWork(
-                            new Logger<SQLiteUnitOfWork>(new LoggerFactory()),
-                            TestFactory.GetEventsContext(),
-                            TestFactory.GetEntitiesContext(),
-                            _eventDispatcherMock);
+        _unitOfWork = await TestFactory.GetTestUnitOfWorkAsync(_eventDispatcherMock);
 
-        var entitiesContext = TestFactory.GetEntitiesContext();
-        entitiesContext.RemoveRange(entitiesContext.Users);
-        entitiesContext.RemoveRange(entitiesContext.Checklists);
-        entitiesContext.SaveChanges();
+        var stateContext = await TestFactory.GetStateContextAsync();
+        stateContext.RemoveRange(stateContext.Users);
+        stateContext.RemoveRange(stateContext.Checklists);
+        stateContext.SaveChanges();
 
-        var eventsContext = TestFactory.GetEventsContext();
-        eventsContext.RemoveRange(eventsContext.Events);
-        eventsContext.SaveChanges();
+        var eventContext = await TestFactory.GetEventContextAsync();
+        eventContext.RemoveRange(eventContext.Events);
+        eventContext.SaveChanges();
     }
 
     [TearDown]

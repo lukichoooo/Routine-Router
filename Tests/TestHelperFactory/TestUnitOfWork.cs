@@ -1,39 +1,21 @@
-using System.Data;
 using Application.Interfaces.Data;
 using Application.Interfaces.Events;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.Persistence;
+namespace TestHelperFactory;
 
-
-public sealed class SQLiteUnitOfWork(
-        ILogger<SQLiteUnitOfWork> logger,
+public sealed class TestUnitOfWork(
+        ILogger<TestUnitOfWork> logger,
         EventContext eventContext,
         StateContext stateContext,
         IDomainEventDispatcher domainEventDispatcher) : IUnitOfWork
 {
     public async Task Commit(CancellationToken ct)
     {
-        await using var transaction = await stateContext.Database.BeginTransactionAsync(ct);
-        try
-        {
-            await stateContext.SaveChangesAsync(ct);
-
-            await eventContext.Database.UseTransactionAsync(transaction.GetDbTransaction(), ct);
-            await eventContext.SaveChangesAsync(ct);
-
-            await transaction.CommitAsync(ct);
-            logger.LogInformation("Committed changes");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Commit failed");
-            throw;
-        }
+        await stateContext.SaveChangesAsync(ct);
+        await eventContext.SaveChangesAsync(ct);
         logger.LogInformation("Commited changes");
 
 
@@ -73,6 +55,7 @@ public sealed class SQLiteUnitOfWork(
         }
     }
 }
+
 
 
 
