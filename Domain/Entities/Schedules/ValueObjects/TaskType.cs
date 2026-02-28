@@ -6,7 +6,7 @@ namespace Domain.Entities.Schedules.ValueObjects;
 
 
 
-public class TaskType : ValueObject
+public sealed class TaskType : ValueObject
 {
     public string Name { get; }
     public TaskCategory Category { get; }

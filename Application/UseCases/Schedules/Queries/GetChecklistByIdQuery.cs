@@ -7,7 +7,9 @@ using Domain.Entities.Schedules.ValueObjects;
 namespace Application.UseCases.Schedules.Queries;
 
 
-public sealed record GetChecklistByIdQuery(ChecklistId ChecklistId) : IQuery<ChecklistState>;
+public sealed record GetChecklistByIdQuery(ChecklistId ChecklistId)
+    : IQuery<ChecklistState>;
+
 
 public class GetChecklistByIdQueryHandler(
         IIdentityProvider identity,

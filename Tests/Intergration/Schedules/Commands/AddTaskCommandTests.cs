@@ -11,9 +11,7 @@ using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users;
 using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
-using Infrastructure.Persistence;
 using Infrastructure.Repos;
-using Microsoft.Extensions.Logging;
 using Moq;
 using TestHelperFactory;
 

@@ -1,5 +1,10 @@
+using Domain.Entities.Schedules;
+using Domain.Entities.Schedules.ValueObjects;
+using Domain.Entities.Users;
+using Domain.Entities.Users.ValueObjects;
 using Domain.SeedWork;
 using Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
@@ -20,19 +25,32 @@ public interface IEntityStateStore<TState, TId>
 }
 
 
-public class SQLiteStateStore<TState, TId>(StateContext context) : IEntityStateStore<TState, TId>
-where TId : EntityId
-where TState : AggregateRootState<TId>
+public class SQLiteChecklistStateStore(StateContext context) : IEntityStateStore<ChecklistState, ChecklistId>
 {
-    public async Task<TState?> Get(TId aggregateId, CancellationToken ct)
-        => await context
-        .Set<TState>()
-        .FindAsync([aggregateId], ct);
+    public async Task<ChecklistState?> Get(ChecklistId aggregateId, CancellationToken ct)
+        => await context.Checklists
+        .Include(c => c.Tasks
+                .OrderBy(t => t.PlannedSchedule.StartTime))
+        .FirstOrDefaultAsync(c => c.Id == aggregateId, ct);
 
-    public async Task Save(TState aggregateState, CancellationToken ct)
+    public async Task Save(ChecklistState aggregateState, CancellationToken ct)
         => await context.AddAsync(aggregateState, ct);
 
-    public void Update(TState aggregateState)
+    public void Update(ChecklistState aggregateState)
+        => context.Update(aggregateState);
+}
+
+
+public class SQLiteUserStateStore(StateContext context) : IEntityStateStore<UserState, UserId>
+{
+    public async Task<UserState?> Get(UserId aggregateId, CancellationToken ct)
+        => await context.Users
+        .FirstOrDefaultAsync(c => c.Id == aggregateId, ct);
+
+    public async Task Save(UserState aggregateState, CancellationToken ct)
+        => await context.AddAsync(aggregateState, ct);
+
+    public void Update(UserState aggregateState)
         => context.Update(aggregateState);
 }
 

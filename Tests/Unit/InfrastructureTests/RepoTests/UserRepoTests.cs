@@ -27,7 +27,7 @@ public class UserRepoTests
         _eventContext = await TestFactory.GetEventContextAsync();
         _stateContext = await TestFactory.GetStateContextAsync();
         _eventStore = new SQLiteEventStore(TestFactory.GetEventMapper(), _eventContext);
-        _stateStore = new SQLiteStateStore<UserState, UserId>(_stateContext);
+        _stateStore = new SQLiteUserStateStore(_stateContext);
         _eventContext.RemoveRange(_eventContext.Events);
         _stateContext.RemoveRange(_stateContext.Checklists);
         await _eventContext.SaveChangesAsync();

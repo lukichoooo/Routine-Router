@@ -115,9 +115,9 @@ public static class TestFactory
 
     // Entity State Stores
     public static async Task<IEntityStateStore<ChecklistState, ChecklistId>> GetChecklistStateStoreAsync()
-        => _checklistStateStore ??= new SQLiteStateStore<ChecklistState, ChecklistId>(await GetStateContextAsync());
+        => _checklistStateStore ??= new SQLiteChecklistStateStore(await GetStateContextAsync());
 
     public static async Task<IEntityStateStore<UserState, UserId>> GetUserStateStoreAsync()
-        => _userStateStore ??= new SQLiteStateStore<UserState, UserId>(await GetStateContextAsync());
+        => _userStateStore ??= new SQLiteUserStateStore(await GetStateContextAsync());
 }
 

@@ -56,7 +56,7 @@ public class EntityStateStoreTests
         await _context.Users.AddAsync(user.State);
         _context.SaveChanges();
 
-        var sut = new SQLiteStateStore<UserState, UserId>(_context);
+        var sut = new SQLiteUserStateStore(_context);
 
         // Act
         var res = await sut.Get(user.Id, default);
@@ -77,7 +77,7 @@ public class EntityStateStoreTests
         var passHash = _fix.Create<PasswordHash>();
         user.Create(userId, name, passHash);
 
-        var sut = new SQLiteStateStore<UserState, UserId>(_context);
+        var sut = new SQLiteUserStateStore(_context);
 
         // Act
         await sut.Save(user.State, default);
@@ -96,7 +96,7 @@ public class EntityStateStoreTests
     public async Task Update_User_Success()
     {
         // Arrange
-        var sut = new SQLiteStateStore<UserState, UserId>(_context);
+        var sut = new SQLiteUserStateStore(_context);
 
         var user = new User();
         var userId = _fix.Create<UserId>();
@@ -138,7 +138,7 @@ public class EntityStateStoreTests
         await _context.Checklists.AddAsync(checklist.State);
         _context.SaveChanges();
 
-        var sut = new SQLiteStateStore<ChecklistState, ChecklistId>(_context);
+        var sut = new SQLiteChecklistStateStore(_context);
         var currentlyTrackedEntities = GetTrackedEntityStateOwners();
 
         // Act
@@ -159,7 +159,7 @@ public class EntityStateStoreTests
         var userId = _fix.Create<UserId>();
         checklist.Create(checklistId, userId);
 
-        var sut = new SQLiteStateStore<ChecklistState, ChecklistId>(_context);
+        var sut = new SQLiteChecklistStateStore(_context);
 
         // Act
         await sut.Save(checklist.State, default);
@@ -178,7 +178,7 @@ public class EntityStateStoreTests
     public async Task Update_Checklist_Success()
     {
         // Arrange
-        var sut = new SQLiteStateStore<ChecklistState, ChecklistId>(_context);
+        var sut = new SQLiteChecklistStateStore(_context);
 
         var checklist = new Checklist();
         var checklistId = _fix.Create<ChecklistId>();
