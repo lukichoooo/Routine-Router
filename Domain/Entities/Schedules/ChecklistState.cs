@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Common.Exceptions;
 using Domain.Entities.Schedules.Events;
 using Domain.Entities.Schedules.ValueObjects;

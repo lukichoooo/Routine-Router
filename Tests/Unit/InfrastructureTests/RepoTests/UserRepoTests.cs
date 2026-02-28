@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Application.Interfaces.Events;
 using AutoFixture;
 using Domain.Common.ValueObjects;
@@ -87,8 +88,7 @@ public class UserRepoTests
 
         // Assert
         var res = await _eventStore.Load(userId, default);
-        Console.WriteLine($"res[0].AggregateId: {res[0].AggregateId.Value}");
-        Assert.That(res, Has.Count.EqualTo(domainEvents.Count));
+        Console.WriteLine($"res[0].AggregateId: {res[0].AggregateId.Value}"); Assert.That(res, Has.Count.EqualTo(domainEvents.Count));
         Assert.That(res[0].AggregateId.Value, Is.EqualTo(domainEvents[0].AggregateId.Value));
         Assert.That(res[0].Timestamp, Is.EqualTo(domainEvents[0].Timestamp));
         Assert.That(res[0].Version, Is.EqualTo(domainEvents[0].Version));
@@ -112,16 +112,24 @@ public class UserRepoTests
             oldUser.Verify(name, pass);
         }
 
-        var sut = new UserRepo(_eventStore, _stateStore);
-        await sut.Save(oldUser, default);
+        await _eventStore.Append(
+                oldUser.Id,
+                oldUser.DomainEvents,
+                oldUser.StoredVersion,
+                default);
         await _eventContext.SaveChangesAsync();
+
+
+        var sut = new UserRepo(_eventStore, _stateStore);
 
         // Act
         var user = await sut.GetById(userId, default);
 
         // Assert
         Assert.That(user, Is.Not.Null);
-        Assert.That(user.State, Is.EqualTo(oldUser.State));
+        Assert.That(user.State.Id, Is.EqualTo(oldUser.State.Id));
+        Assert.That(user.State.Name, Is.EqualTo(oldUser.State.Name));
+        Assert.That(user.State.PasswordHash, Is.EqualTo(oldUser.State.PasswordHash));
         Assert.That(user.DomainEvents, Is.Empty);
     }
 
@@ -145,16 +153,19 @@ public class UserRepoTests
         }
 
 
-        var sut = new UserRepo(_eventStore, _stateStore);
-        await sut.Save(oldUser, default);
+        await _stateStore.Save(oldUser.State, default);
         await _stateContext.SaveChangesAsync();
+
+        var sut = new UserRepo(_eventStore, _stateStore);
 
         // Act
         var user = await sut.GetById(userId, default);
 
         // Assert
         Assert.That(user, Is.Not.Null);
-        Assert.That(user.State, Is.EqualTo(oldUser.State));
+        Assert.That(user.State.Id, Is.EqualTo(oldUser.State.Id));
+        Assert.That(user.State.Name, Is.EqualTo(oldUser.State.Name));
+        Assert.That(user.State.PasswordHash, Is.EqualTo(oldUser.State.PasswordHash));
         Assert.That(user.DomainEvents, Is.Empty);
     }
 

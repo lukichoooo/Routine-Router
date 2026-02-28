@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Application.Interfaces.Events;
 using AutoFixture;
 using Domain.Common.ValueObjects;
@@ -121,9 +122,14 @@ public class ChecklistRepoTests
                     );
         }
 
-        var sut = new ChecklistRepo(_eventStore, _stateStore);
-        await sut.Save(oldChecklist, default);
+        await _eventStore.Append(
+            oldChecklist.Id,
+            oldChecklist.DomainEvents,
+            oldChecklist.StoredVersion,
+            default);
         await _eventContext.SaveChangesAsync();
+
+        var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
         var checklist = await sut.GetById(checklistId, default);
@@ -131,7 +137,11 @@ public class ChecklistRepoTests
         // Assert
 
         Assert.That(checklist, Is.Not.Null);
-        Assert.That(checklist.State, Is.EqualTo(oldChecklist.State));
+        Assert.That(JsonSerializer.Serialize(checklist.State.Tasks),
+                Is.EquivalentTo(JsonSerializer.Serialize(oldChecklist.State.Tasks)));
+        Assert.That(checklist.State.Id, Is.EqualTo(oldChecklist.State.Id));
+        Assert.That(checklist.State.Statistics, Is.EqualTo(oldChecklist.State.Statistics));
+        Assert.That(checklist.State.UserId, Is.EqualTo(oldChecklist.State.UserId));
         Assert.That(checklist.DomainEvents, Is.Empty);
     }
 
@@ -157,9 +167,10 @@ public class ChecklistRepoTests
                     );
         }
 
-        var sut = new ChecklistRepo(_eventStore, _stateStore);
-        await sut.Save(oldChecklist, default);
+        await _stateStore.Save(oldChecklist.State, default);
         await _stateContext.SaveChangesAsync();
+
+        var sut = new ChecklistRepo(_eventStore, _stateStore);
 
         // Act
         var checklist = await sut.GetById(checklistId, default);
