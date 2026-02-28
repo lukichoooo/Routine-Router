@@ -52,7 +52,7 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
             return null;
 
         var entity = TEntity.Create(events);
-        await stateStore.Save(entity.State, ct);
+        stateStore.Update(entity.State);
 
         return entity;
     }
