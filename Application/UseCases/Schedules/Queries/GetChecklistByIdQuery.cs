@@ -31,7 +31,9 @@ public class GetChecklistByIdQueryHandler(
         if (checklist.UserId != userId)
             throw new ApplicationArgumentException($"User has no Checklist with ChecklistId={query.ChecklistId}");
 
-        return ChecklistState.CreateState(checklist);
+        // TODO: Write a library for creating Projections
+        // and use it here
+        return checklist.State;
     }
 }
 

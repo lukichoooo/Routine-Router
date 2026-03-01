@@ -67,9 +67,6 @@ public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregate
 
 #pragma warning disable CS8618 
     private ChecklistState(AggregateRoot<ChecklistId> owner) : base(owner) { }
-#pragma warning restore CS8618
-
-#pragma warning disable CS8618
     private ChecklistState() { }
 #pragma warning restore CS8618
 }

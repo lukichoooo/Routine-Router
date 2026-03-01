@@ -15,22 +15,19 @@ public interface IAggregateRootState
 }
 
 
-public abstract class AggregateRootState<TID> : IAggregateRootState
-where TID : EntityId
+public abstract class AggregateRootState<TId> : IAggregateRootState
+where TId : EntityId
 {
-    public AggregateRoot<TID>? Owner { get; }
+    public AggregateRoot<TId>? Owner { get; }
 
-    public TID Id { get; protected set; }
+    public TId Id { get; protected set; }
     public int Version { get; set; }
 
     IAggregateRoot IAggregateRootState.Owner => Owner!;
 
 
 #pragma warning disable CS8618
-    protected AggregateRootState(AggregateRoot<TID> owner) => Owner = owner;
-#pragma warning restore CS8618
-
-#pragma warning disable CS8618
+    protected AggregateRootState(AggregateRoot<TId> owner) => Owner = owner;
     protected AggregateRootState() { }
 #pragma warning restore CS8618
 }

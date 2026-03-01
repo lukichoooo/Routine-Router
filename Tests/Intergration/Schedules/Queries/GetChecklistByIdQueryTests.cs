@@ -68,35 +68,37 @@ public class GetChecklistByIdQueryTests
     [TearDown]
     public void TearDown() { TestFactory.Reset(); }
 
-    //
-    // [Test]
-    // public async Task GetChecklistByIdQuery_Success()
-    // {
-    //     var user = new User();
-    //     user.Create(CurrentUserId, new(CurrentUserName), _fix.Create<PasswordHash>());
-    //     await _userRepo.Save(user, default);
-    //     await _unitOfWork.Commit();
-    //
-    //     var sut = new GetChecklistByIdQueryHandler(
-    //             _identityMock,
-    //             _checklistRepo,
-    //             _userRepo);
-    //
-    //     var checklist = new Checklist();
-    //     var checklistId = new ChecklistId(Guid.NewGuid());
-    //     checklist.Create(checklistId, CurrentUserId);
-    //     await _checklistRepo.Save(checklist, default);
-    //     await _unitOfWork.Commit();
-    //     Console.WriteLine(JsonSerializer.Serialize(checklist.State));
-    //
-    //     var command = new GetChecklistByIdQuery(checklistId);
-    //
-    //     var result = await sut.Handle(command, default);
-    //     Console.WriteLine(JsonSerializer.Serialize(result));
-    //
-    //     Assert.That(result, Is.Not.Null);
-    //     Assert.That(JsonSerializer.Serialize(checklist.State),
-    //             Is.EqualTo(JsonSerializer.Serialize(result)));
-    // }
 
+    [Test]
+    public async Task GetChecklistByIdQuery_Success()
+    {
+        var user = new User();
+        user.Create(CurrentUserId, new(CurrentUserName), _fix.Create<PasswordHash>());
+        await _userRepo.Save(user, default);
+        await _unitOfWork.Commit();
+
+        var sut = new GetChecklistByIdQueryHandler(
+                _identityMock,
+                _checklistRepo,
+                _userRepo);
+
+        var checklist = new Checklist();
+        var checklistId = new ChecklistId(Guid.NewGuid());
+        checklist.Create(checklistId, CurrentUserId);
+        await _checklistRepo.Save(checklist, default);
+        await _unitOfWork.Commit();
+
+        var command = new GetChecklistByIdQuery(checklistId);
+
+        var result = await sut.Handle(command, default);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Owner, Is.Null);
+
+        Assert.That(JsonSerializer.Serialize(result),
+                Is.EqualTo(JsonSerializer.Serialize(checklist.State)));
+
+        Console.WriteLine(JsonSerializer.Serialize(checklist.State));
+        Console.WriteLine(JsonSerializer.Serialize(result));
+    }
 }

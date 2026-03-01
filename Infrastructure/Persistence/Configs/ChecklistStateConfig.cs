@@ -13,6 +13,7 @@ public class ChecklistStateConfig : IEntityTypeConfiguration<ChecklistState>
     public void Configure(EntityTypeBuilder<ChecklistState> builder)
     {
         // keeping the owner tracked by EF
+        // But not storing it in the database
         builder.Ignore(x => x.Owner);
 
         // ---------- PRIMARY KEY ----------
