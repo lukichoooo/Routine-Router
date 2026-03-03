@@ -7,12 +7,17 @@ namespace DtoGenerator;
 
 public static class DtoDataBuilderExtensions
 {
-    extension(SyntaxNode syntaxNode)
+    extension(SyntaxNode node)
     {
         public bool HasAttribute()
-            => syntaxNode.GetType().CustomAttributes
-                .Any(a => a.AttributeType == typeof(GenerateDtoAttribute));
+        {
+            if (node is not ClassDeclarationSyntax classDecl)
+                return false;
 
+            return classDecl.AttributeLists
+                .SelectMany(list => list.Attributes)
+                .Any(attr => attr.Name.ToString() == nameof(GenerateDtoAttribute));
+        }
     }
 
     extension(GeneratorSyntaxContext context)
@@ -54,9 +59,9 @@ public static class DtoDataBuilderExtensions
                 .ToHashSet();
 
             props = props
-                .Where(p => include.Contains(p.Identifier.ValueText)
-                        && !exclude.Contains(p.Identifier.ValueText))
-                .ToList();
+                 .Where(p => (include.Count == 0 || include.Contains(p.Identifier.ValueText))
+                         && !exclude.Contains(p.Identifier.ValueText))
+                 .ToList();
 
             return new GeneratedDtoData(
                 DtoName: dtoSymbol.Name,

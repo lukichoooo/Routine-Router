@@ -15,7 +15,7 @@ public class MappedDtoGenerator : IIncrementalGenerator
         IncrementalValuesProvider<GeneratedDtoData> dtoData = initContext.SyntaxProvider
             .CreateSyntaxProvider(
                 static (s, _) => s.HasAttribute(),
-                static (s, _) => s.ToDtoData()
+                static (ctx, _) => ctx.ToDtoData()
                 );
 
         initContext.RegisterSourceOutput(

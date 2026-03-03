@@ -20,4 +20,9 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\src\DtoGenerator\DtoGenerator.csproj" />
+  </ItemGroup>
+
 </Project>

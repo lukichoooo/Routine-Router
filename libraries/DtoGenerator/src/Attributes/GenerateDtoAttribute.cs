@@ -1,9 +1,9 @@
 namespace Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false)]
-public class GenerateDtoAttribute : Attribute
+public class GenerateDtoAttribute(Type TargetType) : Attribute
 {
-    public required Type TargetType { get; init; }
+    public Type TargetType { get; init; } = TargetType;
     public IReadOnlyList<string> Exclude { get; init; } = [];
     public IReadOnlyList<string> Include { get; init; } = [];
 }
