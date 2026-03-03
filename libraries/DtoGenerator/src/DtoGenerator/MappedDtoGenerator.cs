@@ -1,5 +1,4 @@
-﻿using Attributes;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DtoGenerator;
@@ -15,8 +14,8 @@ public class MappedDtoGenerator : IIncrementalGenerator
     {
         IncrementalValuesProvider<GeneratedDtoData> dtoData = initContext.SyntaxProvider
             .CreateSyntaxProvider(
-                static (s, _) => s.HasAttribute(typeof(GenerateDtoAttribute)),
-                static (s, _) => s.ToDtoData(typeof(GenerateDtoAttribute))
+                static (s, _) => s.HasAttribute(),
+                static (s, _) => s.ToDtoData()
                 );
 
         initContext.RegisterSourceOutput(
@@ -28,6 +27,7 @@ public class MappedDtoGenerator : IIncrementalGenerator
 
 public record GeneratedDtoData(
         string DtoName,
-        string ClassName,
-        HashSet<PropertyDeclarationSyntax> Properties
+        string TargetName,
+        IReadOnlyList<PropertyDeclarationSyntax> Properties,
+        string TargetNamespace
         );
