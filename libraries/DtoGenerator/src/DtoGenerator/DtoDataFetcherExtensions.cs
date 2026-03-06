@@ -54,10 +54,10 @@ public static class DtoDataBuilderExtensions
             .Select(v => v.Value)
             .ToHashSet();
 
-        if (include.Count == 0 && exclude.Count == 0)
+        if (include.Count != 0 && exclude.Count != 0)
         {
             throw new DtoGeneratorException(
-                $"{nameof(GenerateDtoAttribute)} attribute must have at least one of '{nameof(GenerateDtoAttribute.Include)}' or '{nameof(GenerateDtoAttribute.Exclude)}' arguments");
+                $"{nameof(GenerateDtoAttribute)} attribute must have at only one of '{nameof(GenerateDtoAttribute.Include)}' or '{nameof(GenerateDtoAttribute.Exclude)}' at the same time");
         }
 
         if (exclude.Count > 0)
