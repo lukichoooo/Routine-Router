@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using Attributes;
 using DtoGenerator.Common.Exceptions;
 using Microsoft.CodeAnalysis;
@@ -44,15 +47,16 @@ public static class DtoDataBuilderExtensions
         if (props is null) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument has invalid type");
 
 
-        Dictionary<string, TypedConstant> attrArgs = generatorAttr.NamedArguments.ToDictionary();
+        Dictionary<string, TypedConstant> attrArgs = generatorAttr.NamedArguments
+            .ToDictionary(x => x.Key, x => x.Value);
 
         var include = attrArgs[nameof(GenerateDtoAttribute.Include)].Values
             .Select(v => v.Value)
-            .ToHashSet();
+            .ToImmutableHashSet();
 
         var exclude = attrArgs[nameof(GenerateDtoAttribute.Exclude)].Values
             .Select(v => v.Value)
-            .ToHashSet();
+            .ToImmutableHashSet();
 
         if (include.Count != 0 && exclude.Count != 0)
         {
@@ -66,12 +70,14 @@ public static class DtoDataBuilderExtensions
         if (include.Count > 0)
             props = props.Where(p => include.Contains(p.Identifier.ValueText)).ToList();
 
-        return new GeneratedDtoData(
-            DtoName: dtoSymbol.Name,
-            TargetName: targetName,
-            Properties: props,
-            TargetNamespace: targetNamespace
-        );
+        return new GeneratedDtoData()
+        {
+
+            DtoName = dtoSymbol.Name,
+            TargetName = targetName,
+            Properties = props,
+            TargetNamespace = targetNamespace,
+        };
     }
 
 }
