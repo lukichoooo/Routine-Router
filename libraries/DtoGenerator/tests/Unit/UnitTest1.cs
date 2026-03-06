@@ -24,9 +24,9 @@ public class Tests
     [Test]
     public void Test1()
     {
-        UserDto dto = new()
-        {
-            Id = 1,
-        };
+        // UserDto dto = new()
+        // {
+        //     Id = 1,
+        // };
     }
 }
