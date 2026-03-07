@@ -17,19 +17,20 @@ public class MappedDtoGenerator : IIncrementalGenerator
             .CreateSyntaxProvider(
                 static (s, _) => s.HasAttribute(),
                 static (ctx, _) => ctx.ToDtoData()
-                );
+                )
+            .Where(x => x is not null);
 
         initContext.RegisterSourceOutput(
                 dtoData,
-                (spc, dtoData) => spc.BuildDtoSourceFiles(dtoData)
+                static (spc, dtoData) => spc.BuildDtoSourceFiles(dtoData)
                     );
     }
 }
 
-public class GeneratedDtoData
+public record GeneratedDtoData()
 {
-    public string DtoName { get; set; }
-    public string TargetName { get; set; }
-    public IReadOnlyList<PropertyDeclarationSyntax> Properties { get; set; }
-    public string TargetNamespace { get; set; }
+    public string DtoName { get; set; } = string.Empty;
+    public string TargetName { get; set; } = string.Empty;
+    public IReadOnlyList<PropertyDeclarationSyntax> Properties { get; set; } = [];
+    public string TargetNamespace { get; set; } = string.Empty;
 }

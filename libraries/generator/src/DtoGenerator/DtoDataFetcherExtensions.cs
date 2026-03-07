@@ -10,6 +10,8 @@ namespace DtoGenerator;
 
 public static class DtoDataBuilderExtensions
 {
+    private const string GeneratorAttribute = "GenerateDto";
+
     public static bool HasAttribute(this SyntaxNode node)
     {
         if (node is not ClassDeclarationSyntax classDecl)
@@ -17,7 +19,7 @@ public static class DtoDataBuilderExtensions
 
         return classDecl.AttributeLists
             .SelectMany(list => list.Attributes)
-            .Any(attr => attr.Name.ToString() == nameof(GenerateDtoAttribute));
+            .Any(attr => attr.Name.ToString() == GeneratorAttribute);
     }
 
     public static GeneratedDtoData ToDtoData(this GeneratorSyntaxContext context)
@@ -29,9 +31,9 @@ public static class DtoDataBuilderExtensions
             .FirstOrDefault(a => a.AttributeClass?.Name == nameof(GenerateDtoAttribute))
             ?? throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute)}' attribute not found");
 
-        string targetName = null!;
-        string targetNamespace = null!;
-        List<PropertyDeclarationSyntax> props = null!;
+        string targetName = string.Empty;
+        string targetNamespace = string.Empty;
+        List<PropertyDeclarationSyntax> props = [];
 
         if (generatorAttr.ConstructorArguments[0].Value is ITypeSymbol targetType)
         {
@@ -39,24 +41,33 @@ public static class DtoDataBuilderExtensions
                 .FirstOrDefault()?.GetSyntax()!;
 
             props = declarationSyntax.Members.OfType<PropertyDeclarationSyntax>().ToList();
-            targetNamespace = targetType.ContainingNamespace?.ToDisplayString()!;
+            targetNamespace = targetType.ContainingNamespace!.ToDisplayString();
             targetName = targetType.Name;
         }
-        if (targetName is null) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument not found");
-        if (targetNamespace is null) throw new DtoGeneratorException("Namespace not found for target type");
-        if (props is null) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument has invalid type");
+        if (string.IsNullOrEmpty(targetName)) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument not found");
+        if (string.IsNullOrEmpty(targetNamespace)) throw new DtoGeneratorException("Namespace not found for target type");
+        if (props.Count == 0) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument has invalid type");
 
 
         Dictionary<string, TypedConstant> attrArgs = generatorAttr.NamedArguments
             .ToDictionary(x => x.Key, x => x.Value);
 
-        var include = attrArgs[nameof(GenerateDtoAttribute.Include)].Values
-            .Select(v => v.Value)
-            .ToImmutableHashSet();
+        ImmutableHashSet<string> include = [];
+        ImmutableHashSet<string> exclude = [];
 
-        var exclude = attrArgs[nameof(GenerateDtoAttribute.Exclude)].Values
-            .Select(v => v.Value)
-            .ToImmutableHashSet();
+        if (attrArgs.TryGetValue(nameof(GenerateDtoAttribute.Include), out var includeArg))
+        {
+            include = includeArg.Values
+                .Select(v => v.Value as string)
+                .ToImmutableHashSet() as ImmutableHashSet<string>;
+        }
+
+        if (attrArgs.TryGetValue(nameof(GenerateDtoAttribute.Exclude), out var excludeArg))
+        {
+            exclude = excludeArg.Values
+                .Select(x => x.Value as string)
+                .ToImmutableHashSet() as ImmutableHashSet<string>;
+        }
 
         if (include.Count != 0 && exclude.Count != 0)
         {
