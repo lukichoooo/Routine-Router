@@ -31,20 +31,20 @@ public static class DtoDataBuilderExtensions
 
         string targetName = string.Empty;
         string targetNamespace = string.Empty;
-        List<PropertyDeclarationSyntax> props = [];
+        IEnumerable<PropertyDeclarationSyntax> props = [];
 
         if (generatorAttr.ConstructorArguments[0].Value is ITypeSymbol targetType)
         {
             var declarationSyntax = (ClassDeclarationSyntax)targetType.DeclaringSyntaxReferences
                 .FirstOrDefault()?.GetSyntax()!;
 
-            props = declarationSyntax.Members.OfType<PropertyDeclarationSyntax>().ToList();
+            props = declarationSyntax.Members.OfType<PropertyDeclarationSyntax>();
             targetNamespace = targetType.ContainingNamespace!.ToDisplayString();
             targetName = targetType.Name;
         }
         if (string.IsNullOrEmpty(targetName)) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument not found");
         if (string.IsNullOrEmpty(targetNamespace)) throw new DtoGeneratorException("Namespace not found for target type");
-        if (props.Count == 0) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument has invalid type");
+        if (!props.Any()) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument has invalid type");
 
 
         Dictionary<string, TypedConstant> attrArgs = generatorAttr.NamedArguments
@@ -74,18 +74,18 @@ public static class DtoDataBuilderExtensions
         }
 
         if (exclude.Count > 0)
-            props = props.Where(p => !exclude.Contains(p.Identifier.ValueText)).ToList();
+            props = props.Where(p => !exclude.Contains(p.Identifier.ValueText));
 
         if (include.Count > 0)
-            props = props.Where(p => include.Contains(p.Identifier.ValueText)).ToList();
+            props = props.Where(p => include.Contains(p.Identifier.ValueText));
 
         return new GeneratedDtoData()
         {
-
             DtoName = dtoSymbol.Name,
             TargetName = targetName,
             Properties = props,
             TargetNamespace = targetNamespace,
+            Maps = [],
         };
     }
 

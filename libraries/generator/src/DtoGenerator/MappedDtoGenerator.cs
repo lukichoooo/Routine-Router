@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DtoGenerator;
@@ -27,10 +26,19 @@ public class MappedDtoGenerator : IIncrementalGenerator
     }
 }
 
+public struct Mapping
+{
+    public string Source { get; set; } = string.Empty;
+    public string Target { get; set; } = string.Empty;
+
+    public Mapping(string source, string target) => (Source, Target) = (source, target);
+}
+
 public record GeneratedDtoData()
 {
     public string DtoName { get; set; } = string.Empty;
     public string TargetName { get; set; } = string.Empty;
-    public IReadOnlyList<PropertyDeclarationSyntax> Properties { get; set; } = [];
+    public IEnumerable<PropertyDeclarationSyntax> Properties { get; set; } = [];
     public string TargetNamespace { get; set; } = string.Empty;
+    public IEnumerable<Mapping> Maps { get; set; } = [];
 }
