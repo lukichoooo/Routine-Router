@@ -35,7 +35,7 @@ public static class DtoBuilderExtensions
         sb.AppendLine("using System.Linq;");
 
         // Add target namespace
-        sb.AppendLine($"namespace {dtoData.TargetNamespace}.Dtos;");
+        sb.AppendLine($"namespace {dtoData.TargetNamespace};");
 
         // Start class
         sb.AppendLine($"public partial class {dtoData.DtoName}");
