@@ -42,6 +42,9 @@ public static class DtoBuilderExtensions
             string type = property.Type.ToFullString();
             string identifier = property.Identifier.ValueText;
 
+            if (dtoData.PropNameToMappedType.TryGetValue(identifier, out var mappedType))
+                type = mappedType;
+
             sb.AppendLine($"\t{$"public {type} {identifier} {{get; set;}}"}");
         }
     }
@@ -56,12 +59,20 @@ public static class DtoBuilderExtensions
         foreach (var property in dtoData.Properties)
         {
             string identifier = property.Identifier.ValueText;
-            sb.AppendLine($"\t\t\t{identifier} = entity.{identifier},");
+            if (dtoData.PropNameToMappedType.TryGetValue(identifier, out var mappedType))
+            {
+                sb.AppendLine($"\t\t\t{identifier} = {mappedType}.From(entity.{identifier}),");
+            }
+            else
+            {
+                sb.AppendLine($"\t\t\t{identifier} = entity.{identifier},");
+            }
         }
         sb.AppendLine("\t\t};");
         sb.AppendLine("\t}");
 
     }
+
 
     private static void LogOnBuild(this SourceProductionContext context,
             string message,

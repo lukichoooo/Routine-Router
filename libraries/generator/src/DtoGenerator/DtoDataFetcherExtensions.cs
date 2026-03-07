@@ -29,30 +29,57 @@ public static class DtoDataBuilderExtensions
             .FirstOrDefault(a => a.AttributeClass?.Name == nameof(GenerateDtoAttribute))
             ?? throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute)}' attribute not found");
 
-        string targetName = string.Empty;
-        string targetNamespace = string.Empty;
-        IEnumerable<PropertyDeclarationSyntax> props = [];
+        var mapAttributes = dtoSymbol?.GetAttributes()
+            .Where(a => a.AttributeClass?.Name == nameof(MapAttribute) && a is not null)
+            ?? [];
 
-        if (generatorAttr.ConstructorArguments[0].Value is ITypeSymbol targetType)
+        generatorAttr.ExtractGeneratorAttributeConstructorArgs(
+                out var targetName,
+                out var targetNamespace,
+                out var props);
+
+        generatorAttr.ExtractGeneratorAttributeNamedArgs(
+                out var include,
+                out var exclude);
+
+        if (exclude.Any()) props = props.Where(p => !exclude.Contains(p.Identifier.ValueText));
+        if (include.Any()) props = props.Where(p => include.Contains(p.Identifier.ValueText));
+
+        var propNameToMappedType = mapAttributes.GetPropNameToMappedTypeAsDict();
+
+        return new GeneratedDtoData()
         {
-            var declarationSyntax = (ClassDeclarationSyntax)targetType.DeclaringSyntaxReferences
-                .FirstOrDefault()?.GetSyntax()!;
+            DtoName = dtoSymbol!.Name,
+            TargetName = targetName,
+            Properties = props,
+            TargetNamespace = targetNamespace,
+            PropNameToMappedType = propNameToMappedType,
+        };
+    }
 
-            props = declarationSyntax.Members.OfType<PropertyDeclarationSyntax>();
-            targetNamespace = targetType.ContainingNamespace!.ToDisplayString();
-            targetName = targetType.Name;
-        }
-        if (string.IsNullOrEmpty(targetName)) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument not found");
-        if (string.IsNullOrEmpty(targetNamespace)) throw new DtoGeneratorException("Namespace not found for target type");
-        if (!props.Any()) throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute.TargetType)}' argument has invalid type");
+    private static void ExtractGeneratorAttributeConstructorArgs(this AttributeData generatorAttr,
+            out string targetName,
+            out string targetNamespace,
+            out IEnumerable<PropertyDeclarationSyntax> props)
+    {
+        var targetType = generatorAttr.ConstructorArguments[0].Value as INamedTypeSymbol ?? throw new DtoGeneratorException($"Invalid {nameof(GenerateDtoAttribute)} constructor argument");
 
+        var declarationSyntax = (ClassDeclarationSyntax)targetType.DeclaringSyntaxReferences
+            .FirstOrDefault()?.GetSyntax()!;
 
+        props = declarationSyntax.Members.OfType<PropertyDeclarationSyntax>();
+        targetNamespace = targetType.ContainingNamespace!.ToDisplayString();
+        targetName = targetType.Name;
+    }
+
+    private static void ExtractGeneratorAttributeNamedArgs(this AttributeData generatorAttr,
+            out ImmutableHashSet<string> include,
+            out ImmutableHashSet<string> exclude)
+    {
+        include = [];
+        exclude = [];
         Dictionary<string, TypedConstant> attrArgs = generatorAttr.NamedArguments
             .ToDictionary(x => x.Key, x => x.Value);
-
-        ImmutableHashSet<string> include = [];
-        ImmutableHashSet<string> exclude = [];
-
         if (attrArgs.TryGetValue(nameof(GenerateDtoAttribute.Include), out var includeArg))
         {
             include = includeArg.Values
@@ -70,23 +97,20 @@ public static class DtoDataBuilderExtensions
         if (include.Count != 0 && exclude.Count != 0)
         {
             throw new DtoGeneratorException(
-                $"{nameof(GenerateDtoAttribute)} attribute must have at only one of '{nameof(GenerateDtoAttribute.Include)}' or '{nameof(GenerateDtoAttribute.Exclude)}' at the same time");
+                $"{nameof(GenerateDtoAttribute)} attribute must have only one of '{nameof(GenerateDtoAttribute.Include)}' or '{nameof(GenerateDtoAttribute.Exclude)}' at the same time");
         }
+    }
 
-        if (exclude.Count > 0)
-            props = props.Where(p => !exclude.Contains(p.Identifier.ValueText));
-
-        if (include.Count > 0)
-            props = props.Where(p => include.Contains(p.Identifier.ValueText));
-
-        return new GeneratedDtoData()
+    private static ImmutableDictionary<string, string> GetPropNameToMappedTypeAsDict(this IEnumerable<AttributeData> mapAttributes)
+    {
+        Dictionary<string, string> res = [];
+        foreach (var mapAttr in mapAttributes)
         {
-            DtoName = dtoSymbol.Name,
-            TargetName = targetName,
-            Properties = props,
-            TargetNamespace = targetNamespace,
-            Maps = [],
-        };
+            var propName = mapAttr.ConstructorArguments[0].Value as string ?? throw new DtoGeneratorException($"Invalid {nameof(MapAttribute.SourcePropName)} constructor argument");
+            var mappedType = mapAttr.ConstructorArguments[1].Value as INamedTypeSymbol ?? throw new DtoGeneratorException($"Invalid {nameof(MapAttribute.TargetType)} constructor argument");
+            res.Add(propName, mappedType.Name);
+        }
+        return res.ToImmutableDictionary();
     }
 
 }
