@@ -45,4 +45,20 @@ public class Tests
             Age = 20
         };
     }
+
+    [Test]
+    public void DtoFromTest()
+    {
+        var user = new User()
+        {
+            Id = 1,
+            Name = "Luka",
+            Age = 20,
+        };
+
+        UserDto userDto = UserDto.From(user);
+        Assert.That(userDto.Id, Is.EqualTo(user.Id));
+        Assert.That(userDto.Name, Is.EqualTo(user.Name));
+        Assert.That(userDto.Age, Is.EqualTo(user.Age));
+    }
 }

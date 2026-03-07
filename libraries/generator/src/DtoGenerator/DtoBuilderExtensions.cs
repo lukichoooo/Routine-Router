@@ -38,6 +38,19 @@ public static class DtoBuilderExtensions
             sb.AppendLine($"\t{$"public {type} {identifier} {{get; set;}}"}");
         }
 
+        // add static method taking in original class object as parameter
+        // and returns dto object
+        sb.AppendLine($"\tpublic static {dtoData.DtoName} From({dtoData.TargetName} entity)");
+        sb.AppendLine("\t{");
+        sb.AppendLine($"\t\treturn new {dtoData.DtoName} {{");
+        foreach (var property in dtoData.Properties)
+        {
+            string identifier = property.Identifier.ValueText;
+            sb.AppendLine($"\t\t\t{identifier} = entity.{identifier},");
+        }
+        sb.AppendLine("\t\t};");
+        sb.AppendLine("\t}");
+
         // Add closing braces
         sb.AppendLine("}");
 
