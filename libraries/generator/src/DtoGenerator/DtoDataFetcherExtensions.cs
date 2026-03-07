@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Attributes;
 using DtoGenerator.Common.Exceptions;
 using Microsoft.CodeAnalysis;

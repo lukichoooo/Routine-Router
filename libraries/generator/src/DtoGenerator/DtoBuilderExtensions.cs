@@ -6,23 +6,10 @@ namespace DtoGenerator;
 
 public static class DtoBuilderExtensions
 {
-    public static void BuildDtoSourceFiles(
-            this SourceProductionContext context,
+    public static void BuildDtoSourceFiles(this SourceProductionContext context,
             GeneratedDtoData dtoData)
     {
-        context.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "DTOGEN002",
-                        "Debug",
-                        $"AUTOGEN ----- Generating Dto: {dtoData.DtoName}",
-                        "DtoGenerator",
-                        DiagnosticSeverity.Warning,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None,
-                    dtoData.TargetName)
-                );
+        context.LogOnBuild($"AUTOGEN ----- Generating Dto: {dtoData.DtoName}");
 
         StringBuilder sb = new();
 
@@ -56,6 +43,27 @@ public static class DtoBuilderExtensions
 
         context.AddSource($"{dtoData.DtoName}.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
         sb.Clear();
+    }
+
+
+    public static void LogOnBuild(this SourceProductionContext context,
+            string message,
+            bool asInfo = false)
+    {
+        context.ReportDiagnostic(
+                Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        "DTOGEN002",
+                        "Debug",
+                        message,
+                        "DtoGenerator",
+                        asInfo ? DiagnosticSeverity.Info : DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true
+                    ),
+                    Location.None,
+                    asInfo ? "Info" : "Warning")
+                );
+
     }
 
 }

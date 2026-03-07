@@ -13,13 +13,16 @@ public class User
 [GenerateDto(typeof(User))]
 public partial class UserDto;
 
+[GenerateDto(typeof(User), Include = [nameof(User.Name)])]
+public partial class UserDtoIncludedName;
+
+[GenerateDto(typeof(User), Exclude = [nameof(User.Name)])]
+public partial class UserDtoExcludedName;
 
 public class Tests
 {
     [SetUp]
-    public void Setup()
-    {
-    }
+    public void Setup() { }
 
     [Test]
     public void Test1()
@@ -28,6 +31,17 @@ public class Tests
         {
             Id = 1,
             Name = "Luka",
+            Age = 20
+        };
+
+        UserDtoIncludedName dtoIncludedName = new()
+        {
+            Name = "Luka",
+        };
+
+        UserDtoExcludedName dtoExcludedName = new()
+        {
+            Id = 1,
             Age = 20
         };
     }

@@ -1,5 +1,3 @@
-using System;
-
 namespace DtoGenerator.Common.Exceptions;
 
 public class DtoGeneratorException : Exception

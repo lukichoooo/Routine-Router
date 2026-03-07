@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Attributes;
 
@@ -7,7 +6,7 @@ namespace Attributes;
 public class GenerateDtoAttribute(Type TargetType) : Attribute
 {
     public Type TargetType { get; set; } = TargetType;
-    public IReadOnlyList<string> Exclude { get; set; } = [];
-    public IReadOnlyList<string> Include { get; set; } = [];
+    public string[] Exclude { get; set; } = [];
+    public string[] Include { get; set; } = [];
 }
 
