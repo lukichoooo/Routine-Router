@@ -79,14 +79,14 @@ internal static class DtoBuilderExtensions
             if (dtoData.PropNameToMappedType.TryGetValue(identifier, out var mappedType))
             {
                 if (isCollectionType)
-                    sb.AppendLine($"\t\t\t{identifier} = entity.{identifier}?.Select(x => {mappedType}.From(x!)).ToList(),");
+                    sb.AppendLine($"\t\t\t{identifier} = entity.{identifier}?.Select(x => {mappedType}.From(x!)).ToList()!,");
                 else
                     sb.AppendLine($"\t\t\t{identifier} = {mappedType}.From(entity.{identifier}!),");
             }
             else
             {
                 if (isCollectionType)
-                    sb.AppendLine($"\t\t\t{identifier} = entity.{identifier}?.ToList(),");
+                    sb.AppendLine($"\t\t\t{identifier} = entity.{identifier}?.ToList()!,");
                 else
                     sb.AppendLine($"\t\t\t{identifier} = entity.{identifier},");
             }
@@ -113,7 +113,7 @@ internal static class DtoBuilderExtensions
         context.ReportDiagnostic(
                 Diagnostic.Create(
                     new DiagnosticDescriptor(
-                        "DTOGEN002",
+                        "DTOGEN001",
                         "Debug",
                         message,
                         "DtoGenerator",

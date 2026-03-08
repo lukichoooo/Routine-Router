@@ -43,6 +43,7 @@ public class AdvancedTests
         Car car = new()
         {
             Id = Guid.NewGuid(),
+            Wheel = new Wheel { Id = Guid.NewGuid(), Color = "Blue" },
             Colors = [
                 new() { Id = Guid.NewGuid(), Name = "Red" },
                 new() { Id = Guid.NewGuid(), Name = "Black" }
@@ -53,6 +54,21 @@ public class AdvancedTests
 
         Assert.That(dto.Colors, Is.EquivalentTo(car.Colors));
         Assert.That(dto.Wheel, Is.TypeOf<WheelDto>());
+        Assert.That(dto.Wheel.Color, Is.EqualTo("Blue"));
+    }
+
+    [Test]
+    public void Test_NullableWheel_StaysNull()
+    {
+        Car car = new()
+        {
+            Id = Guid.NewGuid(),
+            Wheel = null,
+        };
+
+        var dto = CarDto.From(car);
+
+        Assert.That(dto.Wheel, Is.Null);
     }
 }
 
