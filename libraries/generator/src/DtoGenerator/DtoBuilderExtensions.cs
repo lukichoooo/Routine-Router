@@ -37,16 +37,29 @@ public static class DtoBuilderExtensions
     private static void AppendProps(this StringBuilder sb,
             GeneratedDtoData dtoData)
     {
+        sb.AppendLine("#pragma warning disable CS8618"); // CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
         foreach (var property in dtoData.Properties)
         {
             string type = property.Type.ToFullString();
             string identifier = property.Identifier.ValueText;
 
             if (dtoData.PropNameToMappedType.TryGetValue(identifier, out var mappedType))
-                type = mappedType;
+            {
+                if (IsCollectionType(type))
+                {
+                    type = $"List<{mappedType}>";
+                }
+                else
+                {
+                    type = mappedType;
+                }
+            }
 
-            sb.AppendLine($"\t{$"public {type} {identifier} {{get; set;}}"}");
+            sb.AppendLine($"\tpublic {type} {identifier} {{get; set;}}");
         }
+
+        sb.AppendLine("#pragma warning restore CS8618");
     }
 
 
@@ -55,22 +68,41 @@ public static class DtoBuilderExtensions
     {
         sb.AppendLine($"\tpublic static {dtoData.DtoName} From({dtoData.TargetName} entity)");
         sb.AppendLine("\t{");
+        sb.AppendLine("\t\tif (entity is null) return null!;");
         sb.AppendLine($"\t\treturn new {dtoData.DtoName} {{");
         foreach (var property in dtoData.Properties)
         {
             string identifier = property.Identifier.ValueText;
+            string propertyType = property.Type.ToFullString();
+            bool isCollectionType = IsCollectionType(propertyType);
+
             if (dtoData.PropNameToMappedType.TryGetValue(identifier, out var mappedType))
             {
-                sb.AppendLine($"\t\t\t{identifier} = {mappedType}.From(entity.{identifier}),");
+                if (isCollectionType)
+                    sb.AppendLine($"\t\t\t{identifier} = entity.{identifier}?.Select(x => {mappedType}.From(x!)).ToList(),");
+                else
+                    sb.AppendLine($"\t\t\t{identifier} = {mappedType}.From(entity.{identifier}!),");
             }
             else
             {
-                sb.AppendLine($"\t\t\t{identifier} = entity.{identifier},");
+                if (isCollectionType)
+                    sb.AppendLine($"\t\t\t{identifier} = entity.{identifier}?.ToList(),");
+                else
+                    sb.AppendLine($"\t\t\t{identifier} = entity.{identifier},");
             }
         }
         sb.AppendLine("\t\t};");
         sb.AppendLine("\t}");
+    }
 
+    private static bool IsCollectionType(string typeName)
+    {
+        return typeName.StartsWith("List<") ||
+               typeName.StartsWith("IList<") ||
+               typeName.StartsWith("ICollection<") ||
+               typeName.StartsWith("IEnumerable<") ||
+               typeName.StartsWith("IReadOnlyList<") ||
+               typeName.StartsWith("IReadOnlyCollection<");
     }
 
 

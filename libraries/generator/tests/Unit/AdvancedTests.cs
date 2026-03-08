@@ -6,8 +6,8 @@ public class Car
 {
     public Guid Id { get; set; }
     public string Driver { get; private set; } = string.Empty;
-    public List<string>? Colors { get; set; } = [];
-    public Wheel Wheel { get; set; } = new();
+    public List<Color>? Colors { get; set; } = [];
+    public Wheel? Wheel { get; set; } = null;
 }
 
 public class Wheel
@@ -17,13 +17,23 @@ public class Wheel
     public string Color { get; set; } = string.Empty;
 }
 
+public class Color
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+}
+
 
 [GenerateDto(typeof(Car))]
 [Map(nameof(Car.Wheel), typeof(WheelDto))]
+// [Map(nameof(Car.Colors), typeof(ColorDto))]
 public partial class CarDto;
 
 [GenerateDto(typeof(Wheel))]
 public partial class WheelDto;
+
+[GenerateDto(typeof(Color))]
+public partial class ColorDto;
 
 public class AdvancedTests
 {
@@ -33,12 +43,13 @@ public class AdvancedTests
         Car car = new()
         {
             Id = Guid.NewGuid(),
-            Colors = ["red", "blue"],
+            Colors = [
+                new() { Id = Guid.NewGuid(), Name = "Red" },
+                new() { Id = Guid.NewGuid(), Name = "Black" }
+            ],
         };
 
         var dto = CarDto.From(car);
-
-        dto.Wheel = new WheelDto();
 
         Assert.That(dto.Colors, Is.EquivalentTo(car.Colors));
         Assert.That(dto.Wheel, Is.TypeOf<WheelDto>());
