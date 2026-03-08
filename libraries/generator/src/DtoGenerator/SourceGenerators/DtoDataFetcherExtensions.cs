@@ -52,7 +52,7 @@ internal static class DtoDataBuilderExtensions
 
         return new GeneratedDtoData()
         {
-            DtoName = dtoSymbol!.Name,
+            DtoName = dtoSymbol.Name,
             TargetName = targetName,
             Properties = props,
             DtoNamespace = dtoNamespace,
@@ -68,9 +68,22 @@ internal static class DtoDataBuilderExtensions
     {
         var targetType = generatorAttr.ConstructorArguments[0].Value as INamedTypeSymbol ?? throw new DtoGeneratorException($"Invalid {nameof(GenerateDtoAttribute)} constructor argument");
 
-        props = targetType.GetMembers()
-            .OfType<IPropertySymbol>()
-            .Where(p => !p.IsStatic);
+        var allProperties = new List<IPropertySymbol>();
+        var seenPropertyNames = new HashSet<string>(StringComparer.Ordinal);
+        for (var current = targetType; current is not null; current = current.BaseType)
+        {
+            foreach (var member in current.GetMembers())
+            {
+                if (member is IPropertySymbol property
+                        && !property.IsStatic
+                        && property.ExplicitInterfaceImplementations.IsEmpty
+                        && seenPropertyNames.Add(property.Name))
+                {
+                    allProperties.Add(property);
+                }
+            }
+        }
+        props = allProperties;
         targetNamespace = targetType.ContainingNamespace.ToDisplayString();
         targetName = targetType.Name;
     }

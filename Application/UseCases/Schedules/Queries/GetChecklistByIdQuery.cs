@@ -1,14 +1,9 @@
 using Application.Common.Exceptions;
 using Application.Seedwork;
 using Application.UseCases.Identity;
-using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
-using Attributes.GeneratorAttributes;
 
 namespace Application.UseCases.Schedules.Queries;
-
-[GenerateDto(typeof(ChecklistState))]
-public partial class ChecklistDto;
 
 
 public sealed record GetChecklistByIdQuery(ChecklistId ChecklistId)
