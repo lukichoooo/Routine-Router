@@ -46,15 +46,7 @@ where TState : AggregateRootState<TId>, IAggregateRootStateFactory<TState, TId>
         var state = await stateStore.Get(aggregateId, ct);
         if (state is not null)
             return TEntity.Create(state);
-
-        var events = await eventStore.Load(aggregateId, ct);
-        if (events.Count == 0)
-            return null;
-
-        var entity = TEntity.Create(events);
-        await stateStore.Save(entity.State, ct);
-
-        return entity;
+        return null;
     }
 }
 

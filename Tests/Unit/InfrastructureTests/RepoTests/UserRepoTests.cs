@@ -95,45 +95,6 @@ public class UserRepoTests
     }
 
 
-    [TestCase(1)]
-    [TestCase(3)]
-    public async Task GetById_Events(int eventsCount)
-    {
-        // Arrange
-        var userId = new UserId(Guid.NewGuid());
-
-        var oldUser = new User();
-        var name = _fix.Create<Name>();
-        var pass = _fix.Create<PasswordHash>();
-        oldUser.Create(userId, name, pass);
-
-        for (int i = 1; i < eventsCount; ++i)
-        {
-            oldUser.Verify(name, pass);
-        }
-
-        await _eventStore.Append(
-                oldUser.Id,
-                oldUser.DomainEvents,
-                oldUser.StoredVersion,
-                default);
-        await _eventContext.SaveChangesAsync();
-
-
-        var sut = new UserRepo(_eventStore, _stateStore);
-
-        // Act
-        var user = await sut.GetById(userId, default);
-
-        // Assert
-        Assert.That(user, Is.Not.Null);
-        Assert.That(user.State.Id, Is.EqualTo(oldUser.State.Id));
-        Assert.That(user.State.Name, Is.EqualTo(oldUser.State.Name));
-        Assert.That(user.State.PasswordHash, Is.EqualTo(oldUser.State.PasswordHash));
-        Assert.That(user.DomainEvents, Is.Empty);
-    }
-
-
 
     [TestCase(1)]
     [TestCase(3)]

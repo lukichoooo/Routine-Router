@@ -104,51 +104,6 @@ public class ChecklistRepoTests
 
     [TestCase(1)]
     [TestCase(3)]
-    public async Task GetById_Events(int eventsCount)
-    {
-        // Arrange
-        var checklistId = new ChecklistId(Guid.NewGuid());
-
-        var oldChecklist = new Checklist();
-        oldChecklist.Create(checklistId, _fix.Create<UserId>());
-
-        for (int i = 1; i < eventsCount; ++i)
-        {
-            oldChecklist.AddTask(
-                    _fix.Create<Name>(),
-                    _fix.Create<TaskType>(),
-                    _fix.Create<Schedule>(),
-                    _fix.Create<string>()
-                    );
-        }
-
-        await _eventStore.Append(
-            oldChecklist.Id,
-            oldChecklist.DomainEvents,
-            oldChecklist.StoredVersion,
-            default);
-        await _eventContext.SaveChangesAsync();
-
-        var sut = new ChecklistRepo(_eventStore, _stateStore);
-
-        // Act
-        var checklist = await sut.GetById(checklistId, default);
-
-        // Assert
-
-        Assert.That(checklist, Is.Not.Null);
-        Assert.That(JsonSerializer.Serialize(checklist.State.Tasks),
-                Is.EquivalentTo(JsonSerializer.Serialize(oldChecklist.State.Tasks)));
-        Assert.That(checklist.State.Id, Is.EqualTo(oldChecklist.State.Id));
-        Assert.That(checklist.State.Statistics, Is.EqualTo(oldChecklist.State.Statistics));
-        Assert.That(checklist.State.UserId, Is.EqualTo(oldChecklist.State.UserId));
-        Assert.That(checklist.DomainEvents, Is.Empty);
-    }
-
-
-
-    [TestCase(1)]
-    [TestCase(3)]
     public async Task GetById_State(int eventsCount)
     {
         // Arrange

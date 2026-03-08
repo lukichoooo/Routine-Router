@@ -17,6 +17,8 @@ public interface IEntityStateStore<TState, TId>
         where TState : AggregateRootState<TId>
         where TId : EntityId
 {
+    IQueryable<TState> Query { get; }
+
     Task<TState?> Get(TId aggregateId, CancellationToken ct);
 
     Task Save(TState aggregateState, CancellationToken ct);
@@ -27,6 +29,8 @@ public interface IEntityStateStore<TState, TId>
 
 public class SQLiteChecklistStateStore(StateContext context) : IEntityStateStore<ChecklistState, ChecklistId>
 {
+    public IQueryable<ChecklistState> Query => context.Checklists;
+
     public async Task<ChecklistState?> Get(ChecklistId aggregateId, CancellationToken ct)
         => await context.Checklists
         .Include(c => c.Tasks
@@ -43,6 +47,8 @@ public class SQLiteChecklistStateStore(StateContext context) : IEntityStateStore
 
 public class SQLiteUserStateStore(StateContext context) : IEntityStateStore<UserState, UserId>
 {
+    public IQueryable<UserState> Query => context.Users;
+
     public async Task<UserState?> Get(UserId aggregateId, CancellationToken ct)
         => await context.Users
         .FirstOrDefaultAsync(c => c.Id == aggregateId, ct);

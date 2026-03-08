@@ -8,6 +8,6 @@ namespace Application.UseCases.Schedules;
 
 public interface IChecklistRepo : IRepository<Checklist, ChecklistId>
 {
-    Task<Checklist?> GetForDay(UserId userId, DateOnly date, CancellationToken ct);
+    Task<IEnumerable<Checklist>> GetForDay(UserId userId, DateOnly date, CancellationToken ct);
 }
 

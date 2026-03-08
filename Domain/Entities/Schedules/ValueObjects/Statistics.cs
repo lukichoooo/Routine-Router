@@ -21,6 +21,8 @@ public class Statistics : ValueObject
     public Statistics WithLLMRating(Rating llmRating)
         => new(CreatedAt, llmRating, UserRating);
 
+    public DateOnly GetDate() => DateOnly.FromDateTime(CreatedAt.DateTime);
+
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return CreatedAt;
