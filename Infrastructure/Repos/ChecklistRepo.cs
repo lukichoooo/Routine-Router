@@ -1,3 +1,5 @@
+#pragma warning disable CS9107
+
 using Application.Interfaces.Events;
 using Application.UseCases.Schedules;
 using Domain.Entities.Schedules;
@@ -7,7 +9,6 @@ using Infrastructure.Persistence;
 using Infrastructure.Repos.Common;
 
 namespace Infrastructure.Repos;
-
 
 public class ChecklistRepo
 (IEventStore eventStore, IEntityStateStore<ChecklistState, ChecklistId> stateStore)
@@ -20,3 +21,5 @@ public class ChecklistRepo
         .Select(x => Checklist.Create(x));
 }
 
+
+#pragma warning restore CS9107
