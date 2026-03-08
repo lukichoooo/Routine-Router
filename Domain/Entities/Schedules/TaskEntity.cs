@@ -40,7 +40,9 @@ public sealed class TaskEntity
 
     internal void Complete(DateTimeOffset completionTime)
     {
-        ActualSchedule = new Schedule(ActualSchedule!.StartTime, completionTime);
+        if (ActualSchedule is null)
+            throw new DomainArgumentNullException($"{nameof(ActualSchedule)} is null, so Task can't be completed");
+        ActualSchedule = new Schedule(ActualSchedule.StartTime, completionTime);
     }
 
     internal void UpdateMetadataInternal(string metadata)

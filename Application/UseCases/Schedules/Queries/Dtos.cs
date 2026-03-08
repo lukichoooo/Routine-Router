@@ -7,8 +7,6 @@ namespace Application.UseCases.Schedules.Queries;
         Exclude = [
             nameof(ChecklistState.Owner),
             nameof(ChecklistState.Version),
-        ]
-        )]
+        ])]
 public partial class ChecklistDto;
-
 
