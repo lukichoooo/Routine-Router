@@ -23,15 +23,18 @@ internal static class DtoDataBuilderExtensions
     public static GeneratedDtoData ToDtoData(this GeneratorSyntaxContext context)
     {
         var dtoDecl = (ClassDeclarationSyntax)context.Node;
-        var dtoSymbol = context.SemanticModel.GetDeclaredSymbol(dtoDecl);
+        ISymbol dtoSymbol = context.SemanticModel.GetDeclaredSymbol(dtoDecl)
+            ?? throw new DtoGeneratorException($"Symbol not found on '{nameof(GenerateDtoAttribute)}' attribute");
 
-        var generatorAttr = dtoSymbol?.GetAttributes()
+        var generatorAttr = dtoSymbol.GetAttributes()
             .FirstOrDefault(a => a.AttributeClass?.Name == nameof(GenerateDtoAttribute))
             ?? throw new DtoGeneratorException($"'{nameof(GenerateDtoAttribute)}' attribute not found");
 
-        var mapAttributes = dtoSymbol?.GetAttributes()
+        var mapAttributes = dtoSymbol.GetAttributes()
             .Where(a => a.AttributeClass?.Name == nameof(MapAttribute) && a is not null)
             ?? [];
+
+        var dtoNamespace = dtoSymbol.ContainingNamespace.ToDisplayString();
 
         generatorAttr.ExtractGeneratorAttributeConstructorArgs(
                 out var targetName,
@@ -42,8 +45,8 @@ internal static class DtoDataBuilderExtensions
                 out var include,
                 out var exclude);
 
-        if (exclude.Any()) props = props.Where(p => !exclude.Contains(p.Identifier.ValueText));
-        if (include.Any()) props = props.Where(p => include.Contains(p.Identifier.ValueText));
+        if (exclude.Any()) props = props.Where(p => !exclude.Contains(p.Name));
+        if (include.Any()) props = props.Where(p => include.Contains(p.Name));
 
         var propNameToMappedType = mapAttributes.GetPropNameToMappedTypeAsDict();
 
@@ -52,6 +55,7 @@ internal static class DtoDataBuilderExtensions
             DtoName = dtoSymbol!.Name,
             TargetName = targetName,
             Properties = props,
+            DtoNamespace = dtoNamespace,
             TargetNamespace = targetNamespace,
             PropNameToMappedType = propNameToMappedType,
         };
@@ -60,15 +64,14 @@ internal static class DtoDataBuilderExtensions
     private static void ExtractGeneratorAttributeConstructorArgs(this AttributeData generatorAttr,
             out string targetName,
             out string targetNamespace,
-            out IEnumerable<PropertyDeclarationSyntax> props)
+            out IEnumerable<IPropertySymbol> props)
     {
         var targetType = generatorAttr.ConstructorArguments[0].Value as INamedTypeSymbol ?? throw new DtoGeneratorException($"Invalid {nameof(GenerateDtoAttribute)} constructor argument");
 
-        var declarationSyntax = (ClassDeclarationSyntax)targetType.DeclaringSyntaxReferences
-            .FirstOrDefault()?.GetSyntax()!;
-
-        props = declarationSyntax.Members.OfType<PropertyDeclarationSyntax>();
-        targetNamespace = targetType.ContainingNamespace!.ToDisplayString();
+        props = targetType.GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(p => !p.IsStatic);
+        targetNamespace = targetType.ContainingNamespace.ToDisplayString();
         targetName = targetType.Name;
     }
 

@@ -3,21 +3,25 @@ using Application.Seedwork;
 using Application.UseCases.Identity;
 using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
+using Attributes.GeneratorAttributes;
 
 namespace Application.UseCases.Schedules.Queries;
 
+[GenerateDto(typeof(ChecklistState))]
+public partial class ChecklistDto;
+
 
 public sealed record GetChecklistByIdQuery(ChecklistId ChecklistId)
-    : IQuery<ChecklistState>;
+    : IQuery<ChecklistDto>;
 
 
 public class GetChecklistByIdQueryHandler(
         IIdentityProvider identity,
         IChecklistRepo checklistRepo,
         IUserRepo userRepo)
-: BaseQueryHandler<GetChecklistByIdQuery, ChecklistState>
+: BaseQueryHandler<GetChecklistByIdQuery, ChecklistDto>
 {
-    protected override async Task<ChecklistState> Execute(
+    protected override async Task<ChecklistDto> Execute(
             GetChecklistByIdQuery query,
             CancellationToken ct)
     {
@@ -31,9 +35,7 @@ public class GetChecklistByIdQueryHandler(
         if (checklist.UserId != userId)
             throw new ApplicationArgumentException($"User has no Checklist with ChecklistId={query.ChecklistId}");
 
-        // TODO: Write a library for creating Projections
-        // and use it here
-        return checklist.State;
+        return ChecklistDto.From(checklist.State);
     }
 }
 

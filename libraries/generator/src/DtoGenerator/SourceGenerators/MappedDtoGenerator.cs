@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DtoGenerator.SourceGenerators;
 
@@ -32,7 +31,8 @@ internal record GeneratedDtoData()
 {
     public string DtoName { get; set; } = string.Empty;
     public string TargetName { get; set; } = string.Empty;
-    public IEnumerable<PropertyDeclarationSyntax> Properties { get; set; } = [];
+    public IEnumerable<IPropertySymbol> Properties { get; set; } = [];
+    public string DtoNamespace { get; set; } = string.Empty;
     public string TargetNamespace { get; set; } = string.Empty;
     public IImmutableDictionary<string, string> PropNameToMappedType { get; set; } = ImmutableDictionary<string, string>.Empty;
 }
