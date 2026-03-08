@@ -10,15 +10,17 @@ using Infrastructure.Repos.Common;
 
 namespace Infrastructure.Repos;
 
+
 public class ChecklistRepo
 (IEventStore eventStore, IEntityStateStore<ChecklistState, ChecklistId> stateStore)
     : BaseRepository<Checklist, ChecklistId, ChecklistState>(stateStore, eventStore), IChecklistRepo
 {
-    public async Task<IEnumerable<Checklist>> GetForDay(UserId userId, DateOnly date, CancellationToken ct)
-        => stateStore.Query.Where(
-                c => c.UserId == userId
+    public Task<IEnumerable<Checklist>> GetForDay(UserId userId, DateOnly date, CancellationToken ct)
+        => Task.FromResult(stateStore.Query
+            .AsEnumerable()
+            .Where(c => c.UserId == userId
                 && c.Statistics.GetDate() == date)
-        .Select(x => Checklist.Create(x));
+            .Select(Checklist.Create));
 }
 
 

@@ -6,17 +6,17 @@ using Domain.Common;
 namespace Application.UseCases.Schedules.Queries;
 
 
-public sealed record GetTodaysChecklists : IQuery<IEnumerable<ChecklistDto>>;
+public sealed record GetTodaysChecklistsQuery : IQuery<IEnumerable<ChecklistDto>>;
 
 
 public class GetTodaysChecklistsQueryHandler(
         IIdentityProvider identity,
         IChecklistRepo checklistRepo,
         IUserRepo userRepo)
-: BaseQueryHandler<GetTodaysChecklists, IEnumerable<ChecklistDto>>
+: BaseQueryHandler<GetTodaysChecklistsQuery, IEnumerable<ChecklistDto>>
 {
     protected override async Task<IEnumerable<ChecklistDto>> Execute(
-            GetTodaysChecklists query,
+            GetTodaysChecklistsQuery query,
             CancellationToken ct)
     {
         var userId = identity.GetCurrentUserId();
