@@ -1,6 +1,6 @@
-using Attributes;
+using Attributes.GeneratorAttributes;
 
-namespace Unit;
+namespace Unit.SourceDtoGeneration;
 
 public class Car
 {

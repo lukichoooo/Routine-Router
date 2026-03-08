@@ -1,6 +1,6 @@
 using System;
 
-namespace Attributes;
+namespace Attributes.GeneratorAttributes;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 public class GenerateDtoAttribute(Type TargetType) : Attribute

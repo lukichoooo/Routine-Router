@@ -2,9 +2,9 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace DtoGenerator;
+namespace DtoGenerator.SourceGenerators;
 
-public static class DtoBuilderExtensions
+internal static class DtoBuilderExtensions
 {
     public static void BuildDtoSourceFiles(this SourceProductionContext context,
             GeneratedDtoData dtoData)

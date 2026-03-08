@@ -1,12 +1,12 @@
 using System.Collections.Immutable;
-using Attributes;
-using DtoGenerator.Common.Exceptions;
+using Attributes.GeneratorAttributes;
+using DtoGenerator.SourceGenerators.Common.Exceptions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace DtoGenerator;
+namespace DtoGenerator.SourceGenerators;
 
-public static class DtoDataBuilderExtensions
+internal static class DtoDataBuilderExtensions
 {
     private const string GeneratorAttribute = "GenerateDto";
 

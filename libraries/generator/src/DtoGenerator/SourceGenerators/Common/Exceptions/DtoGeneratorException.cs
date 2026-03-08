@@ -1,6 +1,6 @@
-namespace DtoGenerator.Common.Exceptions;
+namespace DtoGenerator.SourceGenerators.Common.Exceptions;
 
-public class DtoGeneratorException : Exception
+internal class DtoGeneratorException : Exception
 {
     public DtoGeneratorException() : base() { }
     public DtoGeneratorException(string? message) : base(message) { }

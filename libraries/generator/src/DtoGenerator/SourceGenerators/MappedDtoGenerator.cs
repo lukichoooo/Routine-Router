@@ -2,14 +2,14 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace DtoGenerator;
+namespace DtoGenerator.SourceGenerators;
 
 // <summary>
 //  Creates Converter of Domain Objects to Dtos
 //  using source code generation
 // </summary>
 [Generator(LanguageNames.CSharp)]
-public class MappedDtoGenerator : IIncrementalGenerator
+internal class MappedDtoGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext initContext)
     {
@@ -28,7 +28,7 @@ public class MappedDtoGenerator : IIncrementalGenerator
 }
 
 
-public record GeneratedDtoData()
+internal record GeneratedDtoData()
 {
     public string DtoName { get; set; } = string.Empty;
     public string TargetName { get; set; } = string.Empty;
