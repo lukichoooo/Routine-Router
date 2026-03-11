@@ -1,0 +1,27 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/libraries/" />
+  <Folder Name="/libraries/generator/" />
+  <Folder Name="/libraries/generator/src/">
+    <Project Path="libraries/generator/src/Attributes/Attributes.csproj" />
+    <Project Path="libraries/generator/src/DtoGenerator/DtoGenerator.csproj" />
+  </Folder>
+  <Folder Name="/libraries/generator/tests/">
+    <Project Path="libraries/generator/tests/Unit/Unit.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/TestHelperFactory/TestHelperFactory.csproj" />
+  </Folder>
+  <Folder Name="/Tests/Unit/">
+    <Project Path="Tests/Unit/DomainTests/DomainTests.csproj" />
+    <Project Path="Tests/Unit/InfrastructureTests/InfrastructureTests.csproj" />
+  </Folder>
+  <Project Path="Application/Application.csproj" />
+  <Project Path="CLI/CLI.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infrastructure/Infrastructure.csproj" />
+</Solution>
