@@ -18,22 +18,29 @@ public sealed class SQLiteUnitOfWork(
 {
     public async Task Commit(CancellationToken ct)
     {
-        await using var transaction = await stateContext.Database.BeginTransactionAsync(ct);
-        try
-        {
-            await stateContext.SaveChangesAsync(ct);
+        // var connection = stateContext.Database.GetDbConnection();
+        // if (connection.State != ConnectionState.Open)
+        //     await connection.OpenAsync(ct);
+        //
+        // await using var transaction = await stateContext.Database.BeginTransactionAsync(ct);
+        // try
+        // {
+        //     await stateContext.SaveChangesAsync(ct);
+        //
+        //     await eventContext.Database.UseTransactionAsync(transaction.GetDbTransaction(), ct);
+        //     await eventContext.SaveChangesAsync(ct);
+        //
+        //     await transaction.CommitAsync(ct);
+        //     logger.LogInformation("Committed changes");
+        // }
+        // catch (Exception ex)
+        // {
+        //     logger.LogError(ex, "Commit failed");
+        //     throw;
+        // }
 
-            await eventContext.Database.UseTransactionAsync(transaction.GetDbTransaction(), ct);
-            await eventContext.SaveChangesAsync(ct);
-
-            await transaction.CommitAsync(ct);
-            logger.LogInformation("Committed changes");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Commit failed");
-            throw;
-        }
+        await stateContext.SaveChangesAsync(ct);
+        await eventContext.SaveChangesAsync(ct);
         logger.LogInformation("Commited changes");
 
 

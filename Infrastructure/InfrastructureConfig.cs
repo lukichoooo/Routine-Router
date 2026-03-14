@@ -55,7 +55,7 @@ namespace Infrastructure
 
             // // Event Store Infrastructure
             services.AddSingleton<IJsonEventMapper, JsonEventMapper>();
-            services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
+            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<IEventStore, SQLiteEventStore>();
             services.AddScoped<IUnitOfWork, SQLiteUnitOfWork>();
 

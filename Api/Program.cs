@@ -10,7 +10,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
 
-builder.Logging.AddFilter("LuckyPennySoftware.MediatR.License", LogLevel.None);
 var app = builder.Build();
 
 app.UseSwagger();

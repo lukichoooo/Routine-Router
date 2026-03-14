@@ -1,4 +1,5 @@
-using MediatR;
+
+using Mediator;
 
 namespace Application.Seedwork;
 
@@ -9,7 +10,7 @@ namespace Application.Seedwork;
 public abstract class BaseQueryHandler<TQuery, TRes> : IRequestHandler<TQuery, TRes>
 where TQuery : IQuery<TRes>
 {
-    public async Task<TRes> Handle(
+    public async ValueTask<TRes> Handle(
             TQuery query,
             CancellationToken ct)
     {

@@ -1,5 +1,5 @@
 using Application.Interfaces.Command;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
