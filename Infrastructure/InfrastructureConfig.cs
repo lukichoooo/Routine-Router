@@ -55,17 +55,17 @@ namespace Infrastructure
 
             // // Event Store Infrastructure
             services.AddSingleton<IJsonEventMapper, JsonEventMapper>();
-            services.AddSingleton<IEventStore, SQLiteEventStore>();
             services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
-            services.AddSingleton<IUnitOfWork, SQLiteUnitOfWork>();
+            services.AddScoped<IEventStore, SQLiteEventStore>();
+            services.AddScoped<IUnitOfWork, SQLiteUnitOfWork>();
 
             // entity tracking
-            services.AddSingleton<IEntityStateStore<ChecklistState, ChecklistId>, SQLiteChecklistStateStore>();
-            services.AddSingleton<IEntityStateStore<UserState, UserId>, SQLiteUserStateStore>();
+            services.AddScoped<IEntityStateStore<ChecklistState, ChecklistId>, SQLiteChecklistStateStore>();
+            services.AddScoped<IEntityStateStore<UserState, UserId>, SQLiteUserStateStore>();
 
             // repos
-            services.AddSingleton<IChecklistRepo, ChecklistRepo>();
-            services.AddSingleton<IUserRepo, UserRepo>();
+            services.AddScoped<IChecklistRepo, ChecklistRepo>();
+            services.AddScoped<IUserRepo, UserRepo>();
 
             // Services
             // TODO: create an interface for each llm service 

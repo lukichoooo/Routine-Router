@@ -12,7 +12,7 @@ public static class ApplicationConfig
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(Assembly.GetExecutingAssembly());
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         // services.AddMediatR(cfg =>
         // {
         //     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());

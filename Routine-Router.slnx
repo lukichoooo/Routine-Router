@@ -20,8 +20,8 @@
     <Project Path="Tests/Unit/DomainTests/DomainTests.csproj" />
     <Project Path="Tests/Unit/InfrastructureTests/InfrastructureTests.csproj" />
   </Folder>
+  <Project Path="Api/Api.csproj" />
   <Project Path="Application/Application.csproj" />
-  <Project Path="CLI/CLI.csproj" />
   <Project Path="Domain/Domain.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj" />
 </Solution>
