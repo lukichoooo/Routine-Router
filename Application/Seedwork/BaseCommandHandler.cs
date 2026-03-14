@@ -1,5 +1,5 @@
 using Application.Interfaces.Data;
-using MediatR;
+using Mediator;
 
 namespace Application.Seedwork;
 
@@ -11,7 +11,7 @@ public abstract class BaseCommandHandler<TCmd, TRes>(IUnitOfWork uow)
 : IRequestHandler<TCmd, TRes>
 where TCmd : ICommand<TRes>
 {
-    public async Task<TRes> Handle(
+    public async ValueTask<TRes> Handle(
             TCmd command,
             CancellationToken ct)
     {

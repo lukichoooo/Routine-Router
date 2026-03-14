@@ -12,8 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
+
+    <PackageReference Include="Mediator.Abstractions" Version="3.0.*" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,13 @@
 using Application.Interfaces.Events;
 using Domain.SeedWork;
-using MediatR;
+using Mediator;
 
 namespace Infrastructure.EventPublishing;
 
 
 public class DomainEventDispatcher(IPublisher publisher) : IDomainEventDispatcher
 {
-    public Task Dispatch(IDomainEvent domainEvent, CancellationToken ct)
+    public ValueTask Dispatch(IDomainEvent domainEvent, CancellationToken ct)
     {
         return publisher.Publish(domainEvent, ct);
     }

@@ -1,4 +1,5 @@
-using MediatR;
+
+using Mediator;
 
 namespace Application.Seedwork;
 

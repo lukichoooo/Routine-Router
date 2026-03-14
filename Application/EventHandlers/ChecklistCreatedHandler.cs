@@ -6,13 +6,13 @@ namespace Application.EventHandlers;
 
 public class ChecklistCreatedHandler : BaseDomainEventHandler<ChecklistCreated>
 {
-    protected override Task Execute(ChecklistCreated evt, CancellationToken ct)
+    protected override ValueTask Execute(ChecklistCreated evt, CancellationToken ct)
     {
         // TODO:
         Console.WriteLine(@$"Checklist created with Id={evt.AggregateId}, 
                 Handled By ChecklistCreatedHandler");
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }
 

@@ -1,7 +1,6 @@
 using System.Reflection;
 using Application.Behaviours;
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
@@ -12,12 +11,10 @@ public static class ApplicationConfig
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-        // services.AddMediatR(cfg =>
-        // {
-        //     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-        //     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-        // });
+        services.AddMediator(options =>
+        {
+            options.ServiceLifetime = ServiceLifetime.Scoped;
+        });
         return services;
     }
 }
