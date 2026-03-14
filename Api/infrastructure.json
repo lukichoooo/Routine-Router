@@ -5,8 +5,7 @@
         "Model": "llama-3.1-8b-instruct"
     },
     "ConnectionStrings": {
-        "EventContext": "Data Source=../Infrastructure/routine-router.db",
-        "StateContext": "Data Source=../Infrastructure/routine-router.db",
+        "DbConnection": "Data Source=../Infrastructure/routine-router.db",
         "CreateDatabaseIfNotExists": true
     }
 }
