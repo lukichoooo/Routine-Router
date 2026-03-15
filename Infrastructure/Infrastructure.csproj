@@ -2,7 +2,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+
+     <!-- EventMapper -->
     <ProjectReference Include="..\libraries\eventMapper\src\EventMapperAbstractions\EventMapperAbstractions.csproj" />
+    <ProjectReference Include="..\libraries\eventMapper\src\EventMapperGenerator\EventMapperGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true"/>
   </ItemGroup>
 
 <PropertyGroup>

@@ -1,20 +1,14 @@
-using Domain.SeedWork;
+using EventMapperAbstractions.Events;
 using Generated.EventMapper;
-using Infrastructure.Persistence.Data;
 
 namespace Unit.EventMapperGeneration;
-
-public sealed class TestEntityId : EntityId
-{
-    public TestEntityId(Guid value) : base(value) { }
-}
 
 public sealed record SimpleEvent(
     TestEntityId AggregateId,
     int Version,
     DateTimeOffset Timestamp,
     string Name
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public sealed record EventWithMultiplePayload(
     TestEntityId AggregateId,
@@ -23,14 +17,14 @@ public sealed record EventWithMultiplePayload(
     string Name,
     int Count,
     bool IsActive
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public sealed record EventWithValueObjectPayload(
     TestEntityId AggregateId,
     int Version,
     DateTimeOffset Timestamp,
     TestValueObject ValueObj
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public record TestValueObject(string Value, int Number);
 

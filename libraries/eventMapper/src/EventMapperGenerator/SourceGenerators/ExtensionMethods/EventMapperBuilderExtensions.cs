@@ -58,6 +58,7 @@ internal static class EventMapperBuilderExtensions
             sb.AppendLine("{");
 
             sb.AppendMainFromDbEvent(eventTypeNames);
+            sb.AppendMainToPayload();
 
             // End class
             sb.AppendLine("}");
@@ -151,6 +152,13 @@ internal static class EventMapperBuilderExtensions
 
             sb.AppendLine("\t\t\t_ => throw new NotSupportedException($\"Unknown event type {dbEvent.EventType}\"),");
             sb.AppendLine("\t\t};");
+        }
+
+
+        internal void AppendMainToPayload()
+        {
+            sb.AppendLine($"\tpublic static string ToPayload({MappingProfile.BaseEventTypeNameFriendly} e)");
+            sb.AppendLine("\t\t=> ToPayload((dynamic)e);");
         }
     }
 }

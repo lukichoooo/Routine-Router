@@ -1,5 +1,7 @@
 using Application.Interfaces.Events;
 using Domain.SeedWork;
+using EventMapperGenerator.SourceGenerators.ExtensionMethods;
+using Generated.EventMapper;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data.Exceptions;
 using Infrastructure.Persistence.Data.Serializer;
@@ -8,9 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Persistence.Data;
 
 
-public class SQLiteEventStore(
-        IJsonEventMapper mapper,
-        EventContext context) : IEventStore
+public class SQLiteEventStore(EventContext context) : IEventStore
 {
     // <summary>
     // Appends events to the event store.
@@ -38,7 +38,7 @@ public class SQLiteEventStore(
         }
 
         IEnumerable<Event> newEvents = events
-            .Select(e => Event.From(e, mapper.ToPayload(e)));
+            .Select(e => Event.From(e, EventMapper.oPayload()));
 
         await context.Events.AddRangeAsync(newEvents, ct);
     }

@@ -1,44 +1,27 @@
-using System.ComponentModel.DataAnnotations;
-using Domain.SeedWork;
 using EventMapperAbstractions.DbEvents;
+using EventMapperAbstractions.Events;
+using EventMapperAbstractions.SeedWork;
 
-namespace Infrastructure.Persistence.Data;
+namespace Unit.EventMapperGeneration;
 
-public sealed class Event : IDbEvent
+public sealed class TestEntityId(Guid value) : IAggregateId
 {
-    [Key]
+    public Guid Value { get; set; } = value;
+    public Guid ToGuid() => Value;
+}
+
+
+public class Event : IDbEvent
+{
     public int Id { get; private set; }
-
     public DateTimeOffset CreatedAt { get; private set; }
-
-
-    // ignored on Payload
-    [Required]
     public required Guid AggregateId { get; set; }
-
-    // ignored on Payload
-    [Required]
     public required int Version { get; set; }
-
-    // ignored on Payload
-    [Required]
     public required DateTimeOffset Timestamp { get; set; }
-
-
-    // Type data
-    [Required]
     public required string AggregateIdType { get; set; }
-
-    // Type data
-    [Required]
     public required string EventType { get; set; }
-
-
-    [Required]
     public required string Payload { get; set; }
-
-
-    public static Event From(IDomainEvent e, string payload)
+    public static Event From(IEvent<TestEntityId> e, string payload)
         => new()
         {
             AggregateId = e.AggregateId.ToGuid(),

@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
-using Domain.SeedWork;
+using EventMapperAbstractions.Events;
 using Generated.EventMapper;
-using Infrastructure.Persistence.Data;
 
 namespace Unit.EventMapperGeneration;
 
@@ -10,13 +9,13 @@ public sealed record EventWithNullableString(
     int Version,
     DateTimeOffset Timestamp,
     string? OptionalName
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public sealed record EventWithAllBaseProps(
     TestEntityId AggregateId,
     int Version,
     DateTimeOffset Timestamp
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public sealed record EventWithDecimal(
     TestEntityId AggregateId,
@@ -24,7 +23,7 @@ public sealed record EventWithDecimal(
     DateTimeOffset Timestamp,
     decimal Amount,
     double Rate
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public sealed record EventWithDateTime(
     TestEntityId AggregateId,
@@ -32,7 +31,7 @@ public sealed record EventWithDateTime(
     DateTimeOffset Timestamp,
     DateTime ScheduledTime,
     DateTimeOffset OccurredAt
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public class EdgeCaseTests
 {

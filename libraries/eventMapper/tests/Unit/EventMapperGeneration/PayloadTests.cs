@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
-using Domain.SeedWork;
+using EventMapperAbstractions.Events;
 using Generated.EventMapper;
-using Infrastructure.Persistence.Data;
 
 namespace Unit.EventMapperGeneration;
 
@@ -10,14 +9,14 @@ public sealed record EventWithListPayload(
     int Version,
     DateTimeOffset Timestamp,
     List<string> Items
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public sealed record EventWithNestedObject(
     TestEntityId AggregateId,
     int Version,
     DateTimeOffset Timestamp,
     NestedData Data
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public record NestedData(string Name, int Value);
 
@@ -27,7 +26,7 @@ public sealed record EventWithGuidPayload(
     DateTimeOffset Timestamp,
     Guid UserId,
     Guid ItemId
-) : BaseDomainEvent<TestEntityId>;
+) : IEvent<TestEntityId>;
 
 public class PayloadTests
 {
