@@ -197,4 +197,43 @@ public class PayloadTests
         Assert.That(result!.Data.Name, Is.EqualTo(original.Data.Name));
         Assert.That(result.Data.Value, Is.EqualTo(original.Data.Value));
     }
+
+    [Test]
+    public void ToPayload_WithBaseTypeListEvent_SerializesCorrectly()
+    {
+        var domainEvent = new EventWithListPayload(
+            new TestEntityId(Guid.NewGuid()),
+            1,
+            DateTimeOffset.UtcNow,
+            new List<string> { "Alpha", "Beta" }
+        );
+
+        IEvent<TestEntityId> baseEvent = domainEvent;
+
+        var result = EventMapper.ToPayload(baseEvent);
+
+        var jsonNode = JsonNode.Parse(result);
+        Assert.That(jsonNode?["Items"], Is.Not.Null);
+        Assert.That(jsonNode!["Items"]!.AsArray(), Has.Count.EqualTo(2));
+    }
+
+    [Test]
+    public void ToPayload_WithBaseTypeNestedEvent_SerializesCorrectly()
+    {
+        var domainEvent = new EventWithNestedObject(
+            new TestEntityId(Guid.NewGuid()),
+            1,
+            DateTimeOffset.UtcNow,
+            new NestedData("BaseTest", 123)
+        );
+
+        IEvent<TestEntityId> baseEvent = domainEvent;
+
+        var result = EventMapper.ToPayload(baseEvent);
+
+        var jsonNode = JsonNode.Parse(result);
+        Assert.That(jsonNode?["Data"], Is.Not.Null);
+        Assert.That(jsonNode!["Data"]!["Name"]?.GetValue<string>(), Is.EqualTo("BaseTest"));
+        Assert.That(jsonNode["Data"]!["Value"]?.GetValue<int>(), Is.EqualTo(123));
+    }
 }
