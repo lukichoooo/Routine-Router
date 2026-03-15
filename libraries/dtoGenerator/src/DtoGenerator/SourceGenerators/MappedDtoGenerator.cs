@@ -1,6 +1,7 @@
 ﻿#pragma warning disable RS1041 // Code analysis requires .net standard 2
 
 using System.Collections.Immutable;
+using DtoGenerator.SourceGenerators.ExtensionMethods;
 using Microsoft.CodeAnalysis;
 
 namespace DtoGenerator.SourceGenerators;

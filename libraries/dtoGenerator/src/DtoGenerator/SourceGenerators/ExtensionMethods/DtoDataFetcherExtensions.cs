@@ -4,7 +4,7 @@ using DtoGenerator.SourceGenerators.Common.Exceptions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace DtoGenerator.SourceGenerators;
+namespace DtoGenerator.SourceGenerators.ExtensionMethods;
 
 internal static class DtoDataBuilderExtensions
 {

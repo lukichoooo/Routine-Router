@@ -2,7 +2,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace DtoGenerator.SourceGenerators;
+namespace DtoGenerator.SourceGenerators.ExtensionMethods;
 
 internal static class DtoBuilderExtensions
 {

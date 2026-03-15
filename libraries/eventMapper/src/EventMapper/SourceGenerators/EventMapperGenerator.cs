@@ -13,29 +13,23 @@ internal class MappedDtoGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext initContext)
     {
-        IncrementalValuesProvider<GeneratedDtoData> dtoData = initContext.SyntaxProvider
+        IncrementalValuesProvider<GeneratedEventData> dtoData = initContext.SyntaxProvider
             .CreateSyntaxProvider(
-                static (s, _) => s.HasAttribute(),
-                static (ctx, _) => ctx.ToDtoData()
+                static (s, _) => s.IsEvent(),
+                static (ctx, _) => ctx.ToEventData()
                 )
             .Where(x => x is not null);
 
         initContext.RegisterSourceOutput(
                 dtoData,
-                static (spc, dtoData) => spc.BuildDtoSourceFiles(dtoData)
+                static (spc, dtoData) => spc.BuildMapperSourceFiles(dtoData)
                     );
     }
 }
 
 
-internal record GeneratedDtoData()
+internal record GeneratedEventData()
 {
-    public string DtoName { get; set; } = string.Empty;
-    public string TargetName { get; set; } = string.Empty;
-    public IEnumerable<IPropertySymbol> Properties { get; set; } = [];
-    public string DtoNamespace { get; set; } = string.Empty;
-    public string TargetNamespace { get; set; } = string.Empty;
-    public IImmutableDictionary<string, string> PropNameToMappedType { get; set; } = ImmutableDictionary<string, string>.Empty;
 }
 
-#pragma warning restore RS1041 // Code analysis requires .net standard 2
+#pragma warning restore RS1041
