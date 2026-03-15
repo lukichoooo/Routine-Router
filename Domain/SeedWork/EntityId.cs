@@ -1,3 +1,5 @@
+using EventMapperAbstractions.SeedWork;
+
 namespace Domain.SeedWork;
 
 
@@ -5,7 +7,7 @@ namespace Domain.SeedWork;
 // Base Class for all Aggregate Root Id
 // inherits from ValueObject
 // </summary>
-public abstract class EntityId : ValueObject
+public abstract class EntityId : ValueObject, IAggregateId
 {
     public Guid Value { get; }
 
