@@ -24,7 +24,7 @@ internal class MappedDtoGenerator : IIncrementalGenerator
 
         initContext.RegisterSourceOutput(
                 dtoData,
-                static (spc, dtoData) => spc.BuildMapperSourceFiles(dtoData)
+                static (spc, dtoData) => spc.BuildMapperSourceFile(dtoData)
                     );
     }
 }

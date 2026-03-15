@@ -1,21 +1,18 @@
-using Domain.SeedWork;
+using System.Collections.Immutable;
 using Infrastructure.Persistence.Data;
 
 namespace EventMapper.SourceGenerators;
 
 public static class EventMappingProfile
 {
-    internal static IEnumerable<string> GetIgnoredOnPayloadPropNames()
-    {
-        yield return nameof(IDomainEvent.AggregateId);
-        yield return nameof(IDomainEvent.Version);
-        yield return nameof(IDomainEvent.Timestamp);
-    }
+    public static IImmutableSet<string> GetIgnoredOnPayloadPropNames()
+        => Event.IgnoredOnPayloadFields.ToImmutableHashSet();
 
-    internal static readonly Type DbEventType = typeof(Event);
+    public static readonly Type DbEventType = typeof(Event);
 
-    internal static readonly string MapperNamespace = DbEventType.Namespace!;
-    internal const string MapperClassName = "EventMapper";
+    public static readonly string MapperNamespace = DbEventType.Namespace!;
+
+    public const string MapperClassName = "EventMapper";
 
 }
 
