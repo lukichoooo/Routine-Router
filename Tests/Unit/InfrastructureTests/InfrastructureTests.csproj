@@ -26,7 +26,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\..\TestHelperFactory\TestHelperFactory.csproj" />
-    <ProjectReference Include="..\..\..\libraries\eventMapper\src\EventMapperGenerator\EventMapperGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true"/>
   </ItemGroup>
 
 </Project>
