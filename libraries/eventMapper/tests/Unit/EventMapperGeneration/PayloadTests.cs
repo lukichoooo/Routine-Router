@@ -1,6 +1,5 @@
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Domain.SeedWork;
-using Infrastructure.Persistence.Data;
 using Event = Infrastructure.Persistence.Data.Event;
 using EventMapper = Infrastructure.Persistence.Data.EventMapper;
 

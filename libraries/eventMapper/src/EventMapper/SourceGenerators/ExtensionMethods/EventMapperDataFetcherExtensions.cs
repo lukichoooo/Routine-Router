@@ -1,6 +1,7 @@
 using EventMapper.SourceGenerators.Common.Exceptions;
 using EventMapperAbstractions.Events;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace EventMapper.SourceGenerators.ExtensionMethods;
 
@@ -8,9 +9,8 @@ public static class EventMapperDataFetcherExtensions
 {
     extension(SyntaxNode node)
     {
-        internal bool IsEvent()
-            => node is INamedTypeSymbol namedTypeSymbol
-                && namedTypeSymbol.AllInterfaces.Any(x => x.Name == nameof(IEvent<>));
+        internal bool IsEventCandidate()
+            => node is TypeDeclarationSyntax t && t.BaseList is not null;
     }
 
     extension(GeneratorSyntaxContext context)
@@ -21,6 +21,10 @@ public static class EventMapperDataFetcherExtensions
             var eventSymbol = context.SemanticModel.GetDeclaredSymbol(eventDecl) as INamedTypeSymbol
                 ?? throw new EventMapperGeneratorException($"Symbol not found on '{eventDecl.GetType().Name}'");
 
+            var eventInterface = context.SemanticModel.Compilation
+                .GetTypeByMetadataName(typeof(IEvent<>).FullName!)
+                ?? throw new EventMapperGeneratorException($"{typeof(IEvent<>).FullName} not found");
+
             var eventNamespace = eventSymbol.ContainingNamespace.ToDisplayString();
 
             var props = eventSymbol.GetMembers()
@@ -28,10 +32,10 @@ public static class EventMapperDataFetcherExtensions
                 .Where(x => !x.IsStatic);
 
             var payloadProps = props.Where(x =>
-                    !EventMappingProfile.GetIgnoredOnPayloadPropNames.Contains(x.Name));
+                    !MappingProfile.GetIgnoredOnPayloadPropNames.Contains(x.Name));
 
             var baseProps = props.Where(x =>
-                    EventMappingProfile.GetIgnoredOnPayloadPropNames.Contains(x.Name));
+                    MappingProfile.GetIgnoredOnPayloadPropNames.Contains(x.Name));
 
             return new GeneratedEventMapperData()
             {

@@ -1,5 +1,6 @@
 #pragma warning disable RS1041 // Code analysis requires .net standard 2
 
+using System.Collections.Immutable;
 using EventMapper.SourceGenerators.ExtensionMethods;
 using Microsoft.CodeAnalysis;
 
@@ -17,7 +18,7 @@ internal class MappedDtoGenerator : IIncrementalGenerator
     {
         IncrementalValuesProvider<GeneratedEventMapperData> dtoData = initContext.SyntaxProvider
             .CreateSyntaxProvider(
-                static (s, _) => s.IsEvent(),
+                static (s, _) => s.IsEventCandidate(),
                 static (ctx, _) => ctx.ToEventData()
                 )
             .Where(x => x is not null);
@@ -26,6 +27,19 @@ internal class MappedDtoGenerator : IIncrementalGenerator
                 dtoData,
                 static (spc, dtoData) => spc.BuildMapperSourceFile(dtoData)
                     );
+
+        // var dtoDataWrapper = dtoData.Collect();
+        //
+        // initContext.RegisterSourceOutput(
+        //     dtoDataWrapper,
+        //     static (spc, allDtos) =>
+        //     {
+        //         var eventTypeNames = allDtos.Select(d => d.EventTypeName);
+        //         var eventNamespaces = allDtos.Select(d => d.EventNamespace).Distinct();
+        //
+        //         spc.BuildMainSourceFile(eventTypeNames, eventNamespaces);
+        //     }
+        // );
     }
 }
 

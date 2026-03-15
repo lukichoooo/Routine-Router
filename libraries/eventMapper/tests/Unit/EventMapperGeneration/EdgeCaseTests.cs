@@ -1,6 +1,7 @@
+using System.Text.Json.Nodes;
 using Domain.SeedWork;
+using EventMapperAbstractions.DbEvents;
 using Event = Infrastructure.Persistence.Data.Event;
-using EventMapper = Infrastructure.Persistence.Data.EventMapper;
 
 namespace Unit.EventMapperGeneration;
 
@@ -120,9 +121,9 @@ public class EdgeCaseTests
 
         var result = EventMapper.ToPayload(domainEvent);
 
-        var jsonNode = System.Text.Json.JsonNode.Parse(result);
+        var jsonNode = JsonNode.Parse(result);
         Assert.That(jsonNode, Is.Not.Null);
-        Assert.That(jsonNode!.Count, Is.EqualTo(0));
+        Assert.That(jsonNode!.AsObject(), Is.Empty);
     }
 
     [Test]

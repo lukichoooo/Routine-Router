@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EventMapperAbstractions\EventMapperAbstractions.csproj" />
+      <ProjectReference Include="..\EventMapperAbstractions\EventMapperAbstractions.csproj" />
   </ItemGroup>
 
 </Project>
