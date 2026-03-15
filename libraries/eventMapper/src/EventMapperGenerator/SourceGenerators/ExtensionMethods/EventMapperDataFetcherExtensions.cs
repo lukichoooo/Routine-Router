@@ -11,7 +11,8 @@ internal static class EventMapperDataFetcherExtensions
             var baseType = compilation.GetTypeByMetadataName(MappingProfile.BaseEventTypeMetadataName);
             if (baseType is null) return [];
 
-            var referencedAssemblies = compilation.SourceModule.ReferencedAssemblySymbols;
+            var referencedAssemblies = compilation.SourceModule.ReferencedAssemblySymbols
+                .Concat([compilation.Assembly]);
 
             return referencedAssemblies
                 .SelectMany(assembly => GetAllTypes(assembly.GlobalNamespace))
