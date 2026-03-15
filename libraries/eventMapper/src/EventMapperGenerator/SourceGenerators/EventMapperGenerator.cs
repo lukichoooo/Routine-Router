@@ -15,29 +15,21 @@ internal class MappedDtoGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext initContext)
     {
-        IncrementalValuesProvider<GeneratedEventMapperData> dtoData = initContext.SyntaxProvider
-            .CreateSyntaxProvider(
-                static (s, _) => s.IsEventCandidate(),
-                static (ctx, _) => ctx.ToEventData()
-                )
-            .Where(x => x is not null);
+        var valuesEventsData = initContext.CompilationProvider
+            .Select((compilation, _) => compilation.GetAllEvents());
 
         initContext.RegisterSourceOutput(
-                dtoData,
-                static (spc, dtoData) => spc.BuildMapperSourceFile(dtoData)
-                    );
+                valuesEventsData,
+                static (spc, events) =>
+                {
+                    foreach (var evt in events)
+                        spc.BuildMapperSourceFile(evt);
 
-        var dtoDataWrapper = dtoData.Collect();
+                    var eventTypeNames = events.Select(d => d.EventTypeName);
+                    var eventNamespaces = events.Select(d => d.EventNamespace).Distinct();
 
-        initContext.RegisterSourceOutput(
-            dtoDataWrapper,
-            static (spc, allDtos) =>
-            {
-                var eventTypeNames = allDtos.Select(d => d.EventTypeName);
-                var eventNamespaces = allDtos.Select(d => d.EventNamespace).Distinct();
-
-                spc.BuildMainSourceFile(eventTypeNames, eventNamespaces);
-            }
+                    spc.BuildMainSourceFile(eventTypeNames, eventNamespaces);
+                }
         );
     }
 }

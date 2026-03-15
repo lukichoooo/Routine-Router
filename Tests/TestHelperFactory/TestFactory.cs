@@ -7,7 +7,6 @@ using Domain.Entities.Users;
 using Domain.Entities.Users.ValueObjects;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
-using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
