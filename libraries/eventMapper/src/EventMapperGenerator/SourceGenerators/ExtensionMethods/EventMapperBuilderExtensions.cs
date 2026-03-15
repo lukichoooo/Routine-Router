@@ -95,23 +95,29 @@ public static class EventMapperBuilderExtensions
             sb.AppendLine($"\tprivate static {mapperData.EventTypeName} "
                     + MappingProfile.GetFromDbEventMethodName(mapperData.EventTypeName)
                     + $"({MappingProfile.DbEventTypeName} dbEvent)");
+            sb.AppendLine("\t{");
+            sb.AppendLine($"\t\tvar payloadNode = JsonSerializer.Deserialize<JsonNode>(dbEvent.Payload)!;");
 
-            sb.AppendLine($"\t\t=> new {mapperData.EventTypeName}(");
+            sb.AppendLine($"\t\treturn new {mapperData.EventTypeName}(");
 
             var args = new List<string>();
             foreach (var prop in mapperData.BaseProps)
             {
-                args.Add($"\t\t\t{prop.Name}: dbEvent.{prop.Name}");
+                if (prop.Name == "AggregateId")
+                    args.Add($"\t\t\t{prop.Name}: new(dbEvent.{prop.Name})");
+                else
+                    args.Add($"\t\t\t{prop.Name}: dbEvent.{prop.Name}");
             }
 
             foreach (var prop in mapperData.PayloadProps)
             {
-                args.Add($"\t\t\t{prop.Name}: JsonSerializer.Deserialize<{prop.Type.Name}>(dbEvent.{prop.Name})!");
+                args.Add($"\t\t\t{prop.Name}: payloadNode[\"{prop.Name}\"]!.Deserialize<{prop.Type.ToDisplayString()}>()!");
             }
 
             sb.AppendJoin(",\n", args).AppendLine();
 
             sb.AppendLine("\t);");
+            sb.AppendLine("\t}");
         }
 
 

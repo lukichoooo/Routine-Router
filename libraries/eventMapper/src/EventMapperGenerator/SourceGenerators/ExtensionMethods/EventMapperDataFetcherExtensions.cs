@@ -9,7 +9,7 @@ public static class EventMapperDataFetcherExtensions
     extension(SyntaxNode node)
     {
         internal bool IsEventCandidate()
-            => node is TypeDeclarationSyntax t && t.BaseList is not null;
+            => node is RecordDeclarationSyntax t && t.BaseList is not null;
     }
 
     extension(GeneratorSyntaxContext context)

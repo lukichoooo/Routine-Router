@@ -195,7 +195,7 @@ public class PayloadTests
 
         var result = EventMapper.FromDbEvent(dbEvent) as EventWithNestedObject;
 
-        Assert.That(result.Data.Name, Is.EqualTo(original.Data.Name));
+        Assert.That(result!.Data.Name, Is.EqualTo(original.Data.Name));
         Assert.That(result.Data.Value, Is.EqualTo(original.Data.Value));
     }
 }
