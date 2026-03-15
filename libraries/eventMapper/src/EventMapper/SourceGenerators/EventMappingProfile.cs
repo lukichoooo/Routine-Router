@@ -5,7 +5,7 @@ namespace EventMapper.SourceGenerators;
 
 public static class EventMappingProfile
 {
-    public static IImmutableSet<string> GetIgnoredOnPayloadPropNames()
+    public static IImmutableSet<string> GetIgnoredOnPayloadPropNames
         => Event.IgnoredOnPayloadFields.ToImmutableHashSet();
 
     public static readonly Type DbEventType = typeof(Event);

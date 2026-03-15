@@ -17,6 +17,9 @@
   <Folder Name="/libraries/eventMapper/src/">
     <Project Path="libraries/eventMapper/src/EventMapper/EventMapper.csproj" />
   </Folder>
+  <Folder Name="/libraries/eventMapper/tests/">
+    <Project Path="libraries/eventMapper/tests/Unit/Unit.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/TestHelperFactory/TestHelperFactory.csproj" />
   </Folder>
