@@ -1,6 +1,6 @@
 namespace EventMapperGenerator.SourceGenerators.Common.Exceptions;
 
-public class EventMapperGeneratorException : Exception
+internal class EventMapperGeneratorException : Exception
 {
     public EventMapperGeneratorException() : base()
     {

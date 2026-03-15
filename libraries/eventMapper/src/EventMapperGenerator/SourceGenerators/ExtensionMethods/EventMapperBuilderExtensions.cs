@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace EventMapperGenerator.SourceGenerators.ExtensionMethods;
 
-public static class EventMapperBuilderExtensions
+internal static class EventMapperBuilderExtensions
 {
     extension(SourceProductionContext context)
     {

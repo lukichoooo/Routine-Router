@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace EventMapperGenerator.SourceGenerators.ExtensionMethods;
 
-public static class EventMapperDataFetcherExtensions
+internal static class EventMapperDataFetcherExtensions
 {
     extension(SyntaxNode node)
     {
