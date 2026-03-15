@@ -45,7 +45,7 @@ public class PayloadTests
 
         var jsonNode = JsonNode.Parse(result);
         Assert.That(jsonNode?["Items"], Is.Not.Null);
-        Assert.That(jsonNode!["Items"]!.AsArray().Count, Is.EqualTo(3));
+        Assert.That(jsonNode!["Items"]!.AsArray(), Has.Count.EqualTo(3));
     }
 
     [Test]
@@ -64,7 +64,7 @@ public class PayloadTests
         var result = EventMapper.FromDbEvent(dbEvent) as EventWithListPayload;
 
         Assert.That(result!.Items, Has.Count.EqualTo(3));
-        Assert.That(result.Items, Is.EquivalentTo(new List<string> { "A", "B", "C" }));
+        Assert.That(result.Items, Is.EquivalentTo(["A", "B", "C"]));
     }
 
     [Test]

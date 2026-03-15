@@ -93,6 +93,9 @@ public class SimpleTests
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Does.Contain("TestName"));
+        Assert.That(result, Does.Not.Contain("AggregateId"));
+        Assert.That(result, Does.Not.Contain("Version"));
+        Assert.That(result, Does.Not.Contain("Timestamp"));
     }
 
     [Test]
@@ -112,6 +115,9 @@ public class SimpleTests
         Assert.That(result, Does.Contain("TestName"));
         Assert.That(result, Does.Contain("10"));
         Assert.That(result, Does.Contain("true"));
+        Assert.That(result, Does.Not.Contain("AggregateId"));
+        Assert.That(result, Does.Not.Contain("Version"));
+        Assert.That(result, Does.Not.Contain("Timestamp"));
     }
 
     [Test]
