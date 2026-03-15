@@ -1,12 +1,11 @@
-﻿#pragma warning disable RS1041 // Code analysis requires .net standard 2
+#pragma warning disable RS1041 // Code analysis requires .net standard 2
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 
-namespace DtoGenerator.SourceGenerators;
+namespace EventMapper.SourceGenerators;
 
 // <summary>
-//  Creates Converter of Domain Objects to Dtos
+//  Creates Converter of Code C# events and Database Stored Events
 //  using source code generation
 // </summary>
 [Generator(LanguageNames.CSharp)]
@@ -39,4 +38,4 @@ internal record GeneratedDtoData()
     public IImmutableDictionary<string, string> PropNameToMappedType { get; set; } = ImmutableDictionary<string, string>.Empty;
 }
 
-#pragma warning restore RS1041
+#pragma warning restore RS1041 // Code analysis requires .net standard 2

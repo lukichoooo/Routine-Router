@@ -13,6 +13,10 @@
   <Folder Name="/libraries/dtoGenerator/tests/">
     <Project Path="libraries/dtoGenerator/tests/Unit/Unit.csproj" />
   </Folder>
+  <Folder Name="/libraries/eventMapper/" />
+  <Folder Name="/libraries/eventMapper/src/">
+    <Project Path="libraries/eventMapper/src/EventMapper/EventMapper.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/TestHelperFactory/TestHelperFactory.csproj" />
   </Folder>
