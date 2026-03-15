@@ -19,10 +19,7 @@ public sealed class SQLiteUnitOfWork(
     public async Task Commit(CancellationToken ct)
     {
         var connection = stateContext.Database.GetDbConnection();
-        if (connection.State != ConnectionState.Open)
-            await connection.OpenAsync(ct);
-
-        eventContext.Database.SetDbConnection(connection);
+        await connection.OpenAsync(ct);
 
         await using var transaction = await stateContext.Database.BeginTransactionAsync(ct);
         try
@@ -41,14 +38,11 @@ public sealed class SQLiteUnitOfWork(
             throw;
         }
 
-        logger.LogInformation("Commited changes");
-
 
         var states = stateContext.ChangeTracker
             .Entries<IAggregateRootState>()
             .Select(e => e.Entity)
             .ToList();
-
 
         logger.LogInformation($"Entries count: {states.Count}");
         foreach (var entry in states)

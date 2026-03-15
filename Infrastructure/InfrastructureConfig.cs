@@ -1,4 +1,5 @@
 using System.ClientModel;
+using System.Data.Common;
 using Application.Interfaces.Command;
 using Application.Interfaces.Data;
 using Application.Interfaces.Events;
@@ -17,6 +18,7 @@ using Infrastructure.Persistence.Data.Serializer;
 using Infrastructure.Repos;
 using Infrastructure.Services.Command;
 using Infrastructure.Services.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,11 +48,9 @@ namespace Infrastructure
 
 
             //EF
-            var dbConnection = config.GetConnectionString("DbConnection");
-            services.AddDbContext<EventContext>(options =>
-                options.UseSqlite(dbConnection));
-            services.AddDbContext<StateContext>(options =>
-                options.UseSqlite(dbConnection));
+            var dbConnection = new SqliteConnection(config.GetConnectionString("DbConnection"));
+            services.AddDbContext<EventContext>(options => options.UseSqlite(dbConnection));
+            services.AddDbContext<StateContext>(options => options.UseSqlite(dbConnection));
 
             services.AddSingleton<IIdentityProvider, IdentityProvider>();
 
