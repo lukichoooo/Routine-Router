@@ -27,7 +27,7 @@
     <ProjectReference Include="..\..\..\..\Infrastructure\Infrastructure.csproj" />
 
     <ProjectReference Include="..\..\src\EventMapperAbstractions\EventMapperAbstractions.csproj" />
-    <ProjectReference Include="..\..\src\EventMapper\EventMapper.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+    <ProjectReference Include="..\..\src\EventMapperGenerator\EventMapperGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
 
 </Project>

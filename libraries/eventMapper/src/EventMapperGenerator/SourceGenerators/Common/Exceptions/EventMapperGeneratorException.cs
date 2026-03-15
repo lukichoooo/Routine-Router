@@ -1,4 +1,4 @@
-namespace EventMapper.SourceGenerators.Common.Exceptions;
+namespace EventMapperGenerator.SourceGenerators.Common.Exceptions;
 
 public class EventMapperGeneratorException : Exception
 {

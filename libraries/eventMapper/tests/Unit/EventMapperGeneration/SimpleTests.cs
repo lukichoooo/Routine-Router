@@ -1,6 +1,6 @@
 using Domain.SeedWork;
-using Event = Infrastructure.Persistence.Data.Event;
-using EventMapper = Infrastructure.Persistence.Data.EventMapper;
+using Generated.EventMapper;
+using Infrastructure.Persistence.Data;
 
 namespace Unit.EventMapperGeneration;
 
@@ -49,7 +49,7 @@ public class SimpleTests
             Payload = """{"Name": "TestName"}"""
         };
 
-        var result = EventMapper.FromPayload<SimpleEvent>(dbEvent);
+        var result = EventMapper.F(dbEvent);
 
         Assert.That(result.AggregateId, Is.EqualTo(dbEvent.AggregateId));
         Assert.That(result.Version, Is.EqualTo(dbEvent.Version));

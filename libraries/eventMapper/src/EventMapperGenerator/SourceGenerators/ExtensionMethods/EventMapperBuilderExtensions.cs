@@ -2,7 +2,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace EventMapper.SourceGenerators.ExtensionMethods;
+namespace EventMapperGenerator.SourceGenerators.ExtensionMethods;
 
 public static class EventMapperBuilderExtensions
 {
@@ -51,8 +51,6 @@ public static class EventMapperBuilderExtensions
             foreach (var ns in eventNamespaces)
                 sb.AppendLine($"using {ns};");
 
-            sb.AppendLine("using System.Text.Json;");
-            sb.AppendLine("using System.Text.Json.Nodes;");
             sb.AppendLine($"namespace {MappingProfile.MapperNamespace};");
 
             // Start class
@@ -133,9 +131,9 @@ public static class EventMapperBuilderExtensions
 
         internal void AppendMainFromDbEvent(IEnumerable<string> eventTypeNames)
         {
-            sb.AppendLine($"\tprivate static {MappingProfile.BaseEventTypeName} "
-                    + MappingProfile.GetFromDbEventMethodName(MappingProfile.BaseEventTypeName)
-                    + $"{MappingProfile.DbEventTypeName} dbEvent)");
+            sb.AppendLine($"\tpublic static {MappingProfile.BaseEventTypeNameFriendly} "
+                    + MappingProfile.MainFromDbEventMethodName
+                    + $"({MappingProfile.DbEventTypeName} dbEvent)");
 
             sb.AppendLine("\t{");
             sb.AppendLine($"\t\treturn dbEvent switch");

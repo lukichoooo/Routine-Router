@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace EventMapper.SourceGenerators;
+namespace EventMapperGenerator.SourceGenerators;
 
 public static class MappingProfile
 {
@@ -8,7 +8,8 @@ public static class MappingProfile
     public static IImmutableSet<string> GetIgnoredOnPayloadPropNames
         => ImmutableHashSet.Create("AggregateId", "Version", "Timestamp");
     public static readonly string DbEventTypeName = "EventMapperAbstractions.DbEvents.IDbEvent";
-    public static readonly string BaseEventTypeName = "EventMapperAbstractions.Events.IEvent`1";
+    public static readonly string BaseEventTypeMetadataName = "EventMapperAbstractions.Events.IEvent`1";
+    public static readonly string BaseEventTypeNameFriendly = "EventMapperAbstractions.Events.IEvent<object>";
     // HARDCODED
 
     public static readonly string MapperNamespace = "Generated.EventMapper";
@@ -17,8 +18,10 @@ public static class MappingProfile
 
     public const string MainFileName = "Main";
 
+    public const string MainFromDbEventMethodName = "FromDbEvent";
+
     internal static string GetFromDbEventMethodName(string eventTypeName)
-        => $"FromDbEventTo{eventTypeName}";
+        => $"{MainFromDbEventMethodName}To{eventTypeName}";
 
 }
 

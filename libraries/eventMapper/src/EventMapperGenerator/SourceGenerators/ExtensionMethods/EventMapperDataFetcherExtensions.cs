@@ -1,9 +1,9 @@
-using EventMapper.SourceGenerators.Common.Exceptions;
+using EventMapperGenerator.SourceGenerators.Common.Exceptions;
 using EventMapperAbstractions.Events;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace EventMapper.SourceGenerators.ExtensionMethods;
+namespace EventMapperGenerator.SourceGenerators.ExtensionMethods;
 
 public static class EventMapperDataFetcherExtensions
 {
@@ -22,8 +22,8 @@ public static class EventMapperDataFetcherExtensions
                 ?? throw new EventMapperGeneratorException($"Symbol not found on '{eventDecl.GetType().Name}'");
 
             var eventInterface = context.SemanticModel.Compilation
-                .GetTypeByMetadataName(MappingProfile.BaseEventTypeName)
-                ?? throw new EventMapperGeneratorException($"{MappingProfile.BaseEventTypeName} not found");
+                .GetTypeByMetadataName(MappingProfile.BaseEventTypeMetadataName)
+                ?? throw new EventMapperGeneratorException($"{MappingProfile.BaseEventTypeMetadataName} not found");
 
             var eventNamespace = eventSymbol.ContainingNamespace.ToDisplayString();
 

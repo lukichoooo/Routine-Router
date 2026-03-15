@@ -1,10 +1,9 @@
 #pragma warning disable RS1041 // Code analysis requires .net standard 2
 
-using System.Collections.Immutable;
-using EventMapper.SourceGenerators.ExtensionMethods;
+using EventMapperGenerator.SourceGenerators.ExtensionMethods;
 using Microsoft.CodeAnalysis;
 
-namespace EventMapper.SourceGenerators;
+namespace EventMapperGenerator.SourceGenerators;
 
 // <summary>
 //  Creates Converter of Code C# events and Database Stored Events
@@ -28,18 +27,18 @@ internal class MappedDtoGenerator : IIncrementalGenerator
                 static (spc, dtoData) => spc.BuildMapperSourceFile(dtoData)
                     );
 
-        // var dtoDataWrapper = dtoData.Collect();
-        //
-        // initContext.RegisterSourceOutput(
-        //     dtoDataWrapper,
-        //     static (spc, allDtos) =>
-        //     {
-        //         var eventTypeNames = allDtos.Select(d => d.EventTypeName);
-        //         var eventNamespaces = allDtos.Select(d => d.EventNamespace).Distinct();
-        //
-        //         spc.BuildMainSourceFile(eventTypeNames, eventNamespaces);
-        //     }
-        // );
+        var dtoDataWrapper = dtoData.Collect();
+
+        initContext.RegisterSourceOutput(
+            dtoDataWrapper,
+            static (spc, allDtos) =>
+            {
+                var eventTypeNames = allDtos.Select(d => d.EventTypeName);
+                var eventNamespaces = allDtos.Select(d => d.EventNamespace).Distinct();
+
+                spc.BuildMainSourceFile(eventTypeNames, eventNamespaces);
+            }
+        );
     }
 }
 
