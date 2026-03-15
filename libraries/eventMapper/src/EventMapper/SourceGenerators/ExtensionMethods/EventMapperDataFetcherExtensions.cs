@@ -1,6 +1,5 @@
-using System.Collections.Immutable;
-using Domain.SeedWork;
 using EventMapper.SourceGenerators.Common.Exceptions;
+using EventMapperAbstractions.Events;
 using Microsoft.CodeAnalysis;
 
 namespace EventMapper.SourceGenerators.ExtensionMethods;
@@ -11,7 +10,7 @@ public static class EventMapperDataFetcherExtensions
     {
         internal bool IsEvent()
             => node is INamedTypeSymbol namedTypeSymbol
-                && namedTypeSymbol.AllInterfaces.Any(x => x.Name == nameof(IDomainEvent));
+                && namedTypeSymbol.AllInterfaces.Any(x => x.Name == nameof(IEvent<>));
     }
 
     extension(GeneratorSyntaxContext context)

@@ -1,4 +1,5 @@
 using Mediator;
+using EventMapperAbstractions.Events;
 
 namespace Domain.SeedWork;
 
@@ -6,11 +7,11 @@ namespace Domain.SeedWork;
 // <summary>
 // Domain Event Interface
 // </summary>
-public interface IDomainEvent : INotification
+public interface IDomainEvent : INotification, IEvent<EntityId>
 {
-    EntityId AggregateId { get; }
-    int Version { get; }
-    DateTimeOffset Timestamp { get; }
+    new EntityId AggregateId { get; }
+    new int Version { get; }
+    new DateTimeOffset Timestamp { get; }
 }
 
 // <summary>
@@ -23,5 +24,8 @@ public abstract record BaseDomainEvent<TAggregateRootId> : IDomainEvent
     public abstract int Version { get; init; }
     public abstract DateTimeOffset Timestamp { get; init; }
 
+
+    // Base interfaces inheritance
     EntityId IDomainEvent.AggregateId => AggregateId;
+    EntityId IEvent<EntityId>.AggregateId => AggregateId;
 }

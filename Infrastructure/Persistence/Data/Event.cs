@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.SeedWork;
+using EventMapperAbstractions.DbEvents;
 
 namespace Infrastructure.Persistence.Data;
 
-public sealed class Event
+public sealed class Event : IDbEvent
 {
     [Key]
     public int Id { get; private set; }
@@ -64,7 +65,6 @@ public sealed class Event
         yield return (Version, nameof(Version));
         yield return (Timestamp, nameof(Timestamp));
     }
-
 
 }
 
