@@ -96,7 +96,7 @@ public static class EventMapperBuilderExtensions
         {
             sb.AppendLine($"\tprivate static {mapperData.EventTypeName} "
                     + MappingProfile.GetFromDbEventMethodName(mapperData.EventTypeName)
-                    + $"({MappingProfile.DbEventType.FullName} dbEvent)");
+                    + $"({MappingProfile.DbEventTypeName} dbEvent)");
 
             sb.AppendLine($"\t\t=> new {mapperData.EventTypeName}(");
 
@@ -133,9 +133,9 @@ public static class EventMapperBuilderExtensions
 
         internal void AppendMainFromDbEvent(IEnumerable<string> eventTypeNames)
         {
-            sb.AppendLine($"\tprivate static {MappingProfile.BaseEventType.FullName} "
-                    + MappingProfile.GetFromDbEventMethodName(MappingProfile.BaseEventType.FullName!)
-                    + $"{MappingProfile.DbEventType.FullName} dbEvent)");
+            sb.AppendLine($"\tprivate static {MappingProfile.BaseEventTypeName} "
+                    + MappingProfile.GetFromDbEventMethodName(MappingProfile.BaseEventTypeName)
+                    + $"{MappingProfile.DbEventTypeName} dbEvent)");
 
             sb.AppendLine("\t{");
             sb.AppendLine($"\t\treturn dbEvent switch");

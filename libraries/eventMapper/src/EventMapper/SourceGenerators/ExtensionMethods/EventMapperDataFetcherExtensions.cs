@@ -22,8 +22,8 @@ public static class EventMapperDataFetcherExtensions
                 ?? throw new EventMapperGeneratorException($"Symbol not found on '{eventDecl.GetType().Name}'");
 
             var eventInterface = context.SemanticModel.Compilation
-                .GetTypeByMetadataName(typeof(IEvent<>).FullName!)
-                ?? throw new EventMapperGeneratorException($"{typeof(IEvent<>).FullName} not found");
+                .GetTypeByMetadataName(MappingProfile.BaseEventTypeName)
+                ?? throw new EventMapperGeneratorException($"{MappingProfile.BaseEventTypeName} not found");
 
             var eventNamespace = eventSymbol.ContainingNamespace.ToDisplayString();
 

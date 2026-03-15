@@ -49,7 +49,7 @@ public class EdgeCaseTests
             Payload = """{"OptionalName": null}"""
         };
 
-        var result = EventMapper.FromPayload<EventWithNullableString>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent);
 
         Assert.That(result.OptionalName, Is.Null);
     }

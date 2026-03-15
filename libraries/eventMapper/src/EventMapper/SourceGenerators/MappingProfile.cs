@@ -1,18 +1,16 @@
 using System.Collections.Immutable;
-using EventMapperAbstractions.DbEvents;
-using EventMapperAbstractions.Events;
 
 namespace EventMapper.SourceGenerators;
 
 public static class MappingProfile
 {
     public static IImmutableSet<string> GetIgnoredOnPayloadPropNames
-        => IDbEvent.IgnoredOnPayloadFields.ToImmutableHashSet();
+        => ImmutableHashSet.Create("AggregateId", "Version", "Timestamp");
 
-    public static readonly Type DbEventType = typeof(IDbEvent);
-    public static readonly Type BaseEventType = typeof(IEvent<>);
+    public static readonly string DbEventTypeName = "EventMapperAbstractions.DbEvents.IDbEvent";
+    public static readonly string BaseEventTypeName = "EventMapperAbstractions.Events.IEvent`1";
 
-    public static readonly string MapperNamespace = DbEventType.Namespace!;
+    public static readonly string MapperNamespace = "Generated.EventMapper";
 
     public const string MapperClassName = "EventMapper";
 
