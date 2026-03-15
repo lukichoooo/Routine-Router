@@ -11,7 +11,7 @@ internal static class DtoBuilderExtensions
 
     extension(SourceProductionContext context)
     {
-        public void BuildDtoSourceFiles(GeneratedDtoData dtoData)
+        public void BuildDtoSourceFile(GeneratedDtoData dtoData)
         {
             context.LogOnBuild($"AUTOGEN ----- Generating Dto: {dtoData.DtoName}");
 
