@@ -32,12 +32,12 @@ internal class MappedDtoGenerator : IIncrementalGenerator
 
 internal record GeneratedDtoData()
 {
-    public string DtoName { get; set; } = string.Empty;
-    public string TargetName { get; set; } = string.Empty;
-    public IEnumerable<IPropertySymbol> Properties { get; set; } = [];
-    public string DtoNamespace { get; set; } = string.Empty;
-    public string TargetNamespace { get; set; } = string.Empty;
-    public IImmutableDictionary<string, string> PropNameToMappedType { get; set; } = ImmutableDictionary<string, string>.Empty;
+    public required string DtoName { get; init; } = string.Empty;
+    public required string TargetName { get; init; } = string.Empty;
+    public required IEnumerable<IPropertySymbol> Properties { get; init; } = [];
+    public required string DtoNamespace { get; init; } = string.Empty;
+    public required string TargetNamespace { get; init; } = string.Empty;
+    public required IImmutableDictionary<string, string> PropNameToMappedType { get; init; } = ImmutableDictionary<string, string>.Empty;
 }
 
 #pragma warning restore RS1041
