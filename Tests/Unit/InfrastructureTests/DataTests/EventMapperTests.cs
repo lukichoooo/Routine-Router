@@ -3,8 +3,8 @@ using AutoFixture.Kernel;
 using Domain.SeedWork;
 using TestHelperFactory;
 using Microsoft.Extensions.Logging;
-using Infrastructure.Persistence.Data.Serializer;
 using Infrastructure.Persistence.Data;
+using Generated.EventMapper;
 
 namespace InfrastructureTests.DataTests;
 
@@ -39,8 +39,6 @@ public class EventMapperTests
             .Select(t => _fix.Create(t, new SpecimenContext(_fix)))
             .ToList();
 
-        var sut = new JsonEventMapper();
-
         foreach (IDomainEvent domainEvent in events)
         {
             if (domainEvent.AggregateId.ToString() == "00000000-0000-0000-0000-000000000000")
@@ -49,10 +47,11 @@ public class EventMapperTests
                 continue;
             }
 
-            string payload = sut.ToPayload(domainEvent);
+            string payload = EventMapper.ToPayload(domainEvent);
             var dbEvent = Event.From(domainEvent, payload);
 
-            var deserializedDomainEvent = sut.ToDomainEvent(dbEvent);
+            var deserializedDomainEvent = EventMapper.FromDbEvent(dbEvent) as IDomainEvent;
+            Assert.That(deserializedDomainEvent, Is.Not.Null);
 
             Assert.That(domainEvent, Is.EqualTo(deserializedDomainEvent));
             AssertProperties(domainEvent, deserializedDomainEvent);

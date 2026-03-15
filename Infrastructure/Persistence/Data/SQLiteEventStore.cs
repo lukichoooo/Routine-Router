@@ -1,10 +1,8 @@
 using Application.Interfaces.Events;
 using Domain.SeedWork;
-using EventMapperGenerator.SourceGenerators.ExtensionMethods;
 using Generated.EventMapper;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data.Exceptions;
-using Infrastructure.Persistence.Data.Serializer;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Data;
@@ -38,7 +36,7 @@ public class SQLiteEventStore(EventContext context) : IEventStore
         }
 
         IEnumerable<Event> newEvents = events
-            .Select(e => Event.From(e, EventMapper.oPayload()));
+            .Select(e => Event.From(e, EventMapper.ToPayload(e)));
 
         await context.Events.AddRangeAsync(newEvents, ct);
     }
@@ -57,7 +55,7 @@ public class SQLiteEventStore(EventContext context) : IEventStore
                     && (toVersion == null || e.Version <= toVersion))
             .ToListAsync(ct);
 
-        return dbEvents.ConvertAll(mapper.ToDomainEvent);
+        return dbEvents.ConvertAll(x => (IDomainEvent)EventMapper.FromDbEvent(x));
     }
 }
 

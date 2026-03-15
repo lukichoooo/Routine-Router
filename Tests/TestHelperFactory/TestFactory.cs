@@ -5,12 +5,9 @@ using Domain.Entities.Schedules;
 using Domain.Entities.Schedules.ValueObjects;
 using Domain.Entities.Users;
 using Domain.Entities.Users.ValueObjects;
-using Infrastructure.EventPublishing;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
-using Infrastructure.Persistence.Data.Serializer;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -26,7 +23,6 @@ public static class TestFactory
     private static Fixture? _fixture;
     private static EventContext? _eventContext;
     private static StateContext? _stateContext;
-    private static IJsonEventMapper? _eventMapper;
     private static IEventStore? _eventStore;
     private static IEntityStateStore<ChecklistState, ChecklistId>? _checklistStateStore;
     private static IEntityStateStore<UserState, UserId>? _userStateStore;
@@ -102,16 +98,6 @@ public static class TestFactory
                 await GetStateContextAsync(),
                 eventDispatcher
                 );
-
-
-    // serializer
-
-    public static IJsonEventMapper GetEventMapper()
-        => _eventMapper ??= new JsonEventMapper();
-
-    public static async Task<IEventStore> GetEventStoreAsync()
-        => _eventStore ??= new SQLiteEventStore(GetEventMapper(), await GetEventContextAsync());
-
 
     // Entity State Stores
     public static async Task<IEntityStateStore<ChecklistState, ChecklistId>> GetChecklistStateStoreAsync()

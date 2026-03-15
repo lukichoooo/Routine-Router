@@ -14,7 +14,6 @@ using Infrastructure.EventPublishing;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Data;
-using Infrastructure.Persistence.Data.Serializer;
 using Infrastructure.Repos;
 using Infrastructure.Services.Command;
 using Infrastructure.Services.Identity;
@@ -55,7 +54,6 @@ namespace Infrastructure
             services.AddSingleton<IIdentityProvider, IdentityProvider>();
 
             // // Event Store Infrastructure
-            services.AddSingleton<IJsonEventMapper, JsonEventMapper>();
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<IEventStore, SQLiteEventStore>();
             services.AddScoped<IUnitOfWork, SQLiteUnitOfWork>();

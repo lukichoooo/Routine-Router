@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Application.Interfaces.Events;
 using AutoFixture;
 using Domain.Common.ValueObjects;
@@ -27,7 +26,7 @@ public class UserRepoTests
     {
         _eventContext = await TestFactory.GetEventContextAsync();
         _stateContext = await TestFactory.GetStateContextAsync();
-        _eventStore = new SQLiteEventStore(TestFactory.GetEventMapper(), _eventContext);
+        _eventStore = new SQLiteEventStore(_eventContext);
         _stateStore = new SQLiteUserStateStore(_stateContext);
         _eventContext.RemoveRange(_eventContext.Events);
         _stateContext.RemoveRange(_stateContext.Checklists);

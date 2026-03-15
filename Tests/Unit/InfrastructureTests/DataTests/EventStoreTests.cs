@@ -4,11 +4,11 @@ using Infrastructure.Persistence.Data;
 using Infrastructure.Persistence.Data.Exceptions;
 using Domain.Entities.Users.ValueObjects;
 using Infrastructure.Persistence.Contexts;
-using Infrastructure.Persistence.Data.Serializer;
 using Domain.Entities.Users;
 using Domain.Common.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Domain.Entities.Users.Events;
+using Generated.EventMapper;
 
 
 namespace InfrastructureTests.DataTests;
@@ -19,7 +19,6 @@ public class EventStoreTests
 {
     private EventContext _eventContext;
     private readonly Fixture _fix = TestFactory.GetFixture();
-    private readonly IJsonEventMapper _eventMapper = TestFactory.GetEventMapper();
 
     [SetUp]
     public async Task SetUpAsync()
@@ -40,9 +39,7 @@ public class EventStoreTests
     public async Task AppendTest_Success()
     {
         // Arrange
-        var sut = new SQLiteEventStore(
-                _eventMapper,
-                _eventContext);
+        var sut = new SQLiteEventStore(_eventContext);
 
         var user = new User();
         user.Create(_fix.Create<UserId>(), _fix.Create<Name>(), _fix.Create<PasswordHash>());
@@ -72,7 +69,7 @@ public class EventStoreTests
     public async Task AppendTest_WithExpectedVersion()
     {
         // Arrange
-        var sut = new SQLiteEventStore(_eventMapper, _eventContext);
+        var sut = new SQLiteEventStore(_eventContext);
 
         var ogUser = new User();
         ogUser.Create(new UserId(Guid.NewGuid()), _fix.Create<Name>(), _fix.Create<PasswordHash>());
@@ -96,12 +93,12 @@ public class EventStoreTests
             .AsNoTracking()
             .Where(e => e.AggregateId == ogUser.Id.Value)
             .OrderBy(e => e.Version)
-            .Select(e => _eventMapper.ToDomainEvent(e))
+            .Select(e => EventMapper.FromDbEvent(e) as UserCreated)
             .ToListAsync();
         Assert.That(userHistory, Has.Exactly(1).InstanceOf<UserCreated>());
 
         // After line 103, before line 106
-        var loadedUser = new User(userHistory);
+        var loadedUser = new User(userHistory!);
 
         Assert.That(loadedUser.Id, Is.EqualTo(ogUser.Id));
         Assert.That(loadedUser.StoredVersion, Is.EqualTo(ogUser.Version));
@@ -139,9 +136,7 @@ public class EventStoreTests
     public async Task AppendTest_ConcurrencyException()
     {
         // Arrange
-        var sut = new SQLiteEventStore(
-                _eventMapper,
-                _eventContext);
+        var sut = new SQLiteEventStore(_eventContext);
 
         var aggregateId = _fix.Create<UserId>();
         var user = new User();
@@ -150,7 +145,7 @@ public class EventStoreTests
 
         var dbEvent = Event.From(
                 domainEvents[0],
-                _eventMapper.ToPayload(domainEvents[0]));
+                EventMapper.ToPayload(domainEvents[0]));
 
         await _eventContext.Events.AddAsync(dbEvent);
         await _eventContext.SaveChangesAsync();
