@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-  <ProjectReference Include="..\libraries\generator\src\Attributes\Attributes.csproj" />
-  <ProjectReference Include="..\libraries\generator\src\DtoGenerator\DtoGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  <ProjectReference Include="..\libraries\dtoGenerator\src\Attributes\Attributes.csproj" />
+  <ProjectReference Include="..\libraries\dtoGenerator\src\DtoGenerator\DtoGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <PropertyGroup>

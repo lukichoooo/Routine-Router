@@ -5,13 +5,13 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/libraries/" />
-  <Folder Name="/libraries/generator/" />
-  <Folder Name="/libraries/generator/src/">
-    <Project Path="libraries/generator/src/Attributes/Attributes.csproj" />
-    <Project Path="libraries/generator/src/DtoGenerator/DtoGenerator.csproj" />
+  <Folder Name="/libraries/dtoGenerator/" />
+  <Folder Name="/libraries/dtoGenerator/src/">
+    <Project Path="libraries/dtoGenerator/src/Attributes/Attributes.csproj" />
+    <Project Path="libraries/dtoGenerator/src/DtoGenerator/DtoGenerator.csproj" />
   </Folder>
-  <Folder Name="/libraries/generator/tests/">
-    <Project Path="libraries/generator/tests/Unit/Unit.csproj" />
+  <Folder Name="/libraries/dtoGenerator/tests/">
+    <Project Path="libraries/dtoGenerator/tests/Unit/Unit.csproj" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/TestHelperFactory/TestHelperFactory.csproj" />
