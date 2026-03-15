@@ -136,12 +136,12 @@ public static class EventMapperBuilderExtensions
                     + $"({MappingProfile.DbEventTypeName} dbEvent)");
 
             sb.AppendLine("\t{");
-            sb.AppendLine($"\t\treturn dbEvent switch");
+            sb.AppendLine($"\t\treturn dbEvent.EventType switch");
             sb.AppendLine("\t\t{");
 
             foreach (var et in eventTypeNames)
             {
-                sb.AppendLine($"\t\t\t{et} e => {MappingProfile.GetFromDbEventMethodName(et)}(e),");
+                sb.AppendLine($"\t\t\t \"{et}\" => {MappingProfile.GetFromDbEventMethodName(et)}(dbEvent),");
             }
 
             sb.AppendLine("\t\t\t_ => throw new NotSupportedException()");

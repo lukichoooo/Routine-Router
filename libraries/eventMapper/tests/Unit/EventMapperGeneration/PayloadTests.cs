@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using Domain.SeedWork;
-using Event = Infrastructure.Persistence.Data.Event;
-using EventMapper = Infrastructure.Persistence.Data.EventMapper;
+using Generated.EventMapper;
+using Infrastructure.Persistence.Data;
 
 namespace Unit.EventMapperGeneration;
 
@@ -61,9 +61,9 @@ public class PayloadTests
             Payload = @"{""Items"": [""A"", ""B"", ""C""]}"
         };
 
-        var result = EventMapper.FromPayload<EventWithListPayload>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithListPayload;
 
-        Assert.That(result.Items, Has.Count.EqualTo(3));
+        Assert.That(result!.Items, Has.Count.EqualTo(3));
         Assert.That(result.Items, Is.EquivalentTo(new List<string> { "A", "B", "C" }));
     }
 
@@ -98,9 +98,9 @@ public class PayloadTests
             Payload = @"{""Data"": {""Name"": ""TestData"", ""Value"": 100}}"
         };
 
-        var result = EventMapper.FromPayload<EventWithNestedObject>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithNestedObject;
 
-        Assert.That(result.Data, Is.Not.Null);
+        Assert.That(result!.Data, Is.Not.Null);
         Assert.That(result.Data.Name, Is.EqualTo("TestData"));
         Assert.That(result.Data.Value, Is.EqualTo(100));
     }
@@ -142,9 +142,9 @@ public class PayloadTests
             Payload = @"{""UserId"": """ + userId + @""", ""ItemId"": """ + itemId + @"""}"
         };
 
-        var result = EventMapper.FromPayload<EventWithGuidPayload>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithGuidPayload;
 
-        Assert.That(result.UserId, Is.EqualTo(userId));
+        Assert.That(result!.UserId, Is.EqualTo(userId));
         Assert.That(result.ItemId, Is.EqualTo(itemId));
     }
 
@@ -168,9 +168,9 @@ public class PayloadTests
             Payload = EventMapper.ToPayload(original)
         };
 
-        var result = EventMapper.FromPayload<EventWithListPayload>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithListPayload;
 
-        Assert.That(result.Items, Is.EquivalentTo(original.Items));
+        Assert.That(result!.Items, Is.EquivalentTo(original.Items));
     }
 
     [Test]
@@ -193,7 +193,7 @@ public class PayloadTests
             Payload = EventMapper.ToPayload(original)
         };
 
-        var result = EventMapper.FromPayload<EventWithNestedObject>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithNestedObject;
 
         Assert.That(result.Data.Name, Is.EqualTo(original.Data.Name));
         Assert.That(result.Data.Value, Is.EqualTo(original.Data.Value));

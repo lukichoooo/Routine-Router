@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using Domain.SeedWork;
-using EventMapperAbstractions.DbEvents;
-using Event = Infrastructure.Persistence.Data.Event;
+using Generated.EventMapper;
+using Infrastructure.Persistence.Data;
 
 namespace Unit.EventMapperGeneration;
 
@@ -49,9 +49,9 @@ public class EdgeCaseTests
             Payload = """{"OptionalName": null}"""
         };
 
-        var result = EventMapper.FromDbEvent(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithNullableString;
 
-        Assert.That(result.OptionalName, Is.Null);
+        Assert.That(result!.OptionalName, Is.Null);
     }
 
     [Test]
@@ -67,9 +67,9 @@ public class EdgeCaseTests
             Payload = """{"OptionalName": ""}"""
         };
 
-        var result = EventMapper.FromPayload<EventWithNullableString>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithNullableString;
 
-        Assert.That(result.OptionalName, Is.EqualTo(string.Empty));
+        Assert.That(result!.OptionalName, Is.EqualTo(string.Empty));
     }
 
     [Test]
@@ -103,9 +103,9 @@ public class EdgeCaseTests
             Payload = "{}"
         };
 
-        var result = EventMapper.FromPayload<EventWithAllBaseProps>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithAllBaseProps;
 
-        Assert.That(result.AggregateId.ToGuid(), Is.EqualTo(aggregateId));
+        Assert.That(result!.AggregateId.ToGuid(), Is.EqualTo(aggregateId));
         Assert.That(result.Version, Is.EqualTo(5));
         Assert.That(result.Timestamp, Is.EqualTo(timestamp));
     }
@@ -139,9 +139,9 @@ public class EdgeCaseTests
             Payload = """{"Amount": 123.45, "Rate": 0.055}"""
         };
 
-        var result = EventMapper.FromPayload<EventWithDecimal>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithDecimal;
 
-        Assert.That(result.Amount, Is.EqualTo(123.45m));
+        Assert.That(result!.Amount, Is.EqualTo(123.45m));
         Assert.That(result.Rate, Is.EqualTo(0.055).Within(0.0001));
     }
 
@@ -180,9 +180,9 @@ public class EdgeCaseTests
             Payload = payload
         };
 
-        var result = EventMapper.FromPayload<EventWithDateTime>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithDateTime;
 
-        Assert.That(result.ScheduledTime, Is.EqualTo(scheduledTime));
+        Assert.That(result!.ScheduledTime, Is.EqualTo(scheduledTime));
         Assert.That(result.OccurredAt, Is.EqualTo(occurredAt));
     }
 
@@ -226,9 +226,9 @@ public class EdgeCaseTests
             Payload = EventMapper.ToPayload(original)
         };
 
-        var result = EventMapper.FromPayload<EventWithNullableString>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithNullableString;
 
-        Assert.That(result.OptionalName, Is.Null);
+        Assert.That(result!.OptionalName, Is.Null);
     }
 
     [Test]
@@ -252,9 +252,9 @@ public class EdgeCaseTests
             Payload = EventMapper.ToPayload(original)
         };
 
-        var result = EventMapper.FromPayload<EventWithDecimal>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithDecimal;
 
-        Assert.That(result.Amount, Is.EqualTo(123456.789m));
+        Assert.That(result!.Amount, Is.EqualTo(123456.789m));
         Assert.That(result.Rate, Is.EqualTo(0.123456789).Within(0.0000001));
     }
 
@@ -273,8 +273,8 @@ public class EdgeCaseTests
             Payload = payload
         };
 
-        var result = EventMapper.FromPayload<EventWithNullableString>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithNullableString;
 
-        Assert.That(result.OptionalName, Is.EqualTo(largeString));
+        Assert.That(result!.OptionalName, Is.EqualTo(largeString));
     }
 }

@@ -2,8 +2,10 @@ using EventMapperAbstractions.Events;
 
 namespace EventMapperAbstractions.DbEvents;
 
-public interface IDbEvent
+public interface IDbEvent : IEvent<Guid>
 {
+    public string EventType { get; }
+
     public static IReadOnlySet<string> IgnoredOnPayloadFields
         => new HashSet<string>
         {

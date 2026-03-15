@@ -1,5 +1,4 @@
 using EventMapperGenerator.SourceGenerators.Common.Exceptions;
-using EventMapperAbstractions.Events;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -27,9 +26,13 @@ public static class EventMapperDataFetcherExtensions
 
             var eventNamespace = eventSymbol.ContainingNamespace.ToDisplayString();
 
-            var props = eventSymbol.GetMembers()
+            var props = eventSymbol?
+                .GetMembers()
                 .OfType<IPropertySymbol>()
-                .Where(x => !x.IsStatic);
+                .Where(p => !p.IsStatic
+                        && p.DeclaredAccessibility == Accessibility.Public
+                        && !p.IsImplicitlyDeclared
+                ) ?? [];
 
             var payloadProps = props.Where(x =>
                     !MappingProfile.GetIgnoredOnPayloadPropNames.Contains(x.Name));
@@ -39,7 +42,7 @@ public static class EventMapperDataFetcherExtensions
 
             return new GeneratedEventMapperData()
             {
-                EventTypeName = eventSymbol.Name,
+                EventTypeName = eventSymbol!.Name,
                 EventNamespace = eventNamespace,
                 PayloadProps = payloadProps,
                 BaseProps = baseProps,

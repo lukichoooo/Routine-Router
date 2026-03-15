@@ -49,9 +49,9 @@ public class SimpleTests
             Payload = """{"Name": "TestName"}"""
         };
 
-        var result = EventMapper.F(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as SimpleEvent;
 
-        Assert.That(result.AggregateId, Is.EqualTo(dbEvent.AggregateId));
+        Assert.That(result!.AggregateId.Value, Is.EqualTo(dbEvent.AggregateId));
         Assert.That(result.Version, Is.EqualTo(dbEvent.Version));
         Assert.That(result.Timestamp, Is.EqualTo(dbEvent.Timestamp));
         Assert.That(result.Name, Is.EqualTo("TestName"));
@@ -70,9 +70,9 @@ public class SimpleTests
             Payload = """{"Name": "TestName", "Count": 5, "IsActive": true}"""
         };
 
-        var result = EventMapper.FromPayload<EventWithMultiplePayload>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as EventWithMultiplePayload;
 
-        Assert.That(result.AggregateId, Is.EqualTo(dbEvent.AggregateId));
+        Assert.That(result!.AggregateId.Value, Is.EqualTo(dbEvent.AggregateId));
         Assert.That(result.Version, Is.EqualTo(dbEvent.Version));
         Assert.That(result.Name, Is.EqualTo("TestName"));
         Assert.That(result.Count, Is.EqualTo(5));
@@ -134,8 +134,8 @@ public class SimpleTests
             Payload = EventMapper.ToPayload(originalEvent)
         };
 
-        var result = EventMapper.FromPayload<SimpleEvent>(dbEvent);
+        var result = EventMapper.FromDbEvent(dbEvent) as SimpleEvent;
 
-        Assert.That(result.Name, Is.EqualTo(originalEvent.Name));
+        Assert.That(result!.Name, Is.EqualTo(originalEvent.Name));
     }
 }
