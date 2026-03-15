@@ -5,8 +5,10 @@ namespace EventMapperGenerator.SourceGenerators;
 public static class MappingProfile
 {
     // HARDCODED
-    public static IImmutableSet<string> GetIgnoredOnPayloadPropNames
+    public static IImmutableSet<string> IgnoredOnPayloadPropNames
         => ImmutableHashSet.Create("AggregateId", "Version", "Timestamp");
+    public static IImmutableSet<string> SingleArgConstructorFields
+        => ImmutableHashSet.Create("AggregateId");
     public static readonly string DbEventTypeName = "EventMapperAbstractions.DbEvents.IDbEvent";
     public static readonly string BaseEventTypeMetadataName = "EventMapperAbstractions.Events.IEvent`1";
     public static readonly string BaseEventTypeNameFriendly = "object";

@@ -35,10 +35,10 @@ public static class EventMapperDataFetcherExtensions
                 ) ?? [];
 
             var payloadProps = props.Where(x =>
-                    !MappingProfile.GetIgnoredOnPayloadPropNames.Contains(x.Name));
+                    !MappingProfile.IgnoredOnPayloadPropNames.Contains(x.Name));
 
             var baseProps = props.Where(x =>
-                    MappingProfile.GetIgnoredOnPayloadPropNames.Contains(x.Name));
+                    MappingProfile.IgnoredOnPayloadPropNames.Contains(x.Name));
 
             return new GeneratedEventMapperData()
             {

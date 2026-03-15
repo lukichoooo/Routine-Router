@@ -103,7 +103,7 @@ public static class EventMapperBuilderExtensions
             var args = new List<string>();
             foreach (var prop in mapperData.BaseProps)
             {
-                if (prop.Name == "AggregateId")
+                if (MappingProfile.SingleArgConstructorFields.Contains(prop.Name))
                     args.Add($"\t\t\t{prop.Name}: new(dbEvent.{prop.Name})");
                 else
                     args.Add($"\t\t\t{prop.Name}: dbEvent.{prop.Name}");
@@ -141,8 +141,7 @@ public static class EventMapperBuilderExtensions
                     + MappingProfile.MainFromDbEventMethodName
                     + $"({MappingProfile.DbEventTypeName} dbEvent)");
 
-            sb.AppendLine("\t{");
-            sb.AppendLine($"\t\treturn dbEvent.EventType switch");
+            sb.AppendLine($"\t\t=> dbEvent.EventType switch");
             sb.AppendLine("\t\t{");
 
             foreach (var et in eventTypeNames)
@@ -150,9 +149,8 @@ public static class EventMapperBuilderExtensions
                 sb.AppendLine($"\t\t\t \"{et}\" => {MappingProfile.GetFromDbEventMethodName(et)}(dbEvent),");
             }
 
-            sb.AppendLine("\t\t\t_ => throw new NotSupportedException()");
+            sb.AppendLine("\t\t\t_ => throw new NotSupportedException($\"Unknown event type {dbEvent.EventType}\"),");
             sb.AppendLine("\t\t};");
-            sb.AppendLine("\t}");
         }
     }
 }
