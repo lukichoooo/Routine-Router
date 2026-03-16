@@ -18,9 +18,13 @@ public class ChecklistRepo
 {
     public async Task<IEnumerable<Checklist>> GetForDay(UserId userId, DateOnly date, CancellationToken ct)
         => (await stateStore.Query
-            .Where(c => c.UserId == userId && c.Statistics.GetDate() == date)
+            .Where(c => c.UserId == userId)
+            .Where(c => c.UserId == userId
+                     && c.CreatedAt.Year == date.Year
+                     && c.CreatedAt.Month == date.Month
+                     && c.CreatedAt.Day == date.Day)
             .ToListAsync(ct))
-            .ConvertAll(Checklist.Create);
+            .Select(Checklist.Create);
 }
 
 

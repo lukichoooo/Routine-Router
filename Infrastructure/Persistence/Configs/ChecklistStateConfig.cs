@@ -42,10 +42,11 @@ public class ChecklistStateConfig : IEntityTypeConfiguration<ChecklistState>
                .HasForeignKey(x => x.ChecklistId)
                .IsRequired();
 
+        builder.Property(s => s.CreatedAt).IsRequired();
+
+
         builder.OwnsOne(x => x.Statistics, sb =>
         {
-            sb.Property(s => s.CreatedAt).IsRequired();
-
             sb.OwnsOne(s => s.UserRating, ur =>
             {
                 ur.Property(r => r.MoodRating).HasColumnName("User_MoodRating");

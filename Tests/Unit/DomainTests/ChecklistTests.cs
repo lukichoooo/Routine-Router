@@ -236,7 +236,7 @@ public class ChecklistTests
         Assert.That(state, Is.Not.Null);
         Assert.That(state.Id, Is.EqualTo(evt.AggregateId));
         Assert.That(state.UserId, Is.EqualTo(evt.UserId));
-        Assert.That(state.Statistics.CreatedAt, Is.EqualTo(evt.Timestamp));
+        Assert.That(state.CreatedAt, Is.EqualTo(evt.Timestamp));
     }
 
     [Test]

@@ -13,6 +13,9 @@ public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregate
 
     public UserId UserId { get; private set; }
     public Statistics Statistics { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
+
+    public DateOnly GetDate() => DateOnly.FromDateTime(CreatedAt.DateTime);
 
 
     public static ChecklistState CreateState(AggregateRoot<ChecklistId> owner)
@@ -25,7 +28,8 @@ public sealed class ChecklistState : AggregateRootState<ChecklistId>, IAggregate
     {
         Id = e.AggregateId;
         UserId = e.UserId;
-        Statistics = new Statistics(e.Timestamp);
+        CreatedAt = e.Timestamp;
+        Statistics = new Statistics();
     }
 
     public void Apply(TaskAddedToChecklist e)
