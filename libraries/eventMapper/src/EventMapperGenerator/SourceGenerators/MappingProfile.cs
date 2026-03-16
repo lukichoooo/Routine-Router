@@ -11,7 +11,7 @@ public static class MappingProfile
         => ImmutableHashSet.Create("AggregateId");
     public static readonly string DbEventTypeName = "EventMapperAbstractions.DbEvents.IDbEvent";
     public static readonly string BaseEventTypeMetadataName = "EventMapperAbstractions.Events.IEvent`1";
-    public static readonly string BaseEventTypeNameFriendly = "object";
+    public static readonly string BaseEventTypeNameFriendly = "EventMapperAbstractions.Events.IEvent";
     // HARDCODED
 
     public static readonly string MapperNamespace = "Generated.EventMapper";

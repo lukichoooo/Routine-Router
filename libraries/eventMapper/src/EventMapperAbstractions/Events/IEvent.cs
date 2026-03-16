@@ -1,6 +1,8 @@
 ﻿namespace EventMapperAbstractions.Events;
 
-public interface IEvent<TEntityId>
+public interface IEvent;
+
+public interface IEvent<TEntityId> : IEvent
 {
     TEntityId AggregateId { get; }
     int Version { get; }
