@@ -5,17 +5,22 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 
-public interface IController
-{
-    public Task<ActionResult<string>> Handle(string input);
-}
-
 [ApiController]
 [Route("[controller]")]
-public class ChatController(ICommandParser parser, ISender sender) : ControllerBase, IController
+public class ChatController(IInputParser parser, ISender sender) : ControllerBase
 {
-    [HttpPost]
-    public async Task<ActionResult<string>> Handle([FromBody] string input)
+    [HttpPost("command")]
+    public async Task<ActionResult<string>> Command([FromBody] string input)
+    {
+        dynamic cmd = await parser.Parse(input);
+
+        dynamic result = await sender.Send(cmd);
+
+        return Ok(result);
+    }
+
+    [HttpPost("query")]
+    public async Task<ActionResult<string>> Query([FromBody] string input)
     {
         dynamic cmd = await parser.Parse(input);
 

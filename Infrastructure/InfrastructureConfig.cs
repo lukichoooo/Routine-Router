@@ -87,7 +87,7 @@ namespace Infrastructure
             );
 
             // LLM
-            services.AddSingleton<ICommandParser, CommandParser>();
+            services.AddSingleton<IInputParser, LLMInputParser>();
 
 
             return services;
