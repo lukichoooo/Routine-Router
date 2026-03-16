@@ -18,7 +18,7 @@ public class EventMapperTests
     {
         var loggerFactory = LoggerFactory.Create(builder =>
         {
-            // builder.AddConsole(); // Comment out to not log
+            builder.AddConsole(); // Comment out to not log
             builder.SetMinimumLevel(LogLevel.Debug);
         });
         return loggerFactory.CreateLogger<EventMapperTests>();
@@ -41,9 +41,9 @@ public class EventMapperTests
 
         foreach (IDomainEvent domainEvent in events)
         {
-            if (domainEvent.AggregateId.ToString() == "00000000-0000-0000-0000-000000000000")
+            if (domainEvent.AggregateId.ToGuid().ToString() == "00000000-0000-0000-0000-000000000000")
             {
-                logger.LogDebug($"DomainEvent: {domainEvent.GetType().Name}\n");
+                Assert.Fail($"AggregateId is null for {domainEvent.GetType().Name}");
                 continue;
             }
 
