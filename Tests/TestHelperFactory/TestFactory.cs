@@ -22,7 +22,6 @@ public static class TestFactory
     private static Fixture? _fixture;
     private static EventContext? _eventContext;
     private static StateContext? _stateContext;
-    private static IEventStore? _eventStore;
     private static IEntityStateStore<ChecklistState, ChecklistId>? _checklistStateStore;
     private static IEntityStateStore<UserState, UserId>? _userStateStore;
 
@@ -34,7 +33,6 @@ public static class TestFactory
         _stateContext?.Dispose();
         _stateContext = null;
 
-        _eventStore = null;
         _checklistStateStore = null;
         _userStateStore = null;
     }
